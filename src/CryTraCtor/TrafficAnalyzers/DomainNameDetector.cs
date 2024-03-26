@@ -1,10 +1,24 @@
 ﻿using SharpPcap;
+using SharpPcap.LibPcap;
 
-namespace CryTraCtor.PacketArrivalHandler;
+namespace CryTraCtor.TrafficAnalyzers;
 
-public static class PacketArrivalHandler
+public class DomainNameDetector(string analyzedFileName) : TrafficAnalyzer(analyzedFileName)
 {
-    public static void HandlePacketArrival(object s, PacketCapture packetCapture)
+    public override void Run()
+    {
+        using var device = new CaptureFileReaderDevice(AnalyzedFileName);
+
+        device.Open();
+        device.Filter = "ip and tcp";
+
+        device.OnPacketArrival += HandlePacketArrival;
+        
+        device.Capture();
+
+    }
+    
+    private static void HandlePacketArrival(object s, PacketCapture packetCapture)
     {
         var rawPacket = packetCapture.GetPacket();
         var packet = PacketDotNet.Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);

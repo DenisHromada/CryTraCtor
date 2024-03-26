@@ -1,11 +1,7 @@
 using System.Configuration;
-using CryTraCtor.PacketArrivalHandler;
-using SharpPcap;
-using SharpPcap.LibPcap;
+using CryTraCtor.TrafficAnalyzers;
 
 var captureFilePath = ConfigurationManager.AppSettings["CaptureFilePath"];
 
-using var device = new CaptureFileReaderDevice(captureFilePath);
-device.Open();
-device.OnPacketArrival += PacketArrivalHandler.HandlePacketArrival;
-device.Capture();
+var domainNameDetector = new DomainNameDetector(captureFilePath ?? string.Empty);
+domainNameDetector.Run();
