@@ -1,4 +1,4 @@
-﻿using CryTraCtor.DataStructures;
+﻿using CryTraCtor.DataStructures.Dns;
 using Kaitai;
 using SharpPcap;
 using SharpPcap.LibPcap;
@@ -37,21 +37,16 @@ public class DomainNameDetector(string analyzedFileName) : TrafficAnalyzer(analy
         Console.WriteLine("DNS packet #{0}", DnsPacketCounter);
         Console.WriteLine("Transaction ID: {0:X}", data.TransactionId);
         
-        foreach (var query in data.Queries)
+        foreach (var query in data.GetQueries())
         {
-            var domainName = data.GetFullyQualifiedDomainName(query.Name);
-            
-            Console.WriteLine("Query: {0}", domainName.TrimEnd('.'));
+            Console.WriteLine("Query: {0}", query.DomainName);
         }
         
-        foreach (var answer in data.Answers)
+        foreach (var answer in data.GetAnswers())
         {
-            var domainName = data.GetFullyQualifiedDomainName(answer.Name);
-            
-            Console.WriteLine("Answer: {0}", domainName.TrimEnd('.'));
+            Console.WriteLine("Answer: {0}", answer.DomainName);
         }
         
-        // var protocol = udpPayloadPacket.
         var srcIp = ipPacket.SourceAddress;
         var dstIp = ipPacket.DestinationAddress;
         int srcPort = udpPacket.SourcePort;
