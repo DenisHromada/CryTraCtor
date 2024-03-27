@@ -39,33 +39,15 @@ public class DomainNameDetector(string analyzedFileName) : TrafficAnalyzer(analy
         
         foreach (var query in data.Queries)
         {
-            var domainName = string.Empty;
-            foreach (var subDomain in query.Name.Name)
-            {
-                domainName += subDomain.Name + ".";
-            }
+            var domainName = data.GetFullyQualifiedDomainName(query.Name);
+            
             Console.WriteLine("Query: {0}", domainName.TrimEnd('.'));
         }
         
         foreach (var answer in data.Answers)
         {
-            var domainName = string.Empty;
-            foreach (var subDomain in answer.Name.Name)
-            {
-                if (subDomain.IsPointer)
-                {
-                    var actualName = subDomain.Pointer.Contents;
-                    foreach (var actualSubDomain in actualName.Name)
-                    {
-                        domainName += actualSubDomain.Name + ".";
-                    }
-                    
-                }
-                else
-                {
-                    domainName += subDomain.Name + ".";
-                }
-            }
+            var domainName = data.GetFullyQualifiedDomainName(answer.Name);
+            
             Console.WriteLine("Answer: {0}", domainName.TrimEnd('.'));
         }
         
