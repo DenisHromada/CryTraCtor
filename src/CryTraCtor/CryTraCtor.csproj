@@ -13,4 +13,9 @@
       <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="PacketParsers\RawToSummaryMapper\" />
+      <Folder Include="PacketParsers\Raw\" />
+    </ItemGroup>
+
 </Project>

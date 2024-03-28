@@ -2,12 +2,11 @@
 
 using System.Collections.ObjectModel;
 using Kaitai;
-using Microsoft.VisualBasic;
 
-namespace CryTraCtor.DataStructures.Dns;
+namespace CryTraCtor.PacketParsers.RawToSummaryMapper.Dns;
 
-public class DnsPacket(KaitaiStream p__io, KaitaiStruct p__parent = null, Kaitai.KaitaiDnsPacket p__root = null)
-    : Kaitai.KaitaiDnsPacket(p__io, p__parent, p__root)
+public class DnsPacket(KaitaiStream p__io, KaitaiStruct p__parent = null, KaitaiDnsPacket p__root = null)
+    : KaitaiDnsPacket(p__io, p__parent, p__root)
 {
     private static string GetFullyQualifiedDomainName(DomainName kaitaiDomainName)
     {
@@ -16,15 +15,17 @@ public class DnsPacket(KaitaiStream p__io, KaitaiStruct p__parent = null, Kaitai
         {
             if (subDomain.IsPointer)
             {
-                var actualName = subDomain.Pointer.Contents;
-                domainName += GetFullyQualifiedDomainName(actualName);
-                break;
+                domainName = GetFullyQualifiedDomainName(subDomain.Pointer.Contents);
             }
-            domainName += subDomain.Name + ".";
+            else
+            {
+                domainName += subDomain.Name + ".";
+            }
         }
+
         return domainName.TrimEnd('.');
     }
-    
+
     public Collection<DnsAnswer> GetQueries()
     {
         var queries = new Collection<DnsAnswer>();
@@ -37,7 +38,7 @@ public class DnsPacket(KaitaiStream p__io, KaitaiStruct p__parent = null, Kaitai
 
         return queries;
     }
-    
+
     public Collection<DnsAnswer> GetAnswers()
     {
         var answers = new Collection<DnsAnswer>();
@@ -47,8 +48,7 @@ public class DnsPacket(KaitaiStream p__io, KaitaiStruct p__parent = null, Kaitai
             var parsedAnswer = new DnsAnswer(GetFullyQualifiedDomainName(answer.Name));
             answers.Add(parsedAnswer);
         }
-        
+
         return answers;
     }
 }
-    

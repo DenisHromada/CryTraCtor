@@ -1,4 +1,5 @@
-﻿using CryTraCtor.DataStructures.Dns;
+﻿using System.Collections.ObjectModel;
+using CryTraCtor.PacketParsers.RawToSummaryMapper.Dns;
 using Kaitai;
 using SharpPcap;
 using SharpPcap.LibPcap;
@@ -7,7 +8,8 @@ namespace CryTraCtor.TrafficAnalyzers;
 
 public class DomainNameDetector(string analyzedFileName) : TrafficAnalyzer(analyzedFileName)
 {
-    protected static int DnsPacketCounter = 0;
+    private static int DnsPacketCounter = 0;
+    
     public override void Run()
     {
         using var device = new CaptureFileReaderDevice(AnalyzedFileName);
@@ -32,17 +34,18 @@ public class DomainNameDetector(string analyzedFileName) : TrafficAnalyzer(analy
         var ipPacket = (PacketDotNet.IPPacket)udpPacket.ParentPacket;
         
         var dataStream = new KaitaiStream(udpPacket.PayloadData);
-        var data = new DnsPacket(dataStream);
+        var dnsPacket = new DnsPacket(dataStream);
+        
         DnsPacketCounter++;
         Console.WriteLine("DNS packet #{0}", DnsPacketCounter);
-        Console.WriteLine("Transaction ID: {0:X}", data.TransactionId);
+        Console.WriteLine("Transaction ID: {0:X}", dnsPacket.TransactionId);
         
-        foreach (var query in data.GetQueries())
+        foreach (var query in dnsPacket.GetQueries())
         {
             Console.WriteLine("Query: {0}", query.DomainName);
         }
         
-        foreach (var answer in data.GetAnswers())
+        foreach (var answer in dnsPacket.GetAnswers())
         {
             Console.WriteLine("Answer: {0}", answer.DomainName);
         }
