@@ -9,7 +9,7 @@ public abstract record DnsSummary(
     uint TransactionId
 ) : PacketSummary(SourceAddress, DestinationAddress, SourcePort, DestinationPort), IDnsSummary
 {
-    public new string GetSerializedPacketString()
+    public override string GetSerializedPacketString()
     {
         return SourceAddress + ":" + SourcePort + " -> " + DestinationAddress + ":" + DestinationPort +
                Environment.NewLine + "TxId: " + TransactionId + " Type: " + MessageType

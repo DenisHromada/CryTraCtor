@@ -11,7 +11,7 @@ public record DnsQuery(
     Collection<QueryEntry> Queries
 ) : DnsSummary(SourceAddress, DestinationAddress, SourcePort, DestinationPort, DnsMessageType.Query, TransactionId)
 {
-    public new string GetSerializedPacketString()
+    public override string GetSerializedPacketString()
     {
         return base.GetSerializedPacketString() + Environment.NewLine
                                                 + string.Join("," + Environment.NewLine, Queries);

@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using CryTraCtor.PacketParsers.Summary.Dns;
-using Kaitai;
+﻿using CryTraCtor.PacketParsers.Summary.Dns;
 using SharpPcap;
 
 namespace CryTraCtor.PacketParsers.RawToSummaryMapper.Dns;

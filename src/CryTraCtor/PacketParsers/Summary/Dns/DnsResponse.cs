@@ -12,7 +12,7 @@ public record DnsResponse(
     Collection<AnswerEntry> Answers
 ) : DnsSummary(SourceAddress, DestinationAddress, SourcePort, DestinationPort, DnsMessageType.Response, TransactionId)
 {
-    public new string GetSerializedPacketString()
+    public override string GetSerializedPacketString()
     {
         return base.GetSerializedPacketString() + Environment.NewLine
                                                 + string.Join("," + Environment.NewLine, Queries) + Environment.NewLine

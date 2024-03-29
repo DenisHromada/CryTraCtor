@@ -7,7 +7,7 @@ public abstract record PacketSummary(
     int DestinationPort
 ) : IPacketSummary
 {
-    public string GetSerializedPacketString()
+    public virtual string GetSerializedPacketString()
     {
         return SourceAddress + ":" + SourcePort + " -> " + DestinationAddress + ":" + DestinationPort;
     }
