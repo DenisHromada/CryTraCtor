@@ -1,10 +1,18 @@
 ﻿namespace CryTraCtor.PacketParsers.Summary.Dns;
 
-public abstract record DnsSummary (
+public abstract record DnsSummary(
     string SourceAddress,
     string DestinationAddress,
     int SourcePort,
     int DestinationPort,
     DnsMessageType MessageType,
     uint TransactionId
-) : PacketSummary(SourceAddress, DestinationAddress, SourcePort, DestinationPort), IDnsSummary;
+) : PacketSummary(SourceAddress, DestinationAddress, SourcePort, DestinationPort), IDnsSummary
+{
+    public new string GetSerializedPacketString()
+    {
+        return SourceAddress + ":" + SourcePort + " -> " + DestinationAddress + ":" + DestinationPort +
+               Environment.NewLine + "TxId: " + TransactionId + " Type: " + MessageType
+            ;
+    }
+}

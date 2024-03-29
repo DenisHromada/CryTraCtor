@@ -5,4 +5,10 @@ public abstract record PacketSummary(
     string DestinationAddress,
     int SourcePort,
     int DestinationPort
-);
+) : IPacketSummary
+{
+    public string GetSerializedPacketString()
+    {
+        return SourceAddress + ":" + SourcePort + " -> " + DestinationAddress + ":" + DestinationPort;
+    }
+}

@@ -1,7 +1,7 @@
 ﻿namespace CryTraCtor.PacketParsers.Summary.Dns;
 
-public interface IDnsSummary
+public interface IDnsSummary : IPacketSummary
 {
-    public uint TransactionId { get; }
     public DnsMessageType MessageType { get; }
+    public uint TransactionId { get; }
 }

@@ -7,8 +7,15 @@ public record DnsResponse(
     string DestinationAddress,
     int SourcePort,
     int DestinationPort,
-    DnsMessageType MessageType,
     uint TransactionId,
     Collection<QueryEntry> Queries,
     Collection<AnswerEntry> Answers
-) : DnsQuery(SourceAddress, DestinationAddress, SourcePort, DestinationPort, MessageType, TransactionId, Queries);
+) : DnsSummary(SourceAddress, DestinationAddress, SourcePort, DestinationPort, DnsMessageType.Response, TransactionId)
+{
+    public new string GetSerializedPacketString()
+    {
+        return base.GetSerializedPacketString() + Environment.NewLine
+                                                + string.Join("," + Environment.NewLine, Queries) + Environment.NewLine
+                                                + string.Join("," + Environment.NewLine, Answers);
+    }
+}

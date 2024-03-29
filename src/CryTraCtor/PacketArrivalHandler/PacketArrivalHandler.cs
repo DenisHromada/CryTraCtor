@@ -8,10 +8,13 @@ public static class PacketArrivalHandler
     {
         var rawPacket = packetCapture.GetPacket();
         var packet = PacketDotNet.Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
-        
+
         var tcpPacket = packet.Extract<PacketDotNet.TcpPacket>();
-        if (tcpPacket == null) {return;}
-        
+        if (tcpPacket == null)
+        {
+            return;
+        }
+
         var ipPacket = (PacketDotNet.IPPacket)tcpPacket.ParentPacket;
         var srcIp = ipPacket.SourceAddress;
         var dstIp = ipPacket.DestinationAddress;
