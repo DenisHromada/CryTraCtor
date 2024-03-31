@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using CryTraCtor.PacketParsers.Summary.Dns;
+using CryTraCtor.Packet.Summary.Dns;
 using Kaitai;
 
 namespace CryTraCtor.PacketParsers.RawToSummaryMapper.Dns;

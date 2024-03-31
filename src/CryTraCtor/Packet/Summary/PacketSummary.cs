@@ -1,4 +1,4 @@
-﻿namespace CryTraCtor.PacketParsers.Summary;
+﻿namespace CryTraCtor.Packet.Summary;
 
 public abstract record PacketSummary(
     string SourceAddress,

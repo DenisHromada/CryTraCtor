@@ -1,6 +1,6 @@
-﻿namespace CryTraCtor.TrafficAnalyzers;
+﻿namespace CryTraCtor.Packet;
 
-public abstract class TrafficAnalyzer(string analyzedFileName)
+public abstract class TrafficExtractor(string analyzedFileName)
 {
     protected string AnalyzedFileName { get; set; } = analyzedFileName;
 

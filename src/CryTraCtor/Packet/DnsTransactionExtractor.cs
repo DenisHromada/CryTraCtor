@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using CryTraCtor.Packet.Summary.Dns;
 using CryTraCtor.PacketParsers.RawToSummaryMapper.Dns;
-using CryTraCtor.PacketParsers.Summary.Dns;
 using SharpPcap;
 using SharpPcap.LibPcap;
 
-namespace CryTraCtor.TrafficAnalyzers;
+namespace CryTraCtor.Packet;
 
-public class DomainNameDetector(string analyzedFileName) : TrafficAnalyzer(analyzedFileName)
+public class DnsTransactionExtractor(string analyzedFileName) : TrafficExtractor(analyzedFileName)
 {
     public Dictionary<uint, Collection<IDnsSummary>> DnsTransactions { get; } = new();
     private static int _dnsPacketCounter = 0;
@@ -21,6 +21,7 @@ public class DomainNameDetector(string analyzedFileName) : TrafficAnalyzer(analy
         device.OnPacketArrival += HandlePacketArrival;
 
         device.Capture();
+        device.Close();
     }
 
     private void HandlePacketArrival(object s, PacketCapture packetCapture)
@@ -52,6 +53,17 @@ public class DomainNameDetector(string analyzedFileName) : TrafficAnalyzer(analy
         else
         {
             DnsTransactions.Add(dnsSummary.TransactionId, [dnsSummary]);
+        }
+    }
+
+    private void PostProcessTransactions()
+    {
+        foreach (var transaction in DnsTransactions)
+        {
+            if (transaction.Value.Count > 2)
+            {
+                throw new NotImplementedException("Found more than two packets with the same transaction Id!");
+            } 
         }
     }
 }

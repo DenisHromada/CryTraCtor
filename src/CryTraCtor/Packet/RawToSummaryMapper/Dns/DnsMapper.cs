@@ -1,4 +1,4 @@
-﻿using CryTraCtor.PacketParsers.Summary.Dns;
+﻿using CryTraCtor.Packet.Summary.Dns;
 using SharpPcap;
 
 namespace CryTraCtor.PacketParsers.RawToSummaryMapper.Dns;

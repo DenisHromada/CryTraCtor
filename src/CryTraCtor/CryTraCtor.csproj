@@ -14,8 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="PacketParsers\RawToSummaryMapper\" />
-      <Folder Include="PacketParsers\Raw\" />
+      <Folder Include="Packet\RawToSummaryMapper\" />
+      <Folder Include="Packet\Raw\" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace CryTraCtor.PacketParsers.Summary.Dns;
+namespace CryTraCtor.Packet.Summary.Dns;
 
 public record DnsResponse(
     string SourceAddress,
