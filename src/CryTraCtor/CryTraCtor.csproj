@@ -15,7 +15,10 @@
 
     <ItemGroup>
       <Folder Include="Packet\RawToSummaryMapper\" />
+      <Folder Include="Packet\RawToSummaryMapper\Dns\" />
       <Folder Include="Packet\Raw\" />
+      <Folder Include="Packet\Raw\Kaitai\Dns\" />
+      <Folder Include="Packet\Summary\Dns\" />
     </ItemGroup>
 
 </Project>
