@@ -1,10 +1,11 @@
 using System.Configuration;
 using CryTraCtor.Analyzers;
+using CryTraCtor.Helpers;
 using CryTraCtor.Mappers;
 using CryTraCtor.Models.Packet;
 
 // Configure capture file
-var captureFilePath = ConfigurationManager.AppSettings["CaptureFilePath"];
+var captureFilePath = GetFileFromId.GetFilepathFromId(string.Empty);
 
 // Extract DNS transactions
 var domainNameDetector = new DnsTransactionExtractor(captureFilePath ?? string.Empty);

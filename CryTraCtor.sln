@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor", "src\CryTraCtor\CryTraCtor.csproj", "{7AF42539-E9F3-469F-A8CB-4B85EF7EC862}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.Business", "src\CryTraCtor.Business\CryTraCtor.Business.csproj", "{7AF42539-E9F3-469F-A8CB-4B85EF7EC862}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.API", "src\CryTraCtor.API\CryTraCtor.API.csproj", "{F53877B3-2727-4567-902D-589FB3CDEE0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3B023A1B-1705-45FC-9560-338F321377F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +16,9 @@ Global
 		{7AF42539-E9F3-469F-A8CB-4B85EF7EC862}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AF42539-E9F3-469F-A8CB-4B85EF7EC862}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AF42539-E9F3-469F-A8CB-4B85EF7EC862}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F53877B3-2727-4567-902D-589FB3CDEE0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F53877B3-2727-4567-902D-589FB3CDEE0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F53877B3-2727-4567-902D-589FB3CDEE0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F53877B3-2727-4567-902D-589FB3CDEE0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

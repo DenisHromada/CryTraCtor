@@ -7,7 +7,7 @@ using SharpPcap.LibPcap;
 
 namespace CryTraCtor.Mappers;
 
-public class DnsTransactionExtractor(string analyzedFileName) : TrafficExtractor(analyzedFileName)
+public class DnsTransactionExtractor(string? analyzedFileName) : TrafficExtractor(analyzedFileName)
 {
     public Collection<DnsTransactionSummary> DnsTransactions { get; } = [];
     private readonly Dictionary<uint, DnsTransactionTraffic> _dnsTransactionDictionary = new();
