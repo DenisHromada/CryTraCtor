@@ -7,6 +7,7 @@
         <InvariantGlobalization>true</InvariantGlobalization>
         <RootNamespace>CryTraCtor.APi</RootNamespace>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <UserSecretsId>4f7bdf94-314f-4cbe-b8db-659cd8ca14d8</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +17,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CryTraCtor.Business\CryTraCtor.Business.csproj" />
+      <ProjectReference Include="..\CryTraCtor.Database\CryTraCtor.Database.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

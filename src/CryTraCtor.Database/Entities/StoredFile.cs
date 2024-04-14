@@ -2,9 +2,9 @@
 
 namespace CryTraCtor.Database.Entities;
 
-public partial class StoredFile
+public partial class StoredFile : IEntity
 {
-    [Key] public Guid Id { get; set; }
+    [Key] public required Guid Id { get; set; }
 
     public string FilePath { get; set; } = null!;
 }

@@ -6,9 +6,13 @@ namespace CryTraCtor.Database;
 public class CryTraCtorDbContext : DbContext
 {
     public virtual DbSet<StoredFile> StoredFiles { get; set; }
-    public CryTraCtorDbContext(DbContextOptions<CryTraCtorDbContext> options, bool seedData = false) : base(options)
+
+    public CryTraCtorDbContext()
     {
     }
-    
 
+    public CryTraCtorDbContext(DbContextOptions<CryTraCtorDbContext> options)
+        : base(options)
+    {
+    }
 }
