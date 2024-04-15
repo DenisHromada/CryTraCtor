@@ -1,3 +1,5 @@
+using System.Configuration;
+using CryTraCtor.APi.Services;
 using CryTraCtor.Database;
 using CryTraCtor.Database.Factories;
 using Microsoft.AspNetCore.Rewrite;
@@ -14,6 +16,7 @@ builder.Services
     .AddControllers()
     ;
 
+builder.Services.AddSingleton<IFileStorageConfig, PcapStorageConfig>();
 builder.Services.AddSingleton<IDbContextFactory<CryTraCtorDbContext>, DbContextPgsqlFactory>();
 
 var app = builder.Build();
