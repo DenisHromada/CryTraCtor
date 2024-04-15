@@ -35,4 +35,18 @@ public class StoredPcapController(
             return BadRequest(e.Message);
         }
     }
+    
+    [HttpDelete]
+    public async Task<IActionResult> DeleteStoredPcapFile(string fileName)
+    {
+        try
+        {
+            await fileStorageService.DeleteFileAsync(fileName);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }

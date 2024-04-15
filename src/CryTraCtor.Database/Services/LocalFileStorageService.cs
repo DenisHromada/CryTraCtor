@@ -1,8 +1,8 @@
-﻿using CryTraCtor.Database;
-using CryTraCtor.Database.Entities;
+﻿using CryTraCtor.Database.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
-namespace CryTraCtor.APi.Services;
+namespace CryTraCtor.Database.Services;
 
 public class LocalFileStorageService(
     IConfiguration configuration,
@@ -32,7 +32,7 @@ public class LocalFileStorageService(
 
         await using var stream = File.Create(fileDbEntity.InternalFilePath);
         await file.CopyToAsync(stream);
-        
+
         await using var dbContext = await contextFactory.CreateDbContextAsync();
         await dbContext.StoredFiles.AddAsync(fileDbEntity);
         await dbContext.SaveChangesAsync();
@@ -43,5 +43,29 @@ public class LocalFileStorageService(
         var localFileStorageDirectory = CaptureFileDirectory;
         var internalFileName = Path.GetRandomFileName();
         return Path.Combine(localFileStorageDirectory, internalFileName);
+    }
+
+    public void DeleteFile(string fileName) => _ = DeleteFileAsync(fileName);
+    public async Task DeleteFileAsync(string fileName)
+    {
+        await using var dbContext = await contextFactory.CreateDbContextAsync();
+        var file = await dbContext.StoredFiles
+            .FirstOrDefaultAsync(f => f.PublicFileName == fileName);
+
+
+        if (file is null)
+        {
+            throw new ArgumentException("File not found");
+        }
+        
+        var filePath = file.InternalFilePath;
+
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+
+        dbContext.StoredFiles.Remove(file);
+        await dbContext.SaveChangesAsync();
     }
 }
