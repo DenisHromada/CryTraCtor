@@ -10,7 +10,7 @@ namespace CryTraCtor.APi.Controllers.StoredFiles;
 [Route("stored-files")]
 public class StoredPcapController(
     IDbContextFactory<CryTraCtorDbContext> contextFactory,
-    IFileStorageConfig configuration)
+    IFileStorageService fileStorageService)
     : Controller
 {
     [HttpGet("Index")]
@@ -25,31 +25,14 @@ public class StoredPcapController(
     [HttpPost]
     public async Task<IActionResult> PostStoredPcapFile(IFormFile file)
     {
-        var size = file.Length;
-        if (size <= 0)
+        try
         {
-            return BadRequest("File is empty");
+            await fileStorageService.StoreFileAsync(file);
+            return Ok();
         }
-
-        var fileDbEntity = new StoredFile
+        catch (Exception e)
         {
-            Id = new Guid(),
-            PublicFileName = file.FileName,
-            MimeType = file.ContentType,
-            FileSize = size,
-            InternalFilePath = GetInternalFilePath()
-        };
-
-        await using var stream = System.IO.File.Create(fileDbEntity.InternalFilePath);
-        await file.CopyToAsync(stream);
-
-        return Ok("File uploaded successfully");
-
-        string GetInternalFilePath()
-        {
-            var localFileStorageDirectory = configuration.CaptureFileDirectory;
-            var internalFileName = Path.GetRandomFileName();
-            return Path.Combine(localFileStorageDirectory, internalFileName);
+            return BadRequest(e.Message);
         }
     }
 }

@@ -16,7 +16,7 @@ builder.Services
     .AddControllers()
     ;
 
-builder.Services.AddSingleton<IFileStorageConfig, PcapStorageConfig>();
+builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddSingleton<IDbContextFactory<CryTraCtorDbContext>, DbContextPgsqlFactory>();
 
 var app = builder.Build();
