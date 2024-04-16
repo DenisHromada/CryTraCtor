@@ -1,6 +1,13 @@
-﻿namespace CryTraCtor.Database.Repositories;
+﻿using CryTraCtor.Database.Entities;
+using Microsoft.AspNetCore.Http;
+
+namespace CryTraCtor.Database.Repositories;
 
 public interface IStoredFileRepository
 {
-    
+    IQueryable<StoredFileEntity> GetAll();
+    Task DeleteAsync(string publicFileName);
+    ValueTask<bool> ExistsAsync(StoredFileEntity entity);
+    Task<StoredFileEntity> InsertAsync(IFormFile entity);
+    Task<StoredFileEntity> UpdateAsync(StoredFileEntity entity);
 }

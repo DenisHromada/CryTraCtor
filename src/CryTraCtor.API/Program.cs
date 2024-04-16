@@ -1,23 +1,28 @@
-using System.Configuration;
-using CryTraCtor.APi.Services;
-using CryTraCtor.Database;
-using CryTraCtor.Database.Factories;
+using AutoMapper.Internal;
+using CryTraCtor.Database.Extensions;
+using CryTraCtor.Database.Installers;
+using CryTraCtor.Installers;
 using Microsoft.AspNetCore.Rewrite;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddControllers()
     ;
 
-builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
-builder.Services.AddSingleton<IDbContextFactory<CryTraCtorDbContext>, DbContextPgsqlFactory>();
+builder.Services.AddInstaller<ApiDatabaseInstaller>();
+builder.Services.AddInstaller<ApiBusinessInstaller>();
+
+// builder.Services.AddAutoMapper(
+//     configuration =>
+//     {
+//         configuration.Internal().MethodMappingEnabled = false;
+//     }, typeof(ApiDatabaseInstaller),
+//     typeof(ApiBusinessInstaller)
+// );
 
 var app = builder.Build();
 

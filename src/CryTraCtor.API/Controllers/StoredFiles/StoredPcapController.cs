@@ -1,6 +1,7 @@
-﻿using CryTraCtor.APi.Services;
-using CryTraCtor.Database;
-using CryTraCtor.Database.Entities;
+﻿using CryTraCtor.Database;
+using CryTraCtor.Database.Services;
+using CryTraCtor.Facades;
+using CryTraCtor.Models.StoredFiles;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,16 +11,14 @@ namespace CryTraCtor.APi.Controllers.StoredFiles;
 [Route("stored-files")]
 public class StoredPcapController(
     IDbContextFactory<CryTraCtorDbContext> contextFactory,
+    IStoredFileFacade storedFileFacade,
     IFileStorageService fileStorageService)
     : Controller
 {
     [HttpGet("Index")]
-    public async Task<ActionResult<string>> GetStoredPcapFiles()
+    public IEnumerable<StoredFileListModel> GetStoredPcapFiles()
     {
-        await using var dbContext = await contextFactory.CreateDbContextAsync();
-        var result = await dbContext.StoredFiles
-            .ToListAsync();
-        return Ok(result);
+        return storedFileFacade.GetAll();
     }
 
     [HttpPost]
@@ -27,8 +26,8 @@ public class StoredPcapController(
     {
         try
         {
-            await fileStorageService.StoreFileAsync(file);
-            return Ok();
+            var storedFileName = await storedFileFacade.Store(file);
+            return Ok("Successfully stored file: " + storedFileName);
         }
         catch (Exception e)
         {
@@ -39,14 +38,7 @@ public class StoredPcapController(
     [HttpDelete]
     public async Task<IActionResult> DeleteStoredPcapFile(string fileName)
     {
-        try
-        {
-            await fileStorageService.DeleteFileAsync(fileName);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+        await storedFileFacade.Delete(fileName);
+        return Ok("Successfully deleted file: " + fileName);
     }
 }
