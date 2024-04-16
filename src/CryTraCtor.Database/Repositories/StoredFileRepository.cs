@@ -14,7 +14,12 @@ public class StoredFileRepository(
 {
     private readonly DbSet<StoredFileEntity> _dbSet = dbContextFactory.CreateDbContext().Set<StoredFileEntity>();
     public IQueryable<StoredFileEntity> GetAll() => _dbSet;
-
+    
+    public async Task<StoredFileEntity?> GetByFilenameAsync(string filename)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+        return await dbContext.StoredFiles.FirstOrDefaultAsync(f => f.PublicFileName == filename);
+    }
     public async Task DeleteAsync(string publicFileName)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();

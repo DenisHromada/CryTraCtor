@@ -6,7 +6,7 @@ namespace CryTraCtor.Facades;
 public interface IStoredFileFacade : IFacade
 {
     List<StoredFileListModel> GetAll();
-    // StoredFileDetailModel GetByFilename(string filename);
+    Task<StoredFileDetailModel> GetFileMetadataAsync(string filename);
     Task<string> Store(IFormFile file);
     // string Rename(string newFilename, string oldFilename);
     Task Delete(string filename);

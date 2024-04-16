@@ -1,24 +1,25 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.Analyzers;
 using CryTraCtor.APi.Models.Dns;
-using CryTraCtor.Helpers;
+using CryTraCtor.Facades;
 using CryTraCtor.Mappers;
-using CryTraCtor.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 
 namespace CryTraCtor.APi.Controllers.Dns;
 
 [ApiController]
 [Route("dns/known-domain")]
-public class KnownDomainController : Controller
+public class KnownDomainController(
+    IStoredFileFacade storedFileFacade
+    ) : Controller
 {
-    [HttpGet("{fileId}")]
-    public async Task<ActionResult<string>> GetDomainCount(string fileId)
+    [HttpGet("{fileName}")]
+    public async Task<ActionResult<string>> GetDomainCount(string fileName)
     {
         try
         {
-            var captureFilePath = GetFileFromId.GetFilepathFromId(fileId);
+            var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
+            var captureFilePath = storedFileDetailModel.InternalFilePath;
 
             var domainNameDetector = new DnsTransactionExtractor(captureFilePath);
             domainNameDetector.Run();

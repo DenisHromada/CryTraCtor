@@ -1,19 +1,14 @@
-﻿using CryTraCtor.Database;
-using CryTraCtor.Database.Services;
-using CryTraCtor.Facades;
+﻿using CryTraCtor.Facades;
 using CryTraCtor.Models.StoredFiles;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.APi.Controllers.StoredFiles;
 
 [ApiController]
 [Route("stored-files")]
 public class StoredPcapController(
-    IDbContextFactory<CryTraCtorDbContext> contextFactory,
-    IStoredFileFacade storedFileFacade,
-    IFileStorageService fileStorageService)
-    : Controller
+    IStoredFileFacade storedFileFacade
+) : Controller
 {
     [HttpGet("Index")]
     public IEnumerable<StoredFileListModel> GetStoredPcapFiles()
@@ -34,7 +29,7 @@ public class StoredPcapController(
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpDelete]
     public async Task<IActionResult> DeleteStoredPcapFile(string fileName)
     {

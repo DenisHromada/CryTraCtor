@@ -1,22 +1,22 @@
-﻿using CryTraCtor.Database;
-using CryTraCtor.Helpers;
+﻿using CryTraCtor.Facades;
 using CryTraCtor.Mappers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.APi.Controllers.Dns;
 
 [ApiController]
 [Route("dns/transaction-count")]
-public class TransactionCountController : Controller
+public class TransactionCountController(
+    IStoredFileFacade storedFileFacade
+) : Controller
 {
-
-    [HttpGet("{fileId}")]
-    public async Task<ActionResult<string>> GetDomainCount(string fileId)
+    [HttpGet("{fileName}")]
+    public async Task<ActionResult<string>> GetDomainCount(string fileName)
     {
         try
         {
-            var captureFilePath = GetFileFromId.GetFilepathFromId(fileId);
+            var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
+            var captureFilePath = storedFileDetailModel.InternalFilePath;
 
             var domainNameDetector = new DnsTransactionExtractor(captureFilePath);
             domainNameDetector.Run();

@@ -23,12 +23,11 @@ public class StoredFileFacade(
 
         return storedFileListModels;
     }
-        // => mapper.MapToExistingEntity(storedFileRepository.GetAll());
-
-    // public StoredFileDetailModel GetByFilename(string filename)
-    // {
-    //     return mapper.Map<StoredFileDetailModel>(storedFileRepository.GetByFilename(filename));
-    // }
+    public async Task<StoredFileDetailModel> GetFileMetadataAsync(string filename)
+    {
+        var storedFileEntity = await storedFileRepository.GetByFilenameAsync(filename);
+        return modelMapper.MapToDetailModel(storedFileEntity);
+    }
 
     public async Task<string> Store(IFormFile file)
     {
