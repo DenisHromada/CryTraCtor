@@ -18,12 +18,12 @@ public class StoredFileRepository(
     public async Task<StoredFileEntity?> GetByFilenameAsync(string filename)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        return await dbContext.StoredFiles.FirstOrDefaultAsync(f => f.PublicFileName == filename);
+        return await dbContext.StoredFile.FirstOrDefaultAsync(f => f.PublicFileName == filename);
     }
     public async Task DeleteAsync(string publicFileName)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var file = await dbContext.StoredFiles
+        var file = await dbContext.StoredFile
             .FirstOrDefaultAsync(f => f.PublicFileName == publicFileName);
 
         if (file is null)
@@ -38,14 +38,14 @@ public class StoredFileRepository(
             File.Delete(filePath);
         }
 
-        dbContext.StoredFiles.Remove(file);
+        dbContext.StoredFile.Remove(file);
         await dbContext.SaveChangesAsync();
     }
 
     public async ValueTask<bool> ExistsAsync(StoredFileEntity entity)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var file = await dbContext.StoredFiles.FirstOrDefaultAsync(
+        var file = await dbContext.StoredFile.FirstOrDefaultAsync(
             f => f.PublicFileName == entity.PublicFileName
         );
         return file is not null;
@@ -77,7 +77,7 @@ public class StoredFileRepository(
             
             await using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
-            await dbContext.StoredFiles.AddAsync(fileDbEntity);
+            await dbContext.StoredFile.AddAsync(fileDbEntity);
             await dbContext.SaveChangesAsync();
             return fileDbEntity;
         }
@@ -91,7 +91,7 @@ public class StoredFileRepository(
     public async Task<StoredFileEntity> UpdateAsync(StoredFileEntity entity)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var existingEntity = await dbContext.StoredFiles
+        var existingEntity = await dbContext.StoredFile
             .FirstOrDefaultAsync(f => f.PublicFileName == entity.PublicFileName);
         if (existingEntity is null)
         {
@@ -99,7 +99,7 @@ public class StoredFileRepository(
         }
         
         entityMapper.MapToExistingEntity(existingEntity, entity);
-        dbContext.StoredFiles.Update(existingEntity);
+        dbContext.StoredFile.Update(existingEntity);
         await dbContext.SaveChangesAsync();
         return existingEntity;
     }

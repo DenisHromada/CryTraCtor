@@ -5,7 +5,9 @@ namespace CryTraCtor.Database;
 
 public class CryTraCtorDbContext : DbContext
 {
-    public virtual DbSet<StoredFileEntity> StoredFiles { get; set; }
+    public virtual DbSet<StoredFileEntity> StoredFile { get; set; }
+    public virtual DbSet<CryptoProductEntity> CryptoProduct { get; set; }
+    public virtual DbSet<KnownDomainEntity> KnownDomain { get; set; }
 
     public CryTraCtorDbContext()
     {

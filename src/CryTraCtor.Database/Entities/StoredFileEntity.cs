@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.Entities;
 
-public partial class StoredFileEntity : IEntity
+[Index(nameof(PublicFileName), IsUnique = true)]
+public class StoredFileEntity : IEntity
 {
-    [Key] public required Guid Id { get; set; }
+    public required Guid Id { get; set; }
 
     public string PublicFileName { get; set; } = null!;
     public string InternalFilePath { get; set; } = null!;
