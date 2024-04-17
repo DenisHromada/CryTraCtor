@@ -11,7 +11,7 @@ var dnsTransactions = domainNameDetector.DnsTransactions;
 Console.WriteLine("Transaction count: {0}", dnsTransactions.Count);
 
 var knownDomainDetector = new KnownDomainDetector(dnsTransactions);
-knownDomainDetector.Run();
+knownDomainDetector.OldRun();
 Console.WriteLine("Known domain count: {0}", knownDomainDetector.KnownDomainDetails.Count);
 
 var walletIpAddresses = knownDomainDetector.GetKnownDomainIpAddresses();

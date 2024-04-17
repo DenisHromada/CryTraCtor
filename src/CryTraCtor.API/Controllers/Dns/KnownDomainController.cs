@@ -25,7 +25,7 @@ public class KnownDomainController(
             domainNameDetector.Run();
 
             var knownDomainDetector = new KnownDomainDetector(domainNameDetector.DnsTransactions);
-            knownDomainDetector.Run();
+            knownDomainDetector.OldRun();
 
             var walletIpAddresses = knownDomainDetector.GetKnownDomainIpAddresses();
 

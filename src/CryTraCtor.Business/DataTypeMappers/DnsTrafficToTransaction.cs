@@ -12,7 +12,8 @@ public static class DnsTrafficToTransaction
 
         if (dnsTraffic.Queries.Count != 1 || dnsTraffic.Responses.Count != 1)
         {
-            throw new NotImplementedException("Found queries/responses with identical DNS transaction id's.");
+            return dnsTransactions;
+            // throw new NotImplementedException("Found queries/responses with identical DNS transaction id's.");
         }
 
         var query = dnsTraffic.Queries.First();

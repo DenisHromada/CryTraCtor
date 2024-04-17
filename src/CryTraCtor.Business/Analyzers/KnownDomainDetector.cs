@@ -5,20 +5,24 @@ using Microsoft.VisualBasic;
 
 namespace CryTraCtor.Analyzers;
 
-public class KnownDomainDetector
+public class KnownDomainDetector(Collection<DnsTransactionSummary> dnsTransactions)
 {
-    private readonly Collection<DnsTransactionSummary> _dnsTransactions;
-
-    public KnownDomainDetector(Collection<DnsTransactionSummary> dnsTransactions)
-    {
-        _dnsTransactions = dnsTransactions;
-    }
-
     public Dictionary<KnownDomainDetail, Collection<DnsTransactionSummary>> KnownDomainDetails { get; } = new();
+    public Collection<DnsTransactionSummary> FilteredDnsTransactions = [];
 
     public void Run()
     {
-        foreach (var dnsTransaction in _dnsTransactions)
+        foreach (var dnsTransactionSummary in dnsTransactions)
+        {
+            if (IsDomainKnown(dnsTransactionSummary.Query.Name))
+            {
+                FilteredDnsTransactions.Add(dnsTransactionSummary);
+            }
+        }
+    }
+    public void OldRun()
+    {
+        foreach (var dnsTransaction in dnsTransactions)
         {
             var domainName = dnsTransaction.Query.Name;
             // search transaction at a time and add relevant information for every known domain
@@ -34,7 +38,7 @@ public class KnownDomainDetector
         return domainName.EndsWith("trezor.io");
     }
 
-    private static KnownDomainDetail? GetKnownDomainDetail(string domainName)
+    public static KnownDomainDetail? GetKnownDomainDetail(string domainName)
     {
             return new KnownDomainDetail(
                 domainName,
