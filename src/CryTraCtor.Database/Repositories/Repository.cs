@@ -11,15 +11,20 @@ public class Repository<TEntity>(
     where TEntity : class, IEntity
 {
     private readonly DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
-
     public IQueryable<TEntity> Get() => _dbSet;
 
     public async ValueTask<bool> ExistsAsync(TEntity entity)
-        => entity.Id != Guid.Empty
-           && await _dbSet.AnyAsync(e => e.Id == entity.Id);
+    {
+        if (entity.Id == Guid.Empty)
+        {
+            return false;
+        }
 
-    public TEntity Insert(TEntity entity)
-        => _dbSet.Add(entity).Entity;
+        return await _dbSet.AnyAsync(e => e.Id == entity.Id);
+    }
+
+    public async Task<TEntity> InsertAsync(TEntity entity) 
+        => (await _dbSet.AddAsync(entity)).Entity;
 
     public async Task<TEntity> UpdateAsync(TEntity entity)
     {
@@ -28,6 +33,6 @@ public class Repository<TEntity>(
         return existingEntity;
     }
 
-    public async Task DeleteAsync(Guid entityId) =>
-        _dbSet.Remove(await _dbSet.SingleAsync(i => i.Id == entityId).ConfigureAwait(false));
+    public async Task DeleteAsync(Guid entityId) 
+        => _dbSet.Remove(await _dbSet.SingleAsync(i => i.Id == entityId).ConfigureAwait(false));
 }

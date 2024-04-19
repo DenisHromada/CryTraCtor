@@ -3,6 +3,7 @@ using CryTraCtor.Database.Factories;
 using CryTraCtor.Database.Mappers;
 using CryTraCtor.Database.Repositories;
 using CryTraCtor.Database.Services;
+using CryTraCtor.Database.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,18 +14,20 @@ public class ApiDatabaseInstaller : IInstaller
     public void Install(IServiceCollection serviceCollection)
     {
         serviceCollection
-            .AddSingleton<IFileStorageService, LocalFileStorageService>()
             .AddSingleton<IDbContextFactory<CryTraCtorDbContext>, DbContextPgsqlFactory>()
-            .AddSingleton<IStoredFileRepository, StoredFileRepository>()
-            .AddSingleton<IEntityMapper<StoredFileEntity>, StoredFileMapper>();
-        
+            .AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
-        serviceCollection.AddScoped<StoredFileRepository>();
-        // serviceCollection.Scan(selector =>
-        //     selector.FromAssemblyOf<ApiDatabaseInstaller>()
-        //         .AddClasses(classes => classes.AssignableTo<IStoredFileRepository>())
-        //         .AsMatchingInterface()
-        //         .WithScopedLifetime()
-        // );
+        serviceCollection
+            .AddSingleton<IFileStorageService, LocalFileStorageService>();
+
+        serviceCollection
+            .AddSingleton<IEntityMapper<StoredFileEntity>, StoredFileEntityMapper>()
+            .AddSingleton<IEntityMapper<CryptoProductEntity>, CryptoProductEntityMapper>()
+            .AddSingleton<IEntityMapper<KnownDomainEntity>, KnownDomainEntityMapper>();
+
+        serviceCollection
+            .AddScoped<IStoredFileRepository, StoredFileRepository>();
+        // .AddScoped<IRepository<CryptoProductEntity>, Repository<CryptoProductEntity>>()
+        // .AddScoped<IRepository<KnownDomainEntity>, Repository<KnownDomainEntity>>();
     }
 }

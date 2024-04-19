@@ -7,6 +7,6 @@ public class KnownDomainEntity : IEntity
     public string Purpose { get; set; } // e.g. bitcoin blockbook, telemetry
     public string Description { get; set; } // additional information
 
-    public Guid KnownProductId { get; set; }
-    public CryptoProductEntity CryptoProduct { get; set; }
+    public Guid CryptoProductId { get; set; }
+    public CryptoProductEntity? CryptoProduct { get; set; }
 }

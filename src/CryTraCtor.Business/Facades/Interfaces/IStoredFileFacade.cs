@@ -1,9 +1,9 @@
 ﻿using CryTraCtor.Models.StoredFiles;
 using Microsoft.AspNetCore.Http;
 
-namespace CryTraCtor.Facades;
+namespace CryTraCtor.Facades.Interfaces;
 
-public interface IStoredFileFacade : IFacade
+public interface IStoredFileFacade 
 {
     List<StoredFileListModel> GetAll();
     Task<StoredFileDetailModel> GetFileMetadataAsync(string filename);

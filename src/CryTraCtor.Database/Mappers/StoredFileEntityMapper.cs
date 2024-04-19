@@ -2,7 +2,7 @@
 
 namespace CryTraCtor.Database.Mappers;
 
-public class StoredFileMapper : IEntityMapper<StoredFileEntity>
+public class StoredFileEntityMapper : IEntityMapper<StoredFileEntity>
 {
     public void MapToExistingEntity(StoredFileEntity existingEntity, StoredFileEntity newEntity)
     {

@@ -12,8 +12,7 @@ public class StoredFileRepository(
     IFileStorageService fileStorageService
 ) : IStoredFileRepository
 {
-    private readonly DbSet<StoredFileEntity> _dbSet = dbContextFactory.CreateDbContext().Set<StoredFileEntity>();
-    public IQueryable<StoredFileEntity> GetAll() => _dbSet;
+    public IQueryable<StoredFileEntity> GetAll() => dbContextFactory.CreateDbContext().Set<StoredFileEntity>();
     
     public async Task<StoredFileEntity?> GetByFilenameAsync(string filename)
     {

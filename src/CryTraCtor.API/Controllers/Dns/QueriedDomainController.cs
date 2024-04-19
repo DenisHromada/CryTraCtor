@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.Analyzers;
+using CryTraCtor.APi.Models.Dns;
 using CryTraCtor.Facades;
+using CryTraCtor.Facades.Interfaces;
 using CryTraCtor.Mappers;
 using CryTraCtor.Models.DnsTransaction;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,45 @@ public class QueriedDomainController(
     IStoredFileFacade storedFileFacade
 ) : Controller
 {
+    [HttpGet("known-domain/{fileName}")]
+    public async Task<ActionResult<string>> GetDomainCount(string fileName)
+    {
+        try
+        {
+            var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
+            var captureFilePath = storedFileDetailModel.InternalFilePath;
+
+            var domainNameDetector = new DnsTransactionExtractor(captureFilePath);
+            domainNameDetector.Run();
+
+            var knownDomainDetector = new KnownDomainDetector(domainNameDetector.DnsTransactions);
+            knownDomainDetector.OldRun();
+
+            var walletIpAddresses = knownDomainDetector.GetKnownDomainIpAddresses();
+
+            var response = new Collection<KnownDomainResponseEntry>();
+            foreach (var knownWalletKeyPair in walletIpAddresses)
+            {
+                var responseEntry = new KnownDomainResponseEntry(
+                    knownWalletKeyPair.Key.DomainName,
+                    knownWalletKeyPair.Key.Vendor,
+                    knownWalletKeyPair.Key.Product,
+                    knownWalletKeyPair.Key.Purpose,
+                    knownWalletKeyPair.Key.Cryptocurrency,
+                    knownWalletKeyPair.Key.Description,
+                    knownWalletKeyPair.Value
+                );
+                response.Add(responseEntry);
+            }
+
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            return BadRequest();
+        }
+    }
+    
     [HttpGet("{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetAllQueriedDomains(string fileName)
     {
