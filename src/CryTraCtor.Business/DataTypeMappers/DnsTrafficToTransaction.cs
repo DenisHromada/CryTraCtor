@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using CryTraCtor.Models.DnsTransaction;
-using CryTraCtor.Models.Packet.Summary.Dns;
+using CryTraCtor.DataTypes.DnsTransaction;
+using CryTraCtor.DataTypes.Packet.Summary.Dns;
 
-namespace CryTraCtor.Mappers;
+namespace CryTraCtor.DataTypeMappers;
 
 public static class DnsTrafficToTransaction
 {

@@ -1,4 +1,4 @@
-﻿namespace CryTraCtor.Models.Packet.Summary.Dns;
+﻿namespace CryTraCtor.DataTypes.Packet.Summary.Dns;
 
 public enum DnsMessageType
 {

@@ -4,7 +4,7 @@
 
 using Kaitai;
 
-namespace CryTraCtor.Models.Packet.Raw.Kaitai.Dns
+namespace CryTraCtor.DataTypes.Packet.Raw.Kaitai.Dns
 {
 
     /// <summary>

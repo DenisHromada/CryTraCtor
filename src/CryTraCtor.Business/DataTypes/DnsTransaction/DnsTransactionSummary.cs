@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using CryTraCtor.Models.Packet.Summary.Dns;
+using CryTraCtor.DataTypes.Packet.Summary.Dns;
 
-namespace CryTraCtor.Models.DnsTransaction;
+namespace CryTraCtor.DataTypes.DnsTransaction;
 
 public record DnsTransactionSummary(
     uint TransactionId,

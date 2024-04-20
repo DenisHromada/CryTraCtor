@@ -1,10 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using CryTraCtor.Models;
-using CryTraCtor.Models.Packet.Raw.Kaitai.Dns;
-using CryTraCtor.Models.Packet.Summary.Dns;
+using CryTraCtor.DataTypes.Packet.Raw.Kaitai.Dns;
+using CryTraCtor.DataTypes.Packet.Summary.Dns;
 using Kaitai;
 
-namespace CryTraCtor.Mappers.RawToSummaryMapper.Dns;
+namespace CryTraCtor.DataTypeMappers.RawToSummaryMapper.Dns;
 
 public class DnsPayloadWrapper
 {

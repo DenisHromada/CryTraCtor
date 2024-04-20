@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace CryTraCtor.Models.Packet.Summary.Dns;
+namespace CryTraCtor.DataTypes.Packet.Summary.Dns;
 
 public record DnsResponse(
     InternetEndpoint Source,

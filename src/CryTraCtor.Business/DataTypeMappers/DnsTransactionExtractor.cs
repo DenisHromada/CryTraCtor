@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
-using CryTraCtor.Mappers.RawToSummaryMapper.Dns;
-using CryTraCtor.Models.DnsTransaction;
-using CryTraCtor.Models.Packet.Summary.Dns;
+using CryTraCtor.DataTypeMappers.RawToSummaryMapper.Dns;
+using CryTraCtor.DataTypes.DnsTransaction;
+using CryTraCtor.DataTypes.Packet.Summary.Dns;
 using SharpPcap;
 using SharpPcap.LibPcap;
 
-namespace CryTraCtor.Mappers;
+namespace CryTraCtor.DataTypeMappers;
 
 public class DnsTransactionExtractor(string? analyzedFileName) : TrafficExtractor(analyzedFileName)
 {

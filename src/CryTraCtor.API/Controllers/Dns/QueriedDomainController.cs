@@ -1,10 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.Analyzers;
 using CryTraCtor.APi.Models.Dns;
+using CryTraCtor.DataTypeMappers;
+using CryTraCtor.DataTypes.DnsTransaction;
 using CryTraCtor.Facades;
 using CryTraCtor.Facades.Interfaces;
 using CryTraCtor.Mappers;
-using CryTraCtor.Models.DnsTransaction;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.Dns;

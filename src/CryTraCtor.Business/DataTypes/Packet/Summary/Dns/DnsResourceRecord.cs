@@ -1,4 +1,4 @@
-﻿namespace CryTraCtor.Models.Packet.Summary.Dns;
+﻿namespace CryTraCtor.DataTypes.Packet.Summary.Dns;
 
 public record DnsResourceRecord(string Name,string Ttl,  string RecordClass, string RecordType, string RecordData)
 {

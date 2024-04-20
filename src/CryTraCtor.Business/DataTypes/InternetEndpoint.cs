@@ -1,4 +1,4 @@
-﻿namespace CryTraCtor.Models;
+﻿namespace CryTraCtor.DataTypes;
 
 public record InternetEndpoint(string Address, int Port)
 {

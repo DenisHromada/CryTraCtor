@@ -1,8 +1,8 @@
-﻿using CryTraCtor.Models;
-using CryTraCtor.Models.Packet.Summary.Dns;
+﻿using CryTraCtor.DataTypes;
+using CryTraCtor.DataTypes.Packet.Summary.Dns;
 using SharpPcap;
 
-namespace CryTraCtor.Mappers.RawToSummaryMapper.Dns;
+namespace CryTraCtor.DataTypeMappers.RawToSummaryMapper.Dns;
 
 public static class DnsMapper
 {

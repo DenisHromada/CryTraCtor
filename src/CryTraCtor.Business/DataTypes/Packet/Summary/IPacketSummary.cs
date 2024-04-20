@@ -1,4 +1,4 @@
-﻿namespace CryTraCtor.Models.Packet.Summary;
+﻿namespace CryTraCtor.DataTypes.Packet.Summary;
 
 public interface IPacketSummary
 {

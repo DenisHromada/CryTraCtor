@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using CryTraCtor.DataTypes;
+using CryTraCtor.DataTypes.DnsTransaction;
 using CryTraCtor.Models;
-using CryTraCtor.Models.DnsTransaction;
 using Microsoft.VisualBasic;
 
 namespace CryTraCtor.Analyzers;

@@ -1,4 +1,4 @@
-﻿namespace CryTraCtor.Mappers;
+﻿namespace CryTraCtor.DataTypeMappers;
 
 public abstract class TrafficExtractor(string analyzedFileName)
 {

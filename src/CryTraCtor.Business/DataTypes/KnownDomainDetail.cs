@@ -1,4 +1,4 @@
-﻿namespace CryTraCtor.Models;
+﻿namespace CryTraCtor.DataTypes;
 
 public record KnownDomainDetail(
     string DomainName, // domain name that matches

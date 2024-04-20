@@ -1,4 +1,5 @@
 using CryTraCtor.Analyzers;
+using CryTraCtor.DataTypeMappers;
 using CryTraCtor.Mappers;
 
 // Configure capture file
