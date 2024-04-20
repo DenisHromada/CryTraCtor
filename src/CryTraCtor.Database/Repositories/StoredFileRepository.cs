@@ -12,9 +12,9 @@ public class StoredFileRepository(
     IFileStorageService fileStorageService
 ) : IStoredFileRepository
 {
-    public IQueryable<StoredFileEntity> GetAll() => dbContextFactory.CreateDbContext().Set<StoredFileEntity>();
+    public IQueryable<StoredFileEntity> GetMetadataAll() => dbContextFactory.CreateDbContext().Set<StoredFileEntity>();
     
-    public async Task<StoredFileEntity?> GetByFilenameAsync(string filename)
+    public async Task<StoredFileEntity?> GetMetadataByFilenameAsync(string filename)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
         return await dbContext.StoredFile.FirstOrDefaultAsync(f => f.PublicFileName == filename);

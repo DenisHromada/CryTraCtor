@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CryTraCtor.Database\CryTraCtor.Database.csproj" />
+      <ProjectReference Include="..\CryTraCtor.Packet\CryTraCtor.Packet.csproj" />
     </ItemGroup>
 
     <ItemGroup>

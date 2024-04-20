@@ -2,9 +2,8 @@
 using CryTraCtor.APi.Models.Dns;
 using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Packet.Analyzers;
-using CryTraCtor.Packet.DataTypeMappers;
-using CryTraCtor.Packet.DataTypes.DnsTransaction;
 using CryTraCtor.Packet.Models;
+using CryTraCtor.Packet.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.Dns;
@@ -12,7 +11,8 @@ namespace CryTraCtor.APi.Controllers.Dns;
 [ApiController]
 [Route("dns/queried-domains")]
 public class QueriedDomainController(
-    IStoredFileFacade storedFileFacade
+    IStoredFileFacade storedFileFacade,
+    IDnsTransactionExtractor dnsTransactionExtractor
 ) : Controller
 {
     [HttpGet("known-domain/{fileName}")]
@@ -23,10 +23,9 @@ public class QueriedDomainController(
             var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
             var captureFilePath = storedFileDetailModel.InternalFilePath;
 
-            var domainNameDetector = new DnsTransactionExtractor(captureFilePath);
-            domainNameDetector.Run();
+            var extractedDomainNames = dnsTransactionExtractor.Run(captureFilePath);
 
-            var knownDomainDetector = new KnownDomainDetector(domainNameDetector.DnsTransactions);
+            var knownDomainDetector = new KnownDomainDetector(extractedDomainNames);
             knownDomainDetector.OldRun();
 
             var walletIpAddresses = knownDomainDetector.GetKnownDomainIpAddresses();
@@ -53,28 +52,24 @@ public class QueriedDomainController(
             return BadRequest(e.Message);
         }
     }
-    
-    [HttpGet("{fileName}")]
+
+    [HttpGet("all/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetAllQueriedDomains(string fileName)
     {
-        var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
-        var captureFilePath = storedFileDetailModel.InternalFilePath;
+        var captureFilePath = (await storedFileFacade.GetFileMetadataAsync(fileName)).InternalFilePath;
+        var extractedDomainNames = dnsTransactionExtractor.Run(captureFilePath);
 
-        var domainNameDetector = new DnsTransactionExtractor(captureFilePath);
-        domainNameDetector.Run();
-
-        return GetDomainQueriers(domainNameDetector.DnsTransactions);
+        return GetDomainQueriers(extractedDomainNames);
     }
-    
+
     [HttpGet("known/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetKnownQueriedDomains(string fileName)
     {
         var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
         var captureFilePath = storedFileDetailModel.InternalFilePath;
 
-        var domainNameDetector = new DnsTransactionExtractor(captureFilePath);
-        domainNameDetector.Run();
-        var knownDomainDetector = new KnownDomainDetector(domainNameDetector.DnsTransactions);
+        var extractedDomainNames = dnsTransactionExtractor.Run(captureFilePath);
+        var knownDomainDetector = new KnownDomainDetector(extractedDomainNames);
         knownDomainDetector.Run();
         return GetDomainQueriers(knownDomainDetector.FilteredDnsTransactions);
     }
@@ -109,20 +104,19 @@ public class QueriedDomainController(
 
         return queriedDomains;
     }
-    
+
     [HttpGet("wallet-traffic/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetWalletTraffic(string fileName)
     {
         var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
         var captureFilePath = storedFileDetailModel.InternalFilePath;
 
-        var domainNameDetector = new DnsTransactionExtractor(captureFilePath);
-        domainNameDetector.Run();
-        var knownDomainDetector = new KnownDomainDetector(domainNameDetector.DnsTransactions);
+        var extractedDomainNames = dnsTransactionExtractor.Run(captureFilePath);
+        var knownDomainDetector = new KnownDomainDetector(extractedDomainNames);
         knownDomainDetector.Run();
 
         var transactions = knownDomainDetector.FilteredDnsTransactions;
-        
+
         Dictionary<string, HashSet<string>> queriedDomains = new();
 
         foreach (var dnsTransaction in transactions)

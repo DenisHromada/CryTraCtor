@@ -13,7 +13,7 @@ public class StoredFileFacade(
 {
     public List<StoredFileListModel> GetAll()
     {
-        var storedFileEntities = storedFileRepository.GetAll();
+        var storedFileEntities = storedFileRepository.GetMetadataAll();
         var storedFileListModels = new List<StoredFileListModel>();
         foreach (var entity in storedFileEntities)
         {
@@ -25,7 +25,7 @@ public class StoredFileFacade(
     }
     public async Task<StoredFileDetailModel> GetFileMetadataAsync(string filename)
     {
-        var storedFileEntity = await storedFileRepository.GetByFilenameAsync(filename);
+        var storedFileEntity = await storedFileRepository.GetMetadataByFilenameAsync(filename);
         return modelMapper.MapToDetailModel(storedFileEntity);
     }
 

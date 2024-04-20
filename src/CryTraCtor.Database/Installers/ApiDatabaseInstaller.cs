@@ -1,4 +1,5 @@
-﻿using CryTraCtor.Database.Entities;
+﻿using CryTraCtor.Common.Installers;
+using CryTraCtor.Database.Entities;
 using CryTraCtor.Database.Factories;
 using CryTraCtor.Database.Mappers;
 using CryTraCtor.Database.Repositories;
@@ -27,7 +28,5 @@ public class ApiDatabaseInstaller : IInstaller
 
         serviceCollection
             .AddScoped<IStoredFileRepository, StoredFileRepository>();
-        // .AddScoped<IRepository<CryptoProductEntity>, Repository<CryptoProductEntity>>()
-        // .AddScoped<IRepository<KnownDomainEntity>, Repository<KnownDomainEntity>>();
     }
 }

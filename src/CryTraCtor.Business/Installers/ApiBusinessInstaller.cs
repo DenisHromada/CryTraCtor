@@ -3,6 +3,7 @@ using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Mappers;
 using CryTraCtor.Business.Mappers.CryptoProduct;
 using CryTraCtor.Business.Mappers.KnownDomain;
+using CryTraCtor.Common.Installers;
 using CryTraCtor.Database.Installers;
 using Microsoft.Extensions.DependencyInjection;
 

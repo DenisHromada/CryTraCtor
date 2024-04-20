@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace CryTraCtor.Database.Installers;
+namespace CryTraCtor.Common.Installers;
 
 public interface IInstaller
 {

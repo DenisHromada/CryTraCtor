@@ -1,6 +1,7 @@
 using CryTraCtor.Business.Installers;
-using CryTraCtor.Database.Extensions;
+using CryTraCtor.Common.Extensions;
 using CryTraCtor.Database.Installers;
+using CryTraCtor.Packet;
 using Microsoft.AspNetCore.Rewrite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services
     .AddControllers()
     ;
 
+builder.Services.AddInstaller<ApiPacketInstaller>();
 builder.Services.AddInstaller<ApiDatabaseInstaller>();
 builder.Services.AddInstaller<ApiBusinessInstaller>();
 
