@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.Database", "src\CryTraCtor.Database\CryTraCtor.Database.csproj", "{38566A4F-1F13-4B33-8A9A-B24637A20715}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.Business", "..\src\CryTraCtor.Business\CryTraCtor.Business.csproj", "{98600792-9A8A-49DA-A431-BABFFDE515DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.Business", "src\CryTraCtor.Business\CryTraCtor.Business.csproj", "{43199C63-C5C8-47B9-9DEF-4AC30F773237}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.Packet", "..\src\CryTraCtor.Packet\CryTraCtor.Packet.csproj", "{EA542FBB-8437-4C88-8541-088390FBCB54}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.Packet", "src\CryTraCtor.Packet\CryTraCtor.Packet.csproj", "{6D159BC3-BC28-4172-A5CC-F8F290100649}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,14 +27,14 @@ Global
 		{38566A4F-1F13-4B33-8A9A-B24637A20715}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38566A4F-1F13-4B33-8A9A-B24637A20715}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38566A4F-1F13-4B33-8A9A-B24637A20715}.Release|Any CPU.Build.0 = Release|Any CPU
-		{98600792-9A8A-49DA-A431-BABFFDE515DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{98600792-9A8A-49DA-A431-BABFFDE515DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{98600792-9A8A-49DA-A431-BABFFDE515DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{98600792-9A8A-49DA-A431-BABFFDE515DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EA542FBB-8437-4C88-8541-088390FBCB54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EA542FBB-8437-4C88-8541-088390FBCB54}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EA542FBB-8437-4C88-8541-088390FBCB54}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EA542FBB-8437-4C88-8541-088390FBCB54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43199C63-C5C8-47B9-9DEF-4AC30F773237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43199C63-C5C8-47B9-9DEF-4AC30F773237}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43199C63-C5C8-47B9-9DEF-4AC30F773237}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43199C63-C5C8-47B9-9DEF-4AC30F773237}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D159BC3-BC28-4172-A5CC-F8F290100649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D159BC3-BC28-4172-A5CC-F8F290100649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D159BC3-BC28-4172-A5CC-F8F290100649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D159BC3-BC28-4172-A5CC-F8F290100649}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

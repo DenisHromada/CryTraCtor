@@ -11,14 +11,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\CryTraCtor.Business\CryTraCtor.Business.csproj" />
-      <ProjectReference Include="..\..\..\src\CryTraCtor.Packet\CryTraCtor.Packet.csproj" />
+      <ProjectReference Include="..\CryTraCtor.Business\CryTraCtor.Business.csproj" />
       <ProjectReference Include="..\CryTraCtor.Database\CryTraCtor.Database.csproj" />
+      <ProjectReference Include="..\CryTraCtor.Packet\CryTraCtor.Packet.csproj" />
     </ItemGroup>
 
     <ItemGroup>

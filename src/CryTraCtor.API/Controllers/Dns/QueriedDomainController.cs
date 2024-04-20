@@ -50,7 +50,7 @@ public class QueriedDomainController(
         }
         catch (Exception e)
         {
-            return BadRequest();
+            return BadRequest(e.Message);
         }
     }
     
