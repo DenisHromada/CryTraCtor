@@ -1,11 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using CryTraCtor.Analyzers;
 using CryTraCtor.APi.Models.Dns;
-using CryTraCtor.DataTypeMappers;
-using CryTraCtor.DataTypes.DnsTransaction;
-using CryTraCtor.Facades;
-using CryTraCtor.Facades.Interfaces;
-using CryTraCtor.Mappers;
+using CryTraCtor.Business.Facades.Interfaces;
+using CryTraCtor.Packet.Analyzers;
+using CryTraCtor.Packet.DataTypeMappers;
+using CryTraCtor.Packet.DataTypes.DnsTransaction;
+using CryTraCtor.Packet.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.Dns;
@@ -81,7 +80,7 @@ public class QueriedDomainController(
     }
 
     private static Dictionary<string, HashSet<string>> GetDomainQueriers(
-        Collection<DnsTransactionSummary> transactions)
+        Collection<DnsTransactionSummaryModel> transactions)
     {
         Dictionary<string, HashSet<string>> queriedDomains = new();
 

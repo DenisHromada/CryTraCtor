@@ -1,5 +1,5 @@
-﻿using CryTraCtor.Facades.Interfaces;
-using CryTraCtor.Models.KnownDomain;
+﻿using CryTraCtor.Business.Facades.Interfaces;
+using CryTraCtor.Business.Models.KnownDomain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.KnownDomain;

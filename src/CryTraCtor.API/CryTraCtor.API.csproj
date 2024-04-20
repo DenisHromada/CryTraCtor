@@ -16,7 +16,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CryTraCtor.Business\CryTraCtor.Business.csproj" />
+      <ProjectReference Include="..\..\..\src\CryTraCtor.Business\CryTraCtor.Business.csproj" />
+      <ProjectReference Include="..\..\..\src\CryTraCtor.Packet\CryTraCtor.Packet.csproj" />
       <ProjectReference Include="..\CryTraCtor.Database\CryTraCtor.Database.csproj" />
     </ItemGroup>
 

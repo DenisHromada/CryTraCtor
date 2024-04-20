@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using CryTraCtor.DataTypes;
-using CryTraCtor.Models;
+using CryTraCtor.Packet.DataTypes;
 
 namespace CryTraCtor.APi.Models.Dns;
 

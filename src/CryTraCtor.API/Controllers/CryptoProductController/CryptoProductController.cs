@@ -1,5 +1,5 @@
-﻿using CryTraCtor.Facades.Interfaces;
-using CryTraCtor.Models.CryptoProduct;
+﻿using CryTraCtor.Business.Facades.Interfaces;
+using CryTraCtor.Business.Models.CryptoProduct;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.CryptoProductController;

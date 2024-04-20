@@ -1,7 +1,6 @@
-using AutoMapper.Internal;
+using CryTraCtor.Business.Installers;
 using CryTraCtor.Database.Extensions;
 using CryTraCtor.Database.Installers;
-using CryTraCtor.Installers;
 using Microsoft.AspNetCore.Rewrite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,14 +14,6 @@ builder.Services
 
 builder.Services.AddInstaller<ApiDatabaseInstaller>();
 builder.Services.AddInstaller<ApiBusinessInstaller>();
-
-// builder.Services.AddAutoMapper(
-//     configuration =>
-//     {
-//         configuration.Internal().MethodMappingEnabled = false;
-//     }, typeof(ApiDatabaseInstaller),
-//     typeof(ApiBusinessInstaller)
-// );
 
 var app = builder.Build();
 

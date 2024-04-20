@@ -1,6 +1,5 @@
-﻿using CryTraCtor.Facades;
-using CryTraCtor.Facades.Interfaces;
-using CryTraCtor.Models.StoredFiles;
+﻿using CryTraCtor.Business.Facades.Interfaces;
+using CryTraCtor.Business.Models.StoredFiles;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.StoredFiles;
