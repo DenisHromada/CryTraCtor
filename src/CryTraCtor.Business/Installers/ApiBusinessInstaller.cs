@@ -3,6 +3,7 @@ using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Mappers;
 using CryTraCtor.Business.Mappers.CryptoProduct;
 using CryTraCtor.Business.Mappers.KnownDomain;
+using CryTraCtor.Business.Services;
 using CryTraCtor.Common.Installers;
 using CryTraCtor.Database.Installers;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,5 +25,10 @@ public class ApiBusinessInstaller : IInstaller
             .AddScoped<IStoredFileFacade, StoredFileFacade>()
             .AddScoped<ICryptoProductFacade, CryptoProductFacade>()
             .AddScoped<IKnownDomainFacade, KnownDomainFacade>();
+
+        serviceCollection
+            .AddScoped<DomainDetector>()
+            .AddScoped<KnownDomainDetector>()
+            .AddScoped<DnsTransactionSummaryModelTransformer>();
     }
 }

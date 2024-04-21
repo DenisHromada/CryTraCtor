@@ -25,6 +25,9 @@ public class KnownDomainModelMapper(
                 Description = entity.Description,
                 CryptoProduct = cryptoProductListModelMapper.MapToListModel(entity.CryptoProduct)
             };
+    
+    public IEnumerable<KnownDomainDetailModel> MapToDetailModel(IEnumerable<KnownDomainEntity> entities)
+        => entities.Select(MapToDetailModel);
 
     public override KnownDomainEntity MapToEntity(KnownDomainDetailModel model)
         => new()

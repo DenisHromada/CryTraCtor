@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.APi.Models.Dns;
-using CryTraCtor.Business.Facades.Interfaces;
+using CryTraCtor.Business.Models.CryptoProduct;
+using CryTraCtor.Business.Services;
 using CryTraCtor.Packet.Analyzers;
 using CryTraCtor.Packet.Models;
-using CryTraCtor.Packet.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.Dns;
@@ -11,8 +11,9 @@ namespace CryTraCtor.APi.Controllers.Dns;
 [ApiController]
 [Route("dns/queried-domains")]
 public class QueriedDomainController(
-    IStoredFileFacade storedFileFacade,
-    IDnsTransactionExtractor dnsTransactionExtractor
+    DomainDetector domainDetector,
+    KnownDomainDetector knownDomainDetector,
+    DnsTransactionSummaryModelTransformer transformer
 ) : Controller
 {
     [HttpGet("known-domain/{fileName}")]
@@ -20,12 +21,9 @@ public class QueriedDomainController(
     {
         try
         {
-            var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
-            var captureFilePath = storedFileDetailModel.InternalFilePath;
+            var extractedDomainNames = await domainDetector.AnalyzeAsync(fileName);
 
-            var extractedDomainNames = dnsTransactionExtractor.Run(captureFilePath);
-
-            var knownDomainDetector = new KnownDomainDetector(extractedDomainNames);
+            var knownDomainDetector = new OLD_KnownDomainDetector(extractedDomainNames);
             knownDomainDetector.OldRun();
 
             var walletIpAddresses = knownDomainDetector.GetKnownDomainIpAddresses();
@@ -56,63 +54,30 @@ public class QueriedDomainController(
     [HttpGet("all/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetAllQueriedDomains(string fileName)
     {
-        var captureFilePath = (await storedFileFacade.GetFileMetadataAsync(fileName)).InternalFilePath;
-        var extractedDomainNames = dnsTransactionExtractor.Run(captureFilePath);
+        var extractedDomainTransactions = await domainDetector.AnalyzeAsync(fileName);
 
-        return GetDomainQueriers(extractedDomainNames);
+        return transformer.TransformToDomainQueriers(extractedDomainTransactions);
     }
-
+    
     [HttpGet("known/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetKnownQueriedDomains(string fileName)
     {
-        var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
-        var captureFilePath = storedFileDetailModel.InternalFilePath;
-
-        var extractedDomainNames = dnsTransactionExtractor.Run(captureFilePath);
-        var knownDomainDetector = new KnownDomainDetector(extractedDomainNames);
-        knownDomainDetector.Run();
-        return GetDomainQueriers(knownDomainDetector.FilteredDnsTransactions);
+        var knownDomainTransactions = await knownDomainDetector.AnalyzeAsync(fileName);
+        return transformer.TransformToDomainQueriers(knownDomainTransactions);
     }
-
-    private static Dictionary<string, HashSet<string>> GetDomainQueriers(
-        Collection<DnsTransactionSummaryModel> transactions)
+    
+    [HttpGet("grouped/{fileName}")]
+    public async Task<Dictionary<CryptoProductListModel, Collection<DnsTransactionSummaryModel>>> GetGroupedKnownQueriedDomains(string fileName)
     {
-        Dictionary<string, HashSet<string>> queriedDomains = new();
-
-        foreach (var dnsTransaction in transactions)
-        {
-            if (dnsTransaction.Query.RecordType == "A")
-            {
-                var domainName = dnsTransaction.Query.Name;
-                if (queriedDomains.ContainsKey(domainName))
-                {
-                    if (queriedDomains[domainName].Contains(dnsTransaction.Client.ToString()))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        queriedDomains[domainName].Add(dnsTransaction.Client.ToString());
-                    }
-                }
-                else
-                {
-                    queriedDomains.Add(domainName, [dnsTransaction.Client.ToString()]);
-                }
-            }
-        }
-
-        return queriedDomains;
+        var knownDomainTransactions = await knownDomainDetector.AnalyzeAsync(fileName);
+        return await transformer.GroupByProduct(knownDomainTransactions);
     }
 
     [HttpGet("wallet-traffic/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetWalletTraffic(string fileName)
     {
-        var storedFileDetailModel = await storedFileFacade.GetFileMetadataAsync(fileName);
-        var captureFilePath = storedFileDetailModel.InternalFilePath;
-
-        var extractedDomainNames = dnsTransactionExtractor.Run(captureFilePath);
-        var knownDomainDetector = new KnownDomainDetector(extractedDomainNames);
+        var extractedDomainNames = await domainDetector.AnalyzeAsync(fileName);
+        var knownDomainDetector = new OLD_KnownDomainDetector(extractedDomainNames);
         knownDomainDetector.Run();
 
         var transactions = knownDomainDetector.FilteredDnsTransactions;
@@ -123,7 +88,7 @@ public class QueriedDomainController(
         {
             if (dnsTransaction.Query.RecordType == "A")
             {
-                var domainDetail = KnownDomainDetector.GetKnownDomainDetail(dnsTransaction.Query.Name);
+                var domainDetail = OLD_KnownDomainDetector.GetKnownDomainDetail(dnsTransaction.Query.Name);
                 if (domainDetail == null)
                 {
                     continue;

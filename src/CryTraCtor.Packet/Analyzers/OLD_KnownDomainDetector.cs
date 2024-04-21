@@ -5,7 +5,7 @@ using CryTraCtor.Packet.Models;
 
 namespace CryTraCtor.Packet.Analyzers;
 
-public class KnownDomainDetector(Collection<DnsTransactionSummaryModel> dnsTransactions)
+public class OLD_KnownDomainDetector(Collection<DnsTransactionSummaryModel> dnsTransactions)
 {
     public Dictionary<KnownDomainDetail, Collection<DnsTransactionSummaryModel>> KnownDomainDetails { get; } = new();
     public Collection<DnsTransactionSummaryModel> FilteredDnsTransactions = [];

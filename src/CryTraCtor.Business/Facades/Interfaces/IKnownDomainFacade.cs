@@ -5,5 +5,6 @@ namespace CryTraCtor.Business.Facades.Interfaces;
 
 public interface IKnownDomainFacade : IFacade<KnownDomainEntity, KnownDomainListModel, KnownDomainDetailModel>
 {
+    public Task<IEnumerable<KnownDomainDetailModel>> GetAllDetailAsync();
     
 }
