@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.Business.Facades.Interfaces;
+using CryTraCtor.Business.Models;
 using CryTraCtor.Business.Models.CryptoProduct;
 using CryTraCtor.Packet.Models;
 
@@ -40,7 +41,7 @@ public class DnsTransactionSummaryModelTransformer(
         return queriedDomains;
     }
 
-    public async Task<Dictionary<CryptoProductListModel, Collection<DnsTransactionSummaryModel>>> GroupByProduct(
+    public async Task<IEnumerable<GroupedQueriedDomains>> GroupByProduct(
         Collection<DnsTransactionSummaryModel> dnsTransactionSummaryModels)
     {
         Dictionary<CryptoProductListModel, Collection<DnsTransactionSummaryModel>> groupedTransactions = new();
@@ -52,10 +53,9 @@ public class DnsTransactionSummaryModelTransformer(
                     on query.Query.Name equals known.DomainName
                 group query by known.CryptoProduct
             ;
+        var transformedJoinQuery = joinQuery.Select(
+            group => new GroupedQueriedDomains(group.Key, group.ToList()));
 
-        return joinQuery.ToDictionary(
-            group => group.Key,
-            group => new Collection<DnsTransactionSummaryModel>(group.ToList())
-        );
+        return transformedJoinQuery;
     }
 }

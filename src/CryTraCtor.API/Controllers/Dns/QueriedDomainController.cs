@@ -1,9 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.APi.Models.Dns;
-using CryTraCtor.Business.Models.CryptoProduct;
+using CryTraCtor.Business.Models;
 using CryTraCtor.Business.Services;
 using CryTraCtor.Packet.Analyzers;
-using CryTraCtor.Packet.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.Dns;
@@ -58,16 +57,16 @@ public class QueriedDomainController(
 
         return transformer.TransformToDomainQueriers(extractedDomainTransactions);
     }
-    
+
     [HttpGet("known/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetKnownQueriedDomains(string fileName)
     {
         var knownDomainTransactions = await knownDomainDetector.AnalyzeAsync(fileName);
         return transformer.TransformToDomainQueriers(knownDomainTransactions);
     }
-    
+
     [HttpGet("grouped/{fileName}")]
-    public async Task<Dictionary<CryptoProductListModel, Collection<DnsTransactionSummaryModel>>> GetGroupedKnownQueriedDomains(string fileName)
+    public async Task<IEnumerable<GroupedQueriedDomains>> GetGroupedKnownQueriedDomains(string fileName)
     {
         var knownDomainTransactions = await knownDomainDetector.AnalyzeAsync(fileName);
         return await transformer.GroupByProduct(knownDomainTransactions);
