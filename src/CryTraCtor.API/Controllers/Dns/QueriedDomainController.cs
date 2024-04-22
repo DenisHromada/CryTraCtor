@@ -15,41 +15,6 @@ public class QueriedDomainController(
     DnsTransactionSummaryModelTransformer transformer
 ) : Controller
 {
-    [HttpGet("known-domain/{fileName}")]
-    public async Task<ActionResult<string>> GetDomainCount(string fileName)
-    {
-        try
-        {
-            var extractedDomainNames = await domainDetector.AnalyzeAsync(fileName);
-
-            var knownDomainDetector = new OLD_KnownDomainDetector(extractedDomainNames);
-            knownDomainDetector.OldRun();
-
-            var walletIpAddresses = knownDomainDetector.GetKnownDomainIpAddresses();
-
-            var response = new Collection<KnownDomainResponseEntry>();
-            foreach (var knownWalletKeyPair in walletIpAddresses)
-            {
-                var responseEntry = new KnownDomainResponseEntry(
-                    knownWalletKeyPair.Key.DomainName,
-                    knownWalletKeyPair.Key.Vendor,
-                    knownWalletKeyPair.Key.Product,
-                    knownWalletKeyPair.Key.Purpose,
-                    knownWalletKeyPair.Key.Cryptocurrency,
-                    knownWalletKeyPair.Key.Description,
-                    knownWalletKeyPair.Value
-                );
-                response.Add(responseEntry);
-            }
-
-            return Ok(response);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
     [HttpGet("all/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetAllQueriedDomains(string fileName)
     {
@@ -113,5 +78,40 @@ public class QueriedDomainController(
         }
 
         return queriedDomains;
+    }
+
+    [HttpGet("known-domain/{fileName}")]
+    public async Task<ActionResult<string>> GetDomainCount(string fileName)
+    {
+        try
+        {
+            var extractedDomainNames = await domainDetector.AnalyzeAsync(fileName);
+
+            var knownDomainDetector = new OLD_KnownDomainDetector(extractedDomainNames);
+            knownDomainDetector.OldRun();
+
+            var walletIpAddresses = knownDomainDetector.GetKnownDomainIpAddresses();
+
+            var response = new Collection<KnownDomainResponseEntry>();
+            foreach (var knownWalletKeyPair in walletIpAddresses)
+            {
+                var responseEntry = new KnownDomainResponseEntry(
+                    knownWalletKeyPair.Key.DomainName,
+                    knownWalletKeyPair.Key.Vendor,
+                    knownWalletKeyPair.Key.Product,
+                    knownWalletKeyPair.Key.Purpose,
+                    knownWalletKeyPair.Key.Cryptocurrency,
+                    knownWalletKeyPair.Key.Description,
+                    knownWalletKeyPair.Value
+                );
+                response.Add(responseEntry);
+            }
+
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

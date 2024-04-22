@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using CryTraCtor.Business.Models.CryptoProduct;
+﻿using CryTraCtor.Business.Models.CryptoProduct;
 using CryTraCtor.Packet.Models;
 
 namespace CryTraCtor.Business.Models;
