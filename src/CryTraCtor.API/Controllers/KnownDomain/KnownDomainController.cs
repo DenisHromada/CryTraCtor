@@ -1,4 +1,5 @@
-﻿using CryTraCtor.Business.Facades.Interfaces;
+﻿using System.Collections.ObjectModel;
+using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Models.KnownDomain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,8 @@ namespace CryTraCtor.APi.Controllers.KnownDomain;
 [ApiController]
 [Route("known-domain")]
 public class KnownDomainController(
-    IKnownDomainFacade knownDomainFacade
+    IKnownDomainFacade knownDomainFacade,
+    IKnownDomainImportFacade knownDomainImportFacade
 ) : Controller
 {
     [HttpGet("Index")]
@@ -36,4 +38,19 @@ public class KnownDomainController(
         await knownDomainFacade.DeleteAsync(id);
         return Ok("Successfully deleted known domain with id: " + id);
     }
+    
+    [HttpPost("Import")]
+    public async Task<IActionResult> Import(Collection<KnownDomainImportModel> modelCollection)
+    {
+        try
+        {
+            await knownDomainImportFacade.Create(modelCollection);
+            return Ok("Successfully imported known domains");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
 }

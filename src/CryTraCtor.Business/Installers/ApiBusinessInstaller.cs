@@ -5,7 +5,6 @@ using CryTraCtor.Business.Mappers.CryptoProduct;
 using CryTraCtor.Business.Mappers.KnownDomain;
 using CryTraCtor.Business.Services;
 using CryTraCtor.Common.Installers;
-using CryTraCtor.Database.Installers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CryTraCtor.Business.Installers;
@@ -19,12 +18,14 @@ public class ApiBusinessInstaller : IInstaller
             .AddSingleton<CryptoProductListModelMapper>()
             .AddSingleton<CryptoProductModelMapper>()
             .AddSingleton<KnownDomainListModelMapper>()
-            .AddSingleton<KnownDomainModelMapper>();
+            .AddSingleton<KnownDomainModelMapper>()
+            .AddSingleton<KnownDomainImportModelMapper>();
 
         serviceCollection
             .AddScoped<IStoredFileFacade, StoredFileFacade>()
             .AddScoped<ICryptoProductFacade, CryptoProductFacade>()
-            .AddScoped<IKnownDomainFacade, KnownDomainFacade>();
+            .AddScoped<IKnownDomainFacade, KnownDomainFacade>()
+            .AddScoped<IKnownDomainImportFacade, KnownDomainImportFacade>();
 
         serviceCollection
             .AddScoped<DomainDetector>()
