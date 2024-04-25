@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Models.KnownDomain;
+using CryTraCtor.Business.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.KnownDomain;
@@ -9,7 +10,8 @@ namespace CryTraCtor.APi.Controllers.KnownDomain;
 [Route("known-domain")]
 public class KnownDomainController(
     IKnownDomainFacade knownDomainFacade,
-    IKnownDomainImportFacade knownDomainImportFacade
+    IKnownDomainImportFacade knownDomainImportFacade,
+    CsvService csvService
 ) : Controller
 {
     [HttpGet("Index")]
@@ -52,5 +54,21 @@ public class KnownDomainController(
             return BadRequest(e.Message);
         }
     }
+    
+    [HttpPost("Import/csv")]
+    public async Task<IActionResult> ImportCsv(IFormFile file)
+    {
+        var modelCollection = csvService.ParseCsv(file);
+        try
+        {
+            await knownDomainImportFacade.Create(modelCollection);
+            return Ok("Successfully imported known domains");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
     
 }

@@ -10,8 +10,11 @@ public class Repository<TEntity>(
 ) : IRepository<TEntity>
     where TEntity : class, IEntity
 {
-    private readonly DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
+    private DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
     public IQueryable<TEntity> Get() => _dbSet;
+    
+    // This is a hacky solution to get all entities before the db context is saved
+    public IQueryable<TEntity> GetLocal() => _dbSet.Local.AsQueryable();
 
     public async ValueTask<bool> ExistsAsync(TEntity entity)
     {

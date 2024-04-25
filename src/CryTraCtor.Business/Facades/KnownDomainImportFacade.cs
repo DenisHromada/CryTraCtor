@@ -14,14 +14,16 @@ public class KnownDomainImportFacade(
     KnownDomainImportModelMapper mapper
 ) : IKnownDomainImportFacade
 {
-    public async Task Create(Collection<KnownDomainImportModel> modelCollection)
+    public async Task Create(IEnumerable<KnownDomainImportModel> modelCollection)
     {
         var unitOfWork = unitOfWorkFactory.Create();
+        var cryptoProductRepository = unitOfWork.GetRepository<CryptoProductEntity, CryptoProductEntityMapper>();
+        var knownDomainRepository = unitOfWork.GetRepository<KnownDomainEntity, KnownDomainEntityMapper>();
         foreach (var model in modelCollection)
         {
             var (cryptoProduct, domainName) = mapper.MapToEntity(model);
-            var cryptoProductRepository = unitOfWork.GetRepository<CryptoProductEntity, CryptoProductEntityMapper>();
-            var existingProduct = await cryptoProductRepository.Get().FirstOrDefaultAsync(product =>
+            var repositoryContent = cryptoProductRepository.GetLocal().ToList();
+            var existingProduct = cryptoProductRepository.GetLocal().FirstOrDefault(product =>
                 product.ProductName == cryptoProduct.ProductName
                 && product.Vendor == cryptoProduct.Vendor);
             if (existingProduct is null)
@@ -30,8 +32,7 @@ public class KnownDomainImportFacade(
             }
             domainName.CryptoProductId = existingProduct.Id;
             
-            var knownDomainRepository = unitOfWork.GetRepository<KnownDomainEntity, KnownDomainEntityMapper>();
-            var existingDomainName = await knownDomainRepository.Get().FirstOrDefaultAsync(
+            var existingDomainName = knownDomainRepository.GetLocal().FirstOrDefault(
                 domain => domain.DomainName == domainName.DomainName
                 && domain.Purpose == domainName.Purpose
                 & domain.Description == domainName.Description
