@@ -17,6 +17,8 @@ public class StoredPcapController(
     }
 
     [HttpPost]
+    [DisableRequestSizeLimit]
+    [RequestFormLimits(ValueLengthLimit = int.MaxValue, MultipartBodyLengthLimit = int.MaxValue)]
     public async Task<IActionResult> PostStoredPcapFile(IFormFile file)
     {
         try
