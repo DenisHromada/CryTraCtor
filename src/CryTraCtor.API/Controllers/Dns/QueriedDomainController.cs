@@ -1,8 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using CryTraCtor.APi.Models.Dns;
-using CryTraCtor.Business.Models;
+﻿using CryTraCtor.Business.Models;
 using CryTraCtor.Business.Services;
-using CryTraCtor.Packet.Analyzers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryTraCtor.APi.Controllers.Dns;
@@ -35,83 +32,5 @@ public class QueriedDomainController(
     {
         var knownDomainTransactions = await knownDomainDetector.AnalyzeAsync(fileName);
         return await transformer.GroupByProduct(knownDomainTransactions);
-    }
-
-    [HttpGet("wallet-traffic/{fileName}")]
-    public async Task<Dictionary<string, HashSet<string>>> GetWalletTraffic(string fileName)
-    {
-        var extractedDomainNames = await domainDetector.AnalyzeAsync(fileName);
-        var knownDomainDetector = new OLD_KnownDomainDetector(extractedDomainNames);
-        knownDomainDetector.Run();
-
-        var transactions = knownDomainDetector.FilteredDnsTransactions;
-
-        Dictionary<string, HashSet<string>> queriedDomains = new();
-
-        foreach (var dnsTransaction in transactions)
-        {
-            if (dnsTransaction.Query.RecordType == "A")
-            {
-                var domainDetail = OLD_KnownDomainDetector.GetKnownDomainDetail(dnsTransaction.Query.Name);
-                if (domainDetail == null)
-                {
-                    continue;
-                }
-
-                var walletProvider = domainDetail.Product;
-                if (queriedDomains.ContainsKey(walletProvider))
-                {
-                    if (queriedDomains[walletProvider].Contains(dnsTransaction.Client.ToString()))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        queriedDomains[walletProvider].Add(dnsTransaction.Client.ToString());
-                    }
-                }
-                else
-                {
-                    queriedDomains.Add(walletProvider, [dnsTransaction.Client.ToString()]);
-                }
-            }
-        }
-
-        return queriedDomains;
-    }
-
-    [HttpGet("known-domain/{fileName}")]
-    public async Task<ActionResult<string>> GetDomainCount(string fileName)
-    {
-        try
-        {
-            var extractedDomainNames = await domainDetector.AnalyzeAsync(fileName);
-
-            var knownDomainDetector = new OLD_KnownDomainDetector(extractedDomainNames);
-            knownDomainDetector.OldRun();
-
-            var walletIpAddresses = knownDomainDetector.GetKnownDomainIpAddresses();
-
-            var response = new Collection<KnownDomainResponseEntry>();
-            foreach (var knownWalletKeyPair in walletIpAddresses)
-            {
-                var responseEntry = new KnownDomainResponseEntry(
-                    knownWalletKeyPair.Key.DomainName,
-                    knownWalletKeyPair.Key.Vendor,
-                    knownWalletKeyPair.Key.Product,
-                    knownWalletKeyPair.Key.Purpose,
-                    knownWalletKeyPair.Key.Cryptocurrency,
-                    knownWalletKeyPair.Key.Description,
-                    knownWalletKeyPair.Value
-                );
-                response.Add(responseEntry);
-            }
-
-            return Ok(response);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
     }
 }
