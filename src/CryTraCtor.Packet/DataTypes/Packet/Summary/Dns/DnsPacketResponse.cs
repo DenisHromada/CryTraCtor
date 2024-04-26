@@ -3,13 +3,13 @@ using CryTraCtor.Packet.Models;
 
 namespace CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 
-public record DnsResponse(
+public record DnsPacketResponse(
     InternetEndpointModel Source,
     InternetEndpointModel Destination,
     uint TransactionId,
     DnsResourceRecordModel Query,
     Collection<DnsResourceRecordModel> Answers
-) : DnsSummary(Source, Destination, DnsMessageType.Response, TransactionId)
+) : DnsPacketSummary(Source, Destination, DnsMessageType.Response, TransactionId)
 {
     public override string GetSerializedPacketString()
     {

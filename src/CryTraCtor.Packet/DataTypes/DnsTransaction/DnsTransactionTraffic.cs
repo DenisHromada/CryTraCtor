@@ -3,30 +3,30 @@ using CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 
 namespace CryTraCtor.Packet.DataTypes.DnsTransaction;
 
-public record DnsTransactionTraffic(Collection<DnsResponse> Responses, Collection<DnsQuery> Queries)
+public record DnsTransactionTraffic(Collection<DnsPacketResponse> Responses, Collection<DnsPacketQuery> Queries)
 {
-    public Collection<DnsQuery> Queries { get; } = [];
-    public Collection<DnsResponse> Responses { get; } = [];
+    public Collection<DnsPacketQuery> Queries { get; } = [];
+    public Collection<DnsPacketResponse> Responses { get; } = [];
 
-    public void AddQuery(DnsQuery query)
+    public void AddQuery(DnsPacketQuery packetQuery)
     {
-        Queries.Add(query);
+        Queries.Add(packetQuery);
     }
 
-    public void AddResponse(DnsResponse response)
+    public void AddResponse(DnsPacketResponse packetResponse)
     {
-        Responses.Add(response);
+        Responses.Add(packetResponse);
     }
 
-    public void AddDnsSummary(IDnsSummary dnsSummary)
+    public void AddDnsSummary(IDnsPacketSummary dnsPacketSummary)
     {
-        if (dnsSummary.MessageType == DnsMessageType.Query)
+        if (dnsPacketSummary.MessageType == DnsMessageType.Query)
         {
-            AddQuery((DnsQuery)dnsSummary);
+            AddQuery((DnsPacketQuery)dnsPacketSummary);
         }
         else
         {
-            AddResponse((DnsResponse)dnsSummary);
+            AddResponse((DnsPacketResponse)dnsPacketSummary);
         }
     }
 }

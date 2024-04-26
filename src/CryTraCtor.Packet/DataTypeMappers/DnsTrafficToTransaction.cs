@@ -13,7 +13,6 @@ public static class DnsTrafficToTransaction
 
         if (dnsTraffic.Queries.Count != 1 || dnsTraffic.Responses.Count != 1)
         {
-            // return dnsTransactions;
             throw new NotImplementedException("Found queries/responses with identical DNS transaction id's.");
         }
 
@@ -38,11 +37,11 @@ public static class DnsTrafficToTransaction
         return dnsTransactions;
     }
 
-    private static bool QueryMatchesResponse(DnsQuery query, DnsResponse response)
+    private static bool QueryMatchesResponse(DnsPacketQuery packetQuery, DnsPacketResponse packetResponse)
     {
-        return (query.TransactionId == response.TransactionId
-                && query.Source == response.Destination
-                && query.Query == response.Query
+        return (packetQuery.TransactionId == packetResponse.TransactionId
+                && packetQuery.Source == packetResponse.Destination
+                && packetQuery.Query == packetResponse.Query
             );
     }
 }

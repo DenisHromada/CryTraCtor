@@ -9,6 +9,7 @@ public class ApiPacketInstaller : IInstaller
     public void Install(IServiceCollection serviceCollection)
     {
         serviceCollection
-            .AddTransient<IDnsTransactionExtractor, DnsTransactionExtractor>();
+            .AddTransient<IDnsTransactionExtractor, DnsTransactionExtractor>()
+            .AddTransient<IDnsPacketReader, DnsPacketReader>();
     }
 }

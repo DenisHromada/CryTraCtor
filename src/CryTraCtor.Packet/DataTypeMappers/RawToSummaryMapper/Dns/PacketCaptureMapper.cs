@@ -1,13 +1,12 @@
-﻿using CryTraCtor.Packet.DataTypes;
-using CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
+﻿using CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 using CryTraCtor.Packet.Models;
 using SharpPcap;
 
 namespace CryTraCtor.Packet.DataTypeMappers.RawToSummaryMapper.Dns;
 
-public static class DnsMapper
+public static class PacketCaptureMapper
 {
-    public static IDnsSummary MapPacketCaptureToDnsPacketSummary(PacketCapture packetCapture)
+    public static IDnsPacketSummary MapToDnsPacketSummary(PacketCapture packetCapture)
     {
         var rawPacket = packetCapture.GetPacket();
         var packet = PacketDotNet.Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
@@ -35,13 +34,13 @@ public static class DnsMapper
 
         return dnsPacket.GetDnsMessageType() switch
         {
-            DnsMessageType.Query => new DnsQuery(
+            DnsMessageType.Query => new DnsPacketQuery(
                 source,
                 destination,
                 dnsPacket.GetTransactionId(),
                 dnsPacket.GetQuery()
             ),
-            DnsMessageType.Response => new DnsResponse(
+            DnsMessageType.Response => new DnsPacketResponse(
                 source,
                 destination,
                 dnsPacket.GetTransactionId(),

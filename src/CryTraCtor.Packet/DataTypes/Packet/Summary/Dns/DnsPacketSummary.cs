@@ -2,12 +2,12 @@
 
 namespace CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 
-public abstract record DnsSummary(
+public abstract record DnsPacketSummary(
     InternetEndpointModel Source,
     InternetEndpointModel Destination,
     DnsMessageType MessageType,
     uint TransactionId
-) : PacketSummary(Source, Destination), IDnsSummary
+) : PacketSummary(Source, Destination), IDnsPacketSummary
 {
     public override string GetSerializedPacketString()
     {
