@@ -17,7 +17,7 @@ public class DnsTransactionSummaryModelTransformer(
 
         foreach (var dnsTransaction in dnsTransactionSummaryModels)
         {
-            if (dnsTransaction.Query.RecordType == "A")
+            if (dnsTransaction.Query.RecordType is "A" or "AAAA")
             {
                 var domainName = dnsTransaction.Query.Name;
                 if (queriedDomains.ContainsKey(domainName))
