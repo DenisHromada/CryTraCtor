@@ -2,7 +2,6 @@
 using CryTraCtor.Packet.DataTypes.DnsTransaction;
 using CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 using CryTraCtor.Packet.Models;
-using CryTraCtor.Packet.Services;
 
 namespace CryTraCtor.Packet.Mappers;
 
@@ -44,28 +43,27 @@ public class DnsTrafficMapper : IDnsTrafficMapper
     {
         var dnsTransactions = new Collection<DnsTransactionSummaryModel>();
 
-        if (dnsTraffic.Queries.Count != 1 || dnsTraffic.Responses.Count != 1)
+        // Duplicate TxId's are common in larger datasets
+        // The following deduplication is flawed in a bunch of ways
+        // For example doesn't account for duplicate requests
+        foreach (var query in dnsTraffic.Queries)
         {
-            throw new NotImplementedException("Found queries/responses with identical DNS transaction id's.");
+            foreach (var response in dnsTraffic.Responses)
+            {
+                if (QueryMatchesResponse(query, response))
+                {
+                    var transactionSummary = new DnsTransactionSummaryModel(
+                        response.TransactionId,
+                        query.Source,
+                        query.Destination,
+                        query.Query,
+                        response.Answers
+                    );
+
+                    dnsTransactions.Add(transactionSummary);
+                }
+            }
         }
-
-        var query = dnsTraffic.Queries.First();
-        var response = dnsTraffic.Responses.First();
-
-        if (!QueryMatchesResponse(query, response))
-        {
-            throw new ApplicationException("Query does not match response.");
-        }
-
-        var transactionSummary = new DnsTransactionSummaryModel(
-            response.TransactionId,
-            query.Source,
-            query.Destination,
-            query.Query,
-            response.Answers
-        );
-
-        dnsTransactions.Add(transactionSummary);
 
         return dnsTransactions;
     }
