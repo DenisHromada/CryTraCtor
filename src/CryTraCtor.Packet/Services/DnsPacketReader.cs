@@ -11,7 +11,7 @@ public class DnsPacketReader : IDnsPacketReader
     {
         using ICaptureDevice device = new CaptureFileReaderDevice(fileName);
         device.Open();
-        device.Filter = "ip and udp and port 53";
+        device.Filter = "(ip or ip6) and udp and port 53";
 
         while (device.GetNextPacket(out var packetCapture) == GetPacketStatus.PacketRead)
         {
