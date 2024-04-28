@@ -11,7 +11,7 @@ public class DnsTransactionSummaryModelTransformer(
 )
 {
     public Dictionary<string, HashSet<string>> TransformToDomainQueriers(
-        Collection<DnsTransactionSummaryModel> dnsTransactionSummaryModels)
+        IEnumerable<DnsTransactionSummaryModel> dnsTransactionSummaryModels)
     {
         Dictionary<string, HashSet<string>> queriedDomains = new();
 
@@ -42,7 +42,7 @@ public class DnsTransactionSummaryModelTransformer(
     }
 
     public async Task<IEnumerable<GroupedQueriedDomains>> GroupByProduct(
-        Collection<DnsTransactionSummaryModel> dnsTransactionSummaryModels)
+        ICollection<DnsTransactionSummaryModel> dnsTransactionSummaryModels)
     {
         Dictionary<CryptoProductListModel, Collection<DnsTransactionSummaryModel>> groupedTransactions = new();
         var allKnownDomains = await knownDomainFacade.GetAllDetailAsync();
