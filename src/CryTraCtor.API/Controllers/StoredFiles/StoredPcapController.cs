@@ -23,7 +23,14 @@ public class StoredPcapController(
     {
         try
         {
-            var storedFileName = await storedFileFacade.Store(file);
+            var stream = file.OpenReadStream();
+            var storedFileDetailModel = new StoredFileDetailModel
+            {
+                PublicFileName = file.FileName,
+                FileSize = file.Length,
+                MimeType = file.ContentType
+            };
+            var storedFileName = await storedFileFacade.Store(storedFileDetailModel, stream);
             return Ok("Successfully stored file: " + storedFileName);
         }
         catch (Exception e)

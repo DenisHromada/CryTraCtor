@@ -1,7 +1,6 @@
 ﻿using CryTraCtor.Database.Entities;
 using CryTraCtor.Database.Mappers;
 using CryTraCtor.Database.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.Repositories;
@@ -13,12 +12,13 @@ public class StoredFileRepository(
 ) : IStoredFileRepository
 {
     public IQueryable<StoredFileEntity> GetMetadataAll() => dbContextFactory.CreateDbContext().Set<StoredFileEntity>();
-    
+
     public async Task<StoredFileEntity?> GetMetadataByFilenameAsync(string filename)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
         return await dbContext.StoredFile.FirstOrDefaultAsync(f => f.PublicFileName == filename);
     }
+
     public async Task DeleteAsync(string publicFileName)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
@@ -50,39 +50,36 @@ public class StoredFileRepository(
         return file is not null;
     }
 
-    public async Task<StoredFileEntity> InsertAsync(IFormFile file)
+    public async Task<StoredFileEntity> InsertAsync(StoredFileEntity entity, Stream incomingStream)
     {
-        var size = file.Length;
-        if (size <= 0)
+        if (entity.FileSize <= 0)
         {
             throw new ArgumentException("File is empty");
         }
 
-        var internalPath = await fileStorageService.StoreFileAsync(file);
-
         try
         {
-            var fileDbEntity = new StoredFileEntity
-            {
-                Id = new Guid(),
-                PublicFileName = file.FileName,
-                MimeType = file.ContentType,
-                FileSize = size,
-                InternalFilePath = internalPath
-            };
+            entity.InternalFilePath = await fileStorageService.StoreFileAsync(incomingStream);
 
-            await using var stream = File.Create(fileDbEntity.InternalFilePath);
-            await file.CopyToAsync(stream);
-            
+            if (entity.Id == Guid.Empty)
+            {
+                entity.Id = Guid.NewGuid();
+            }
+
             await using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
-            await dbContext.StoredFile.AddAsync(fileDbEntity);
+            if (await ExistsAsync(entity))
+            {
+                throw new ArgumentException("File already exists");
+            }
+
+            await dbContext.StoredFile.AddAsync(entity);
             await dbContext.SaveChangesAsync();
-            return fileDbEntity;
+            return entity;
         }
         catch (Exception e)
         {
-            fileStorageService.DeleteFile(internalPath);
+            fileStorageService.DeleteFile(entity.InternalFilePath);
             throw new Exception("Failed to store file", e);
         }
     }
@@ -96,7 +93,7 @@ public class StoredFileRepository(
         {
             throw new ArgumentException("File not found");
         }
-        
+
         entityMapper.MapToExistingEntity(existingEntity, entity);
         dbContext.StoredFile.Update(existingEntity);
         await dbContext.SaveChangesAsync();

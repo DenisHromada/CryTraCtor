@@ -2,7 +2,6 @@ using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Mappers;
 using CryTraCtor.Business.Models.StoredFiles;
 using CryTraCtor.Database.Repositories;
-using Microsoft.AspNetCore.Http;
 
 namespace CryTraCtor.Business.Facades;
 
@@ -29,9 +28,10 @@ public class StoredFileFacade(
         return modelMapper.MapToDetailModel(storedFileEntity);
     }
 
-    public async Task<string> Store(IFormFile file)
+    public async Task<string> Store(StoredFileDetailModel detailModel, Stream stream)
     {
-        var storedFileEntity = await storedFileRepository.InsertAsync(file);
+        var entity = modelMapper.MapToEntity(detailModel);
+        var storedFileEntity = await storedFileRepository.InsertAsync(entity, stream);
         return storedFileEntity.PublicFileName;
     }
 

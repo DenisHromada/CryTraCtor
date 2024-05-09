@@ -9,18 +9,12 @@ public class LocalFileStorageService(
 {
     public string CaptureFileDirectory { get; set; } = configuration["FileStorageDirectory"] ?? string.Empty;
 
-    public async Task<string> StoreFileAsync(IFormFile file)
+    public async Task<string> StoreFileAsync(Stream incomingStream)
     {
-        var size = file.Length;
-        if (size <= 0)
-        {
-            throw new ArgumentException("File is empty");
-        }
-        
         var internalPath = GenerateInternalFilePath();
 
-        await using var stream = File.Create(internalPath);
-        await file.CopyToAsync(stream);
+        await using var storageStream = File.Create(internalPath);
+        await incomingStream.CopyToAsync(storageStream);
 
         return internalPath;
     }
