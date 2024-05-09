@@ -58,7 +58,8 @@ public class KnownDomainController(
     [HttpPost("Import/csv")]
     public async Task<IActionResult> ImportCsv(IFormFile file)
     {
-        var modelCollection = csvService.ParseCsv(file);
+        var stream = file.OpenReadStream();
+        var modelCollection = csvService.ParseCsv(stream);
         try
         {
             await knownDomainImportFacade.Create(modelCollection);

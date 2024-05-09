@@ -1,15 +1,14 @@
 ﻿using System.Globalization;
 using CryTraCtor.Business.Models.KnownDomain;
 using CsvHelper;
-using Microsoft.AspNetCore.Http;
 
 namespace CryTraCtor.Business.Services;
 
 public class CsvService
 {
-    public IEnumerable<KnownDomainImportModel> ParseCsv(IFormFile file)
+    public IEnumerable<KnownDomainImportModel> ParseCsv(Stream stream)
     {
-        using (var reader = new StreamReader(file.OpenReadStream()))
+        using (var reader = new StreamReader(stream))
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
         {
             var records = csv.GetRecords<KnownDomainImportModel>();
