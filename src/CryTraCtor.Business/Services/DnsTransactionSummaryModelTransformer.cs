@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Models;
+using CryTraCtor.Business.Models.Agregates;
 using CryTraCtor.Business.Models.CryptoProduct;
 using CryTraCtor.Packet.Models;
 
@@ -57,5 +58,29 @@ public class DnsTransactionSummaryModelTransformer(
             group => new GroupedQueriedDomains(group.Key, group.ToList()));
 
         return transformedJoinQuery;
+    }
+    public Dictionary<string, IEnumerable<string>> TransformToDetectedAddressPortWallets(
+        ICollection<DnsTransactionSummaryModel> dnsTransactionSummaryModels)
+    {
+        var clientQueryDictionary = dnsTransactionSummaryModels
+            .GroupBy(x => x.Client.ToString())
+            .ToDictionary(group => group.Key,
+                group => group.Select(
+                    t => t.Query.Name));
+
+        return clientQueryDictionary;
+    }
+
+    
+    public Dictionary<string, IEnumerable<string>> TransformToDetectedAddressWallets(
+        ICollection<DnsTransactionSummaryModel> dnsTransactionSummaryModels)
+    {
+        var clientQueryDictionary = dnsTransactionSummaryModels
+            .GroupBy(x => x.Client.Address.ToString())
+            .ToDictionary(group => group.Key,
+                group => group.Select(
+                    t => t.Query.Name));
+
+        return clientQueryDictionary;
     }
 }

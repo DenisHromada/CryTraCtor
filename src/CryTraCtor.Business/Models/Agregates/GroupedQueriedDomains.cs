@@ -1,7 +1,7 @@
 ﻿using CryTraCtor.Business.Models.CryptoProduct;
 using CryTraCtor.Packet.Models;
 
-namespace CryTraCtor.Business.Models;
+namespace CryTraCtor.Business.Models.Agregates;
 
 public class GroupedQueriedDomains(
     CryptoProductListModel groupKey,

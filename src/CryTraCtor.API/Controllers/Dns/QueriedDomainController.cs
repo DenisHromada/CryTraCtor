@@ -1,4 +1,5 @@
 ﻿using CryTraCtor.Business.Models;
+using CryTraCtor.Business.Models.Agregates;
 using CryTraCtor.Business.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,10 +36,28 @@ public class QueriedDomainController(
         return transformer.TransformToDomainQueriers(unknownDomainTransactions);
     }
 
-    [HttpGet("grouped/{fileName}")]
+    [HttpGet("known/groupedByProduct/{fileName}")]
     public async Task<IEnumerable<GroupedQueriedDomains>> GetGroupedKnownQueriedDomains(string fileName)
     {
         var knownDomainTransactions = await knownDomainFilter.GetKnownAsync(fileName);
         return await transformer.GroupByProduct(knownDomainTransactions);
+    }
+    
+    [HttpGet("known/groupByClientAddress/{fileName}")]
+    public async Task<ActionResult> GetDetectedDomainsByAddress(string fileName)
+    {
+        var knownDomainTransactions = await knownDomainFilter.GetKnownAsync(fileName);
+        var detectedWallets = transformer.TransformToDetectedAddressWallets(knownDomainTransactions);
+
+        return Ok(detectedWallets);
+    }
+    
+    [HttpGet("known/groupByClientAddressPort/{fileName}")]
+    public async Task<ActionResult> GetDetectedDomainsByAddressPort(string fileName)
+    {
+        var knownDomainTransactions = await knownDomainFilter.GetKnownAsync(fileName);
+        var detectedWallets = transformer.TransformToDetectedAddressPortWallets(knownDomainTransactions);
+
+        return Ok(detectedWallets);
     }
 }
