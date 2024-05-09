@@ -12,6 +12,12 @@ public class QueriedDomainController(
     DnsTransactionSummaryModelTransformer transformer
 ) : Controller
 {
+    [HttpGet("sanity_check")]
+    public ActionResult SanityCheck()
+    {
+        return Ok("Sanity check passed");
+    }
+    
     [HttpGet("all/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetAllQueriedDomains(string fileName)
     {

@@ -2,11 +2,31 @@
 
 namespace CryTraCtor.Database.Services;
 
-public class LocalFileStorageService(
-    IConfiguration configuration
-) : IFileStorageService
+public class LocalFileStorageService : IFileStorageService
 {
-    public string CaptureFileDirectory { get; set; } = configuration["FileStorageDirectory"] ?? string.Empty;
+    public LocalFileStorageService(IConfiguration configuration)
+    {
+        var fileStorageDirectory = configuration["FileStorageDirectory"];
+        
+        if (string.IsNullOrWhiteSpace(fileStorageDirectory))
+        {
+            fileStorageDirectory = Environment.GetEnvironmentVariable("FILE_STORAGE_DIRECTORY");
+        }
+        
+        if (string.IsNullOrWhiteSpace(fileStorageDirectory))
+        {
+            fileStorageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "StoredFiles");
+        }
+
+        FileStorageDirectory = fileStorageDirectory;
+        if (!Directory.Exists(FileStorageDirectory))
+        {
+            Directory.CreateDirectory(FileStorageDirectory);
+        }
+    }
+    
+
+    public string FileStorageDirectory { get; set; }
 
     public async Task<string> StoreFileAsync(Stream incomingStream)
     {
@@ -20,7 +40,7 @@ public class LocalFileStorageService(
 
     private string GenerateInternalFilePath()
     {
-        var localFileStorageDirectory = CaptureFileDirectory;
+        var localFileStorageDirectory = FileStorageDirectory;
         var internalFileName = Path.GetRandomFileName();
         return Path.Combine(localFileStorageDirectory, internalFileName);
     }

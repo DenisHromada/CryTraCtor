@@ -8,7 +8,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/CryTraCtor.API/CryTraCtor.API.csproj", "src/CryTraCtor.API/"]
+COPY ["src/CryTraCtor.Common/CryTraCtor.Common.csproj", "src/CryTraCtor.Common/"]
 COPY ["src/CryTraCtor.Business/CryTraCtor.Business.csproj", "src/CryTraCtor.Business/"]
+COPY ["src/CryTraCtor.Database/CryTraCtor.Database.csproj", "src/CryTraCtor.Database/"]
+COPY ["src/CryTraCtor.Packet/CryTraCtor.Packet.csproj", "src/CryTraCtor.Packet/"]
 RUN dotnet restore "src/CryTraCtor.API/CryTraCtor.API.csproj"
 COPY . .
 WORKDIR "/src/src/CryTraCtor.API"

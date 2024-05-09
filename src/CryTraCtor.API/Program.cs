@@ -24,6 +24,8 @@ option.AddRedirect("^$", "swagger");
 app.UseRewriter(option);
 
 // Configure the HTTP request pipeline.
+app.UseDeveloperExceptionPage(); 
+
 app.UseSwagger();
 app.UseSwaggerUI();
 

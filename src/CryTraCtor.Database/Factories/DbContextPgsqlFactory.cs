@@ -12,6 +12,14 @@ public class DbContextPgsqlFactory : IDbContextFactory<CryTraCtorDbContext>
     public DbContextPgsqlFactory(IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("Postgres");
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentException("Database connection string not found!");
+            }
+        }
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString ?? string.Empty);
         var dataSource = dataSourceBuilder.Build();
 

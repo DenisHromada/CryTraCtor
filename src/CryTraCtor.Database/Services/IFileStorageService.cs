@@ -2,7 +2,7 @@
 
 public interface IFileStorageService
 {
-    public string CaptureFileDirectory { get; set; }
+    public string FileStorageDirectory { get; set; }
     public Task<string> StoreFileAsync(Stream stream);
     public void DeleteFile(string fileName);
 }
