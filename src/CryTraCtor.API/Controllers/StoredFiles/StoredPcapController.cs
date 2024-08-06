@@ -39,6 +39,20 @@ public class StoredPcapController(
         }
     }
 
+    [HttpPut]
+    public async Task<IActionResult> RenameStoredPcapFile(string oldFileName, string newFileName)
+    {
+        try
+        {
+            var storedFileName = await storedFileFacade.Rename(oldFileName, newFileName);
+            return Ok("Successfully stored file: " + storedFileName);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpDelete]
     public async Task<IActionResult> DeleteStoredPcapFile(string fileName)
     {

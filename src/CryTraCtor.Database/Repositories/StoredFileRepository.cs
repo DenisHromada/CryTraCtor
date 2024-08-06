@@ -30,11 +30,12 @@ public class StoredFileRepository(
             throw new ArgumentException("File not found");
         }
 
-        var filePath = file.InternalFilePath;
-
-        if (File.Exists(filePath))
+        try
         {
-            File.Delete(filePath);
+            fileStorageService.DeleteFile(file.InternalFilePath);
+        }
+        catch (ArgumentException e)
+        {
         }
 
         dbContext.StoredFile.Remove(file);
@@ -84,11 +85,27 @@ public class StoredFileRepository(
         }
     }
 
+    public async Task<StoredFileEntity> RenameAsync(string oldName, string newName)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+        var existingEntity = await GetMetadataByFilenameAsync(oldName);
+
+        if (existingEntity is null)
+        {
+            throw new ArgumentException("File not found");
+        }
+
+        existingEntity.PublicFileName = newName;
+
+        dbContext.StoredFile.Update(existingEntity);
+        await dbContext.SaveChangesAsync();
+        return existingEntity;
+    }
+    // Unsafe to expose to users. Internal path not sanitized.
     public async Task<StoredFileEntity> UpdateAsync(StoredFileEntity entity)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();
-        var existingEntity = await dbContext.StoredFile
-            .FirstOrDefaultAsync(f => f.PublicFileName == entity.PublicFileName);
+        var existingEntity = await GetMetadataByFilenameAsync(entity.PublicFileName);
         if (existingEntity is null)
         {
             throw new ArgumentException("File not found");

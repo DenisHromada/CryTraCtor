@@ -35,11 +35,10 @@ public class StoredFileFacade(
         return storedFileEntity.PublicFileName;
     }
 
-    // public string Rename(string newFilename, string oldFilename)
-    // {
-    //     var storedFileEntity = storedFileRepository.GetByFilename(oldFilename);
-    //     throw new NotImplementedException();
-    // }
+    public async Task<string> Rename(string oldFilename, string newFilename)
+    {
+        return (await storedFileRepository.RenameAsync(oldFilename, newFilename)).PublicFileName;
+    }
 
     public async Task Delete(string publicFileName)
     {

@@ -10,4 +10,5 @@ public interface IStoredFileRepository
     ValueTask<bool> ExistsAsync(StoredFileEntity entity);
     Task<StoredFileEntity> InsertAsync(StoredFileEntity entity, Stream incomingStream);
     Task<StoredFileEntity> UpdateAsync(StoredFileEntity entity);
+    Task<StoredFileEntity> RenameAsync(string oldFileName, string newFileName);
 }
