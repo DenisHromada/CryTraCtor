@@ -1,13 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using CryTraCtor.Business.Facades.Interfaces;
-using CryTraCtor.Business.Models;
 using CryTraCtor.Business.Models.Agregates;
 using CryTraCtor.Business.Models.CryptoProduct;
 using CryTraCtor.Packet.Models;
 
 namespace CryTraCtor.Business.Services;
 
-public class DnsTransactionSummaryModelTransformer(
+public class DnsTransactionSummaryModelFormatter(
     IKnownDomainFacade knownDomainFacade
 )
 {

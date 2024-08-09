@@ -30,7 +30,7 @@ public class ApiBusinessInstaller : IInstaller
         serviceCollection
             .AddScoped<DomainDetector>()
             .AddScoped<KnownDomainFilter>()
-            .AddScoped<DnsTransactionSummaryModelTransformer>()
+            .AddScoped<DnsTransactionSummaryModelFormatter>()
             .AddScoped<CsvService>();
     }
 }

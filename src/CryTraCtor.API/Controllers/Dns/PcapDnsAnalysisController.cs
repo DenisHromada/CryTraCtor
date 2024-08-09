@@ -1,5 +1,4 @@
-﻿using CryTraCtor.Business.Models;
-using CryTraCtor.Business.Models.Agregates;
+﻿using CryTraCtor.Business.Models.Agregates;
 using CryTraCtor.Business.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +6,10 @@ namespace CryTraCtor.APi.Controllers.Dns;
 
 [ApiController]
 [Route("dns/queried-domains")]
-public class QueriedDomainController(
+public class PcapDnsAnalysisController(
     DomainDetector domainDetector,
     KnownDomainFilter knownDomainFilter,
-    DnsTransactionSummaryModelTransformer transformer
+    DnsTransactionSummaryModelFormatter responseFormatter
 ) : Controller
 {
     [HttpGet("all/{fileName}")]
@@ -18,14 +17,14 @@ public class QueriedDomainController(
     {
         var extractedDomainTransactions = await domainDetector.AnalyzeAsync(fileName);
 
-        return transformer.TransformToDomainQueriers(extractedDomainTransactions);
+        return responseFormatter.TransformToDomainQueriers(extractedDomainTransactions);
     }
     
     [HttpGet("known/{fileName}")]
     public async Task<Dictionary<string, HashSet<string>>> GetKnownQueriedDomains(string fileName)
     {
         var knownDomainTransactions = await knownDomainFilter.GetKnownAsync(fileName);
-        return transformer.TransformToDomainQueriers(knownDomainTransactions);
+        return responseFormatter.TransformToDomainQueriers(knownDomainTransactions);
     }
 
     [HttpGet("unknown/{fileName}")]
@@ -33,21 +32,21 @@ public class QueriedDomainController(
     {
         var unknownDomainTransactions = await knownDomainFilter.GetUnknownAsync(fileName);
         
-        return transformer.TransformToDomainQueriers(unknownDomainTransactions);
+        return responseFormatter.TransformToDomainQueriers(unknownDomainTransactions);
     }
 
-    [HttpGet("known/groupedByProduct/{fileName}")]
+    [HttpGet("known/groupByProduct/{fileName}")]
     public async Task<IEnumerable<GroupedQueriedDomains>> GetGroupedKnownQueriedDomains(string fileName)
     {
         var knownDomainTransactions = await knownDomainFilter.GetKnownAsync(fileName);
-        return await transformer.GroupByProduct(knownDomainTransactions);
+        return await responseFormatter.GroupByProduct(knownDomainTransactions);
     }
     
     [HttpGet("known/groupByClientAddress/{fileName}")]
     public async Task<ActionResult> GetDetectedDomainsByAddress(string fileName)
     {
         var knownDomainTransactions = await knownDomainFilter.GetKnownAsync(fileName);
-        var detectedWallets = transformer.TransformToDetectedAddressWallets(knownDomainTransactions);
+        var detectedWallets = responseFormatter.TransformToDetectedAddressWallets(knownDomainTransactions);
 
         return Ok(detectedWallets);
     }
@@ -56,7 +55,16 @@ public class QueriedDomainController(
     public async Task<ActionResult> GetDetectedDomainsByAddressPort(string fileName)
     {
         var knownDomainTransactions = await knownDomainFilter.GetKnownAsync(fileName);
-        var detectedWallets = transformer.TransformToDetectedAddressPortWallets(knownDomainTransactions);
+        var detectedWallets = responseFormatter.TransformToDetectedAddressPortWallets(knownDomainTransactions);
+
+        return Ok(detectedWallets);
+    }
+    
+    [HttpGet("known/groupByClientAddressPortThenProduct/{fileName}")]
+    public async Task<ActionResult> GetDetectedDomainsByAddressPortThenProduct(string fileName)
+    {
+        var knownDomainTransactions = await knownDomainFilter.GetKnownAsync(fileName);
+        var detectedWallets = responseFormatter.TransformToDetectedAddressPortWallets(knownDomainTransactions);
 
         return Ok(detectedWallets);
     }
