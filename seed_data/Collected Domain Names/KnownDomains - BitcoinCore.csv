@@ -1,0 +1,11 @@
+Vendor,ProductName,DomainName,Purpose,Description
+Bitcoin Core,Bitcoin Core,bitcoin.org,Vendor Root,
+Bitcoin Core,Bitcoin Core,seed.bitcoin.sipa.be,Network Node Seed,MainNet
+Bitcoin Core,Bitcoin Core,dnsseed.bluematt.me,Network Node Seed,MainNet
+Bitcoin Core,Bitcoin Core,dnsseed.bitcoin.dashjr-list-of-p2p-nodes.us,Network Node Seed,MainNet
+Bitcoin Core,Bitcoin Core,seed.bitcoin.jonasschnelli.ch,Network Node Seed,MainNet
+Bitcoin Core,Bitcoin Core,seed.btc.petertodd.net,Network Node Seed,MainNet
+Bitcoin Core,Bitcoin Core,seed.bitcoin.sprovoost.nl,Network Node Seed,MainNet
+Bitcoin Core,Bitcoin Core,dnsseed.emzy.de,Network Node Seed,MainNet
+Bitcoin Core,Bitcoin Core,seed.bitcoin.wiz.biz,Network Node Seed,MainNet
+Bitcoin Core,Bitcoin Core,seed.mainnet.achownodes.xyz,Network Node Seed,MainNet

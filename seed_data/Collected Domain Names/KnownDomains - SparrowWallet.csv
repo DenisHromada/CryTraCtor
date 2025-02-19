@@ -1,0 +1,12 @@
+Vendor,ProductName,DomainName,Purpose,Description
+Sparrow Wallet,Sparrow Wallet,blockstream.info,Network Node Seed,MainNet
+Sparrow Wallet,Sparrow Wallet,electrum.blockstream.info,Network Node Seed,MainNet
+Sparrow Wallet,Sparrow Wallet,bitcoin.lu.ke,Network Node Seed,MainNet
+Sparrow Wallet,Sparrow Wallet,electrum.emzy.de,Network Node Seed,MainNet
+Sparrow Wallet,Sparrow Wallet,electrum.bitaroo.net,Network Node Seed,MainNet
+Sparrow Wallet,Sparrow Wallet,electrum.diynodes.com,Network Node Seed,MainNet
+Sparrow Wallet,Sparrow Wallet,fulcrum.sethforprivacy.com,Network Node Seed,MainNet
+Sparrow Wallet,Sparrow Wallet,testnet.aranguren.org,Network Node Seed,TestNet
+Sparrow Wallet,Sparrow Wallet,testnet.qtornado.com,Network Node Seed,TestNet
+Sparrow Wallet,Sparrow Wallet,mempool.space,Network Node Seed,TestNet
+Sparrow Wallet,Sparrow Wallet,blackie.c3-soft.com,Network Node Seed,TestNet
