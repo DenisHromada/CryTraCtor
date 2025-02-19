@@ -6,10 +6,8 @@ Bachelor's Thesis - Forensic Analysis of Anonymization Principles of Cryptocurre
 2. Have Docker installed and run `docker-compose up -d postgres` in the root directory. This creates and a PostgreSQL 
 database container.
 3. Apply migrations to the database. The tool named `dotnet-ef` must be available in the terminal.
-Then run `dotnet ef database update --connection "<connectionString>"`in the CryTraCtor.Database project root.
-The connection string should be in the following format:
-`Server=postgres;Port=5432;Database=postgres;User Id=postgres;Password=postgres;`.
+Then run `./scripts/migrate.sh`in the root directory of the solution.
 4. Connect the application to the database
-- If you want to run the application in a container, you can run `docker compose up -d`.
-- If you want to run the application locally, either make sure environment variables from the `.env` file are sourced, 
+- If you wish to run the application using docker, you can simply run `docker compose up -d`.
+- If you wish to run the application locally, either make sure environment variables from the `.env` file are sourced, 
 or add the database connection string to the CryTraCtor.API project. (for example as .NET User Secrets)

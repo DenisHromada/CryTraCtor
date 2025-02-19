@@ -15,7 +15,7 @@
         - postgres
   
   postgres:
-    image: postgres:12.2
+    image: postgres:17.3
     container_name: postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
