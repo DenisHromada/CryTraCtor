@@ -1,0 +1,19 @@
+Vendor,ProductName,DomainName,Purpose,Description
+Ledger,Ledger Live,ledger.com,Vendor Root,
+Ledger,Ledger Live,resources.live.ledger.app,Unknown,
+Ledger,Ledger Live,download.live.ledger.com,Unknown,
+Ledger,Ledger Live,ledger.statuspage.io,Unknown,
+Ledger,Ledger Live,manager.api.live.ledger.com,Unknown,
+Ledger,Ledger Live,swap.ledger.com,Unknown,
+Ledger,Ledger Live,proxycg.api.live.ledger.com,Unknown,
+Ledger,Ledger Live,buy.api.live.ledger.com,Unknown,
+Ledger,Ledger Live,live-app-catalog.ledger.com,Unknown,
+Ledger,Ledger Live,countervalues.live.ledger.com,Unknown,
+Ledger,Ledger Live,explorers.api.live.ledger.com,Unknown,
+Ledger,Ledger Live,cdn.live.ledger.com,Unknown,
+Ledger,Ledger Live,status.ledger.com,Unknown,
+Ledger,Ledger Live,api.segment.io,Unknown,Suspect
+Ledger,Ledger Live,sdk.fra-02-braze.eu,Analytics,Braze
+Ledger,Ledger Live,use.fontawesome.com,Font,Suspect
+Ledger,Ledger Live,firebaseremoteconfig.googleapis.com,Analytics,Firebase
+Ledger,Ledger Live,firebaseinstallations.googleapis.com,Analytics,Firebase

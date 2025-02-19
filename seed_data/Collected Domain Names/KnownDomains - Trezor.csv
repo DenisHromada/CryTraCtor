@@ -1,0 +1,78 @@
+Vendor,ProductName,DomainName,Purpose,Description
+Trezor,Trezor Suite,trezor.io,Vendor Root,
+Trezor,Trezor Suite,o117836.ingest.sentry.io,Telemetry,
+Trezor,Trezor Suite,data.trezor.io,Analyrics,
+Trezor,Trezor Suite,wiki.trezor.io,Website,
+Trezor,Trezor Suite,suite.trezor.io,Website,
+Trezor,Trezor Suite,shop.trezor.io,Website,
+Trezor,Trezor Suite,status.trezor.io,Website,Status Page
+Trezor,Trezor Suite,btc1.trezor.io,Blockbook,Bitcoin
+Trezor,Trezor Suite,btc2.trezor.io,Blockbook,Bitcoin
+Trezor,Trezor Suite,btc3.trezor.io,Blockbook,Bitcoin
+Trezor,Trezor Suite,btc4.trezor.io,Blockbook,Bitcoin
+Trezor,Trezor Suite,btc5.trezor.io,Blockbook,Bitcoin
+Trezor,Trezor Suite,bch1.trezor.io,Blockbook,Bitcoin Cash
+Trezor,Trezor Suite,bch2.trezor.io,Blockbook,Bitcoin Cash
+Trezor,Trezor Suite,bch3.trezor.io,Blockbook,Bitcoin Cash
+Trezor,Trezor Suite,bch4.trezor.io,Blockbook,Bitcoin Cash
+Trezor,Trezor Suite,bch5.trezor.io,Blockbook,Bitcoin Cash
+Trezor,Trezor Suite,dgb1.trezor.io,Blockbook,DigiByte
+Trezor,Trezor Suite,dgb2.trezor.io,Blockbook,DigiByte
+Trezor,Trezor Suite,zec1.trezor.io,Blockbook,Zcash
+Trezor,Trezor Suite,zec2.trezor.io,Blockbook,Zcash
+Trezor,Trezor Suite,zec3.trezor.io,Blockbook,Zcash
+Trezor,Trezor Suite,zec4.trezor.io,Blockbook,Zcash
+Trezor,Trezor Suite,zec5.trezor.io,Blockbook,Zcash
+Trezor,Trezor Suite,ltc1.trezor.io,Blockbook,Litecoin
+Trezor,Trezor Suite,ltc2.trezor.io,Blockbook,Litecoin
+Trezor,Trezor Suite,ltc3.trezor.io,Blockbook,Litecoin
+Trezor,Trezor Suite,ltc4.trezor.io,Blockbook,Litecoin
+Trezor,Trezor Suite,ltc5.trezor.io,Blockbook,Litecoin
+Trezor,Trezor Suite,dash1.trezor.io,Blockbook,Dash
+Trezor,Trezor Suite,dash2.trezor.io,Blockbook,Dash
+Trezor,Trezor Suite,dash3.trezor.io,Blockbook,Dash
+Trezor,Trezor Suite,dash4.trezor.io,Blockbook,Dash
+Trezor,Trezor Suite,dash5.trezor.io,Blockbook,Dash
+Trezor,Trezor Suite,btg1.trezor.io,Blockbook,Bitcoin Gold
+Trezor,Trezor Suite,btg2.trezor.io,Blockbook,Bitcoin Gold
+Trezor,Trezor Suite,btg3.trezor.io,Blockbook,Bitcoin Gold
+Trezor,Trezor Suite,btg4.trezor.io,Blockbook,Bitcoin Gold
+Trezor,Trezor Suite,btg5.trezor.io,Blockbook,Bitcoin Gold
+Trezor,Trezor Suite,doge1.trezor.io,Blockbook,Dogecoin
+Trezor,Trezor Suite,doge2.trezor.io,Blockbook,Dogecoin
+Trezor,Trezor Suite,doge3.trezor.io,Blockbook,Dogecoin
+Trezor,Trezor Suite,doge4.trezor.io,Blockbook,Dogecoin
+Trezor,Trezor Suite,doge5.trezor.io,Blockbook,Dogecoin
+Trezor,Trezor Suite,vtc1.trezor.io,Blockbook,Vertcoin
+Trezor,Trezor Suite,vtc2.trezor.io,Blockbook,Vertcoin
+Trezor,Trezor Suite,vtc3.trezor.io,Blockbook,Vertcoin
+Trezor,Trezor Suite,vtc4.trezor.io,Blockbook,Vertcoin
+Trezor,Trezor Suite,vtc5.trezor.io,Blockbook,Vertcoin
+Trezor,Trezor Suite,eth1.trezor.io,Blockbook,Ethereum
+Trezor,Trezor Suite,eth2.trezor.io,Blockbook,Ethereum
+Trezor,Trezor Suite,etc1.trezor.io,Blockbook,Ethereum Classic
+Trezor,Trezor Suite,etc2.trezor.io,Blockbook,Ethereum Classic
+Trezor,Trezor Suite,nmc1.trezor.io,Blockbook,Namecoin
+Trezor,Trezor Suite,nmc2.trezor.io,Blockbook,Namecoin
+Trezor,Trezor Suite,tbtc1.trezor.io,Blockbook,Bitcoin Testnet
+Trezor,Trezor Suite,tbtc2.trezor.io,Blockbook,Bitcoin Testnet
+Trezor,Trezor Suite,solana4.trezor.io,Blockbook,Solana
+Trezor,Trezor Suite,solana3.trezor.io,Blockbook,Solana
+Trezor,Trezor Suite,solana2.trezor.io,Blockbook,Solana
+Trezor,Trezor Suite,solana1.trezor.io,Blockbook,Solana
+Trezor,Trezor Suite,matic1.trezor.io,Blockbook,Polygon
+Trezor,Trezor Suite,matic2.trezor.io,Blockbook,Polygon
+Trezor,Trezor Suite,invity.io,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,api.github.com,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,api.dropboxapi.com,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,content.dropboxapi.com,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,notify.dropboxapi.com,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,oauth2.googleapis.com,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,googleapis.com,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,trezor-cardano-mainnet.blockfrost.io,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,trezor-cardano-preview.blockfrost.io,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,blockfrost.dev,Unknown,Present in allowed hosts
+Trezor,Trezor Suite,eth-api-b2c-stage.everstake.one,Unknown,"staking endpoint for Holesky testnet, works only with VPN"
+Trezor,Trezor Suite,eth-api-b2c.everstake.one,Unknown,staking endpoint for Ethereum mainnet
+Trezor,Trezor Suite,www.dropbox.com/oauth2/authorize,Authorization,Present in allowed hosts as oauth
+Trezor,Trezor Suite,accounts.google.com,Authorization,Present in allowed hosts as oauth
