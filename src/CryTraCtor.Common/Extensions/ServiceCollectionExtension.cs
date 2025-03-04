@@ -1,7 +1,7 @@
 ﻿using CryTraCtor.Common.Installers;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CryTraCtor.Common.Extensions;
+namespace CryTraCtor.Common.EExtensions;
 
 public static class ServiceCollectionExtension
 {
