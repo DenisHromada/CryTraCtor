@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.Packet", "src\Cr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.Common", "src\CryTraCtor.Common\CryTraCtor.Common.csproj", "{D12DA457-3ECB-4985-9E4F-2176C20BD1ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryTraCtor.WebApp", "src\CryTraCtor.WebApp\CryTraCtor.WebApp.csproj", "{11CC2986-67BD-45BE-9147-87D00E399C78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{D12DA457-3ECB-4985-9E4F-2176C20BD1ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D12DA457-3ECB-4985-9E4F-2176C20BD1ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D12DA457-3ECB-4985-9E4F-2176C20BD1ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11CC2986-67BD-45BE-9147-87D00E399C78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11CC2986-67BD-45BE-9147-87D00E399C78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11CC2986-67BD-45BE-9147-87D00E399C78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11CC2986-67BD-45BE-9147-87D00E399C78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
