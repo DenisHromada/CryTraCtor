@@ -18,10 +18,15 @@
       build:
         context: .
         dockerfile: src/CryTraCtor.WebApp/Dockerfile
+        target: ${WEBAPP_TARGET}
       ports:
         - "8080:8080"
+        - "5261:5261"
+        - "7006:7006"
       depends_on:
         - crytractor.postgres
+      volumes:
+        - .:/src
 
 
   crytractor.postgres:

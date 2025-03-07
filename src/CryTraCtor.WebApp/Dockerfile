@@ -17,6 +17,9 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "CryTraCtor.WebApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+FROM build AS watch
+ENTRYPOINT ["dotnet", "watch", "--non-interactive"]
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
