@@ -1,3 +1,5 @@
+using CryTraCtor.Business.Installers;
+using CryTraCtor.Common.Extensions;
 using MudBlazor.Services;
 using CryTraCtor.WebApp.Components;
 
@@ -9,6 +11,8 @@ builder.Services.AddMudServices();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddInstaller<WebAppBusinessInstaller>();
 
 var app = builder.Build();
 
@@ -23,7 +27,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.UseAntiforgery();
+// app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
