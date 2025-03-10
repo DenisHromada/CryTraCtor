@@ -1,46 +1,25 @@
-@page "/Files"
+@page "/files"
 
-@using System.Net.Http.Json
-@using CryTraCtor.Business.Facades
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.StoredFiles
-@inject HttpClient httpClient
 @inject IStoredFileFacade storedFileFacade
 
 <h3>Files</h3>
-<MudDataGrid Items="@Elements.Take(4)">
+<MudDataGrid Items="@_elements.Take(4)">
     <Columns>
-        <PropertyColumn Property="x => x.Number" Title="Nr"/>
-        <PropertyColumn Property="x => x.Sign"/>
-        <PropertyColumn Property="x => x.Name"/>
-        <PropertyColumn Property="x => x.Position"/>
-        <PropertyColumn Property="x => x.Molar" Title="Molar mass"/>
+        <PropertyColumn Property="x => x.Id" Title="Id"/>
+        <PropertyColumn Property="x => x.PublicFileName" Title="Public File Name"/>
+        <PropertyColumn Property="x => x.InternalFilePath" Title="Internal File Name"/>
+        <PropertyColumn Property="x => x.MimeType" Title="Mime Type"/>
+        <PropertyColumn Property="x => x.FileSize" Title="File Size"/>
     </Columns>
 </MudDataGrid>
 
 @code {
-
-    // private IEnumerable<StoredFileListModel> _elements = new List<StoredFileListModel>();
-    private IEnumerable<StoredFileListModel> Elements = new List<StoredFileListModel>();
-
-    // public partial class ConstructorInjector(
-    //     IStoredFileFacade storedFileFacade
-    // )
-    // {
-    //     private IStoredFileFacade StoredFileFacade => storedFileFacade;
-    //
-    //     public IEnumerable<StoredFileListModel> StoredFilesGetAll()
-    //     {
-    //         return this.StoredFileFacade.GetAll();
-    //     }
-    // }
-
-
+    private IEnumerable<StoredFileListModel> _elements = new List<StoredFileListModel>();
 
     protected override async Task OnInitializedAsync()
     {
-        Elements = storedFileFacade.GetAll();
-        // _elements = await httpClient.GetFromJsonAsync<List<StoredFileListModel>>("webapi/periodictable");
+        _elements = storedFileFacade.GetAll();
     }
-
 }
