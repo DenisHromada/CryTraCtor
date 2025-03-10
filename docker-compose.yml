@@ -28,8 +28,8 @@
         FILE_STORAGE_DIRECTORY: ${FILE_STORAGE_DIRECTORY}
       depends_on:
         - crytractor.postgres
-      volumes:
-        - .:/src
+#      volumes:
+#        - .:/src
 
 
   crytractor.postgres:
