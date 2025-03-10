@@ -2,7 +2,7 @@
 
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.StoredFiles
-@inject IStoredFileFacade storedFileFacade
+@inject IStoredFileFacade StoredFileFacade
 
 <h3>Files</h3>
 <MudDataGrid Items="@_elements.Take(4)">
@@ -20,6 +20,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _elements = storedFileFacade.GetAll();
+        _elements = StoredFileFacade.GetAll();
     }
 }
