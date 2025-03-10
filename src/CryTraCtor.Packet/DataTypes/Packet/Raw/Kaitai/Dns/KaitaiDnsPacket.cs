@@ -1,5 +1,7 @@
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 // Edit source dns_packet.yml file and use kaitai-struct-compiler to rebuild
+#pragma warning disable CS8625
+#pragma warning disable CS8618
 
 
 using Kaitai;
@@ -807,3 +809,5 @@ namespace CryTraCtor.Packet.DataTypes.Packet.Raw.Kaitai.Dns
         public KaitaiStruct M_Parent { get { return m_parent; } }
     }
 }
+#pragma warning restore CS8625
+#pragma warning restore CS8618

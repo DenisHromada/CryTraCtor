@@ -1,37 +1,4 @@
 ﻿services:
-  crytractor.api:
-    container_name: ${API_HOST}
-    build:
-      context: .
-      dockerfile: src/CryTraCtor.API/Dockerfile
-    ports:
-      - "18080:8080"
-
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      FILE_STORAGE_DIRECTORY: ${FILE_STORAGE_DIRECTORY}
-    depends_on:
-        - crytractor.postgres
-
-  crytractor.webapp:
-      container_name: ${WEBAPP_HOST}
-      build:
-        context: .
-        dockerfile: src/CryTraCtor.WebApp/Dockerfile
-        target: ${WEBAPP_TARGET}
-      ports:
-        - "8080:8080"
-        - "5261:5261"
-        - "7006:7006"
-      environment:
-        DATABASE_URL: ${DATABASE_URL}
-        FILE_STORAGE_DIRECTORY: ${FILE_STORAGE_DIRECTORY}
-      depends_on:
-        - crytractor.postgres
-#      volumes:
-#        - .:/src
-
-
   crytractor.postgres:
     image: postgres:17.3
     container_name: ${POSTGRES_HOST}
