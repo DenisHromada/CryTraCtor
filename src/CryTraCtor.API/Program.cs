@@ -17,6 +17,10 @@ builder.Services.AddInstaller<ApiPacketInstaller>();
 builder.Services.AddInstaller<ApiDatabaseInstaller>();
 builder.Services.AddInstaller<ApiBusinessInstaller>();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 var app = builder.Build();
 
 var option = new RewriteOptions();
