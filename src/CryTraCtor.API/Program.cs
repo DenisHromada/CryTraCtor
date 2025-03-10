@@ -1,7 +1,7 @@
 using CryTraCtor.Business.Installers;
 using CryTraCtor.Common.Extensions;
 using CryTraCtor.Database.Installers;
-using CryTraCtor.Packet;
+using CryTraCtor.Packet.Installers;
 using Microsoft.AspNetCore.Rewrite;
 
 var builder = WebApplication.CreateBuilder(args);
