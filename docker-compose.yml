@@ -23,6 +23,9 @@
         - "8080:8080"
         - "5261:5261"
         - "7006:7006"
+      environment:
+        DATABASE_URL: ${DATABASE_URL}
+        FILE_STORAGE_DIRECTORY: ${FILE_STORAGE_DIRECTORY}
       depends_on:
         - crytractor.postgres
       volumes:
