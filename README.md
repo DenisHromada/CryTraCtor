@@ -11,3 +11,9 @@ Then run `./scripts/migrate.sh`in the root directory of the solution.
 - If you wish to run the application using docker, you can simply run `docker compose up -d`.
 - If you wish to run the application locally, either make sure environment variables from the `.env` file are sourced, 
 or add the database connection string to the CryTraCtor.API project. (for example as .NET User Secrets)
+
+### Misc. Useful Commands
+```bash
+dotnet tool install --global dotnet-ef
+dotnet new install MudBlazor.Templates
+```
