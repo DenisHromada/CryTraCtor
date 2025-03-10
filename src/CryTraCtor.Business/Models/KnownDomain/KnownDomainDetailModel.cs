@@ -5,11 +5,11 @@ namespace CryTraCtor.Business.Models.KnownDomain;
 public class KnownDomainDetailModel : IModel
 {
     public Guid Id { get; set; }
-    public string DomainName { get; set; }
-    public string Purpose { get; set; }
-    public string Description { get; set; }
+    public string DomainName { get; set; } = string.Empty;
+    public string Purpose { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
-    public CryptoProductListModel CryptoProduct { get; set; }
+    public CryptoProductListModel CryptoProduct { get; set; } = CryptoProductListModel.Empty();
 
     public static KnownDomainDetailModel Empty()
         => new KnownDomainDetailModel
