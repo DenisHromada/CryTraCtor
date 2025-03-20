@@ -30,7 +30,7 @@ public class StoredPcapController(
                 FileSize = file.Length,
                 MimeType = file.ContentType
             };
-            var storedFileName = await storedFileFacade.Store(storedFileDetailModel, stream);
+            var storedFileName = await storedFileFacade.StoreAsync(storedFileDetailModel, stream);
             return Ok("Successfully stored file: " + storedFileName);
         }
         catch (Exception e)
