@@ -3,9 +3,23 @@
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.StoredFiles
 @inject IStoredFileFacade StoredFileFacade
+@inject ISnackbar Snackbar
 
 <h3>Files</h3>
-<MudDataGrid Items="@_elements.Take(4)">
+
+<MudPaper Class="pa-4 mb-4">
+    <InputFile id="file-upload" OnChange="OnInputFileChange" class="d-none"
+               accept=".txt,.pdf,.doc,.docx,.xls,.xlsx,.csv,.json,.xml"/>
+    <MudButton HtmlTag="label"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.CloudUpload"
+               for="file-upload">
+        Upload File
+    </MudButton>
+</MudPaper>
+
+<MudDataGrid Items="@_elements">
     <Columns>
         <PropertyColumn Property="x => x.Id" Title="Id"/>
         <PropertyColumn Property="x => x.PublicFileName" Title="Public File Name"/>
@@ -22,4 +36,29 @@
     {
         _elements = StoredFileFacade.GetAll();
     }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs inputFileChangeEventArgs)
+    {
+        try
+        {
+            var file = inputFileChangeEventArgs.File;
+            await using var stream = file.OpenReadStream();
+            var fileModel = new StoredFileDetailModel
+            {
+                PublicFileName = file.Name,
+                MimeType = file.ContentType,
+                FileSize = file.Size
+            };
+
+            var storedFileName = await StoredFileFacade.StoreAsync(fileModel, stream);
+
+            _elements = StoredFileFacade.GetAll();
+            Snackbar.Add($"{storedFileName} uploaded successfully", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error uploading file: {e.Message}", Severity.Error);
+        }
+    }
+
 }
