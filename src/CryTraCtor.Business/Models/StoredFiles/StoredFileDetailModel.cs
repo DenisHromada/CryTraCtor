@@ -2,14 +2,14 @@
 
 public record StoredFileDetailModel : IModel
 {
-    public Guid Id { get; set; }
-    public string PublicFileName { get; set; } = null!;
-    public string InternalFilePath { get; set; } = null!;
-    public string MimeType { get; set; } = null!;
-    public long FileSize { get; set; }
-    
+    public required Guid Id { get; set; }
+    public required string PublicFileName { get; set; }
+    public required string InternalFilePath { get; set; }
+    public required string MimeType { get; set; }
+    public required long FileSize { get; set; }
+
     public static StoredFileDetailModel Empty()
-        => new StoredFileDetailModel
+        => new()
         {
             Id = Guid.Empty,
             PublicFileName = string.Empty,

@@ -43,7 +43,7 @@
         {
             var file = inputFileChangeEventArgs.File;
             await using var stream = file.OpenReadStream();
-            var fileModel = new StoredFileDetailModel
+            var fileModel = StoredFileDetailModel.Empty() with
             {
                 PublicFileName = file.Name,
                 MimeType = file.ContentType,

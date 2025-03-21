@@ -24,7 +24,7 @@ public class StoredPcapController(
         try
         {
             var stream = file.OpenReadStream();
-            var storedFileDetailModel = new StoredFileDetailModel
+            var storedFileDetailModel = StoredFileDetailModel.Empty() with
             {
                 PublicFileName = file.FileName,
                 FileSize = file.Length,
