@@ -30,7 +30,9 @@
             <CellTemplate>
                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
                              Color="Color.Error"
-                             OnClick="@(() => DeleteFile(context.Item.PublicFileName))"
+                             OnClick="@(() => {
+                                          System.Diagnostics.Debug.Assert(context.Item != null, "context.Item != null"); //TODO: ask if this is OK
+                                          return DeleteFile(context.Item.PublicFileName); })"
                              Title="Delete file"/>
             </CellTemplate>
         </TemplateColumn>
