@@ -26,6 +26,14 @@
         <PropertyColumn Property="x => x.InternalFilePath" Title="Internal File Name"/>
         <PropertyColumn Property="x => x.MimeType" Title="Mime Type"/>
         <PropertyColumn Property="x => x.FileSize" Title="File Size"/>
+        <TemplateColumn>
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                             Color="Color.Error"
+                             OnClick="@(() => DeleteFile(context.Item.PublicFileName))"
+                             Title="Delete file"/>
+            </CellTemplate>
+        </TemplateColumn>
     </Columns>
 </MudDataGrid>
 
@@ -61,4 +69,17 @@
         }
     }
 
+    private async Task DeleteFile(string publicFileName)
+    {
+        try
+        {
+            await StoredFileFacade.Delete(publicFileName);
+            _elements = StoredFileFacade.GetAll();
+            Snackbar.Add($"{publicFileName} deleted successfully", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error deleting file: {e.Message}", Severity.Error);
+        }
+    }
 }
