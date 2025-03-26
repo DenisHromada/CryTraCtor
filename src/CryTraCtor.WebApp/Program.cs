@@ -4,6 +4,7 @@ using CryTraCtor.Database.Installers;
 using CryTraCtor.Packet.Installers;
 using MudBlazor.Services;
 using CryTraCtor.WebApp.Components;
+using CryTraCtor.WebApp.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddInstaller<WebAppPacketInstaller>();
 builder.Services.AddInstaller<WebAppDatabaseInstaller>();
 builder.Services.AddInstaller<WebAppBusinessInstaller>();
+
+builder.Services.Configure<FileUploadOptions>(
+    builder.Configuration.GetSection(nameof(FileUploadOptions)));
 
 var app = builder.Build();
 

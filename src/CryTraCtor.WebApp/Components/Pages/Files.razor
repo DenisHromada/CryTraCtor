@@ -2,8 +2,11 @@
 
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.StoredFiles
+@using CryTraCtor.WebApp.Options
+@using Microsoft.Extensions.Options
 @inject IStoredFileFacade StoredFileFacade
 @inject ISnackbar Snackbar
+@inject IOptions<FileUploadOptions> FileUploadOptions
 
 <h3>Files</h3>
 
@@ -52,7 +55,7 @@
         try
         {
             var file = inputFileChangeEventArgs.File;
-            await using var stream = file.OpenReadStream();
+            await using var stream = file.OpenReadStream(FileUploadOptions.Value.MaxFileSizeInBytes);
             var fileModel = StoredFileDetailModel.Empty() with
             {
                 PublicFileName = file.Name,
