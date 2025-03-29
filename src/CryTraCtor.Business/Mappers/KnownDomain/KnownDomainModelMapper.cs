@@ -13,7 +13,7 @@ public class KnownDomainModelMapper(
 {
     public override KnownDomainListModel MapToListModel(KnownDomainEntity? entity)
         => knownDomainListModelMapper.MapToListModel(entity);
-    
+
     public override KnownDomainDetailModel MapToDetailModel(KnownDomainEntity? entity)
         => entity is null
             ? KnownDomainDetailModel.Empty()
@@ -25,7 +25,7 @@ public class KnownDomainModelMapper(
                 Description = entity.Description,
                 CryptoProduct = cryptoProductListModelMapper.MapToListModel(entity.CryptoProduct)
             };
-    
+
     public IEnumerable<KnownDomainDetailModel> MapToDetailModel(IEnumerable<KnownDomainEntity> entities)
         => entities.Select(MapToDetailModel);
 
@@ -37,6 +37,6 @@ public class KnownDomainModelMapper(
             Purpose = model.Purpose,
             Description = model.Description,
             CryptoProductId = model.CryptoProduct.Id,
-            CryptoProduct = null!
+            CryptoProduct = null
         };
 }
