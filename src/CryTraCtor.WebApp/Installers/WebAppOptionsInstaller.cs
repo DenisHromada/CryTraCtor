@@ -12,6 +12,6 @@ public class WebAppOptionsInstaller : IInstaller
         var configuration = serviceCollection.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
         serviceCollection.Configure<FileUploadOptions>(
-            configuration.GetSection(nameof(FileUploadOptions)));
+            configuration.GetSection(FileUploadOptions.Section));
     }
 }
