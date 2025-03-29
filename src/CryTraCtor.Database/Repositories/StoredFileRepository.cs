@@ -13,7 +13,8 @@ public class StoredFileRepository(
     ILogger<StoredFileRepository> logger
 ) : IStoredFileRepository
 {
-    public IQueryable<StoredFileEntity> GetMetadataAll() => dbContextFactory.CreateDbContext().Set<StoredFileEntity>();
+    public Task<List<StoredFileEntity>> GetMetadataAllAsync() =>
+        dbContextFactory.CreateDbContext().Set<StoredFileEntity>().ToListAsync();
 
     public async Task<StoredFileEntity?> GetMetadataByFilenameAsync(string filename)
     {
@@ -61,21 +62,21 @@ public class StoredFileRepository(
             throw new ArgumentException("File is empty");
         }
 
+        if (await ExistsAsync(entity))
+        {
+            throw new ArgumentException("File already exists");
+        }
+
+        entity.InternalFilePath = await fileStorageService.StoreFileAsync(incomingStream);
+
         try
         {
-            entity.InternalFilePath = await fileStorageService.StoreFileAsync(incomingStream);
-
             if (entity.Id == Guid.Empty)
             {
                 entity.Id = Guid.NewGuid();
             }
 
             await using var dbContext = await dbContextFactory.CreateDbContextAsync();
-
-            if (await ExistsAsync(entity))
-            {
-                throw new ArgumentException("File already exists");
-            }
 
             await dbContext.StoredFile.AddAsync(entity);
             await dbContext.SaveChangesAsync();

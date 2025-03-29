@@ -4,7 +4,7 @@ namespace CryTraCtor.Database.Repositories;
 
 public interface IStoredFileRepository
 {
-    IQueryable<StoredFileEntity> GetMetadataAll();
+    Task<List<StoredFileEntity>> GetMetadataAllAsync();
     Task<StoredFileEntity?> GetMetadataByFilenameAsync(string filename);
     Task DeleteAsync(string publicFileName);
     ValueTask<bool> ExistsAsync(StoredFileEntity entity);

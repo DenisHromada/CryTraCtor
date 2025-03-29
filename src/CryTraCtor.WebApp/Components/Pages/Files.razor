@@ -11,15 +11,18 @@
 <h3>Files</h3>
 
 <MudPaper Class="pa-4 mb-4">
-    <InputFile id="file-upload" OnChange="OnInputFileChange" class="d-none"
-               accept=".pcap,.pcapng,.cap"/>
-    <MudButton HtmlTag="label"
-               Variant="Variant.Filled"
-               Color="Color.Primary"
-               StartIcon="@Icons.Material.Filled.CloudUpload"
-               for="file-upload">
-        Upload File
-    </MudButton>
+    <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                   Accept=".pcap,.pcapng,.cap"
+                   FilesChanged="OnInputFileChange"
+                   MaximumFileCount="100">
+        <ActivatorContent>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                Upload File
+            </MudButton>
+        </ActivatorContent>
+    </MudFileUpload>
 </MudPaper>
 
 <MudDataGrid Items="@_elements">
@@ -32,54 +35,62 @@
         <TemplateColumn>
             <CellTemplate>
                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                             Color="Color.Error"
-                             OnClick="@(() => {
-                                          System.Diagnostics.Debug.Assert(context.Item != null, "context.Item != null"); //TODO: ask if this is OK
-                                          return DeleteFile(context.Item.PublicFileName); })"
-                             Title="Delete file"/>
+                               Color="Color.Error"
+                               OnClick="@(() => DeleteFile(context.Item?.PublicFileName))"/>
             </CellTemplate>
         </TemplateColumn>
     </Columns>
 </MudDataGrid>
 
 @code {
-    private IEnumerable<StoredFileListModel> _elements = new List<StoredFileListModel>();
+    private List<StoredFileListModel> _elements = [];
 
     protected override async Task OnInitializedAsync()
     {
-        _elements = StoredFileFacade.GetAll();
+        if (RendererInfo.IsInteractive)
+        {
+            _elements = await StoredFileFacade.GetAllAsync();
+        }
     }
 
-    private async Task OnInputFileChange(InputFileChangeEventArgs inputFileChangeEventArgs)
+    private async Task OnInputFileChange(IReadOnlyList<IBrowserFile>? fileList)
     {
-        try
+
+        if (fileList is null || fileList.Count == 0)
         {
-            var file = inputFileChangeEventArgs.File;
-            await using var stream = file.OpenReadStream(FileUploadOptions.Value.MaxFileSizeInBytes);
-            var fileModel = StoredFileDetailModel.Empty() with
+            return;
+        }
+
+        foreach (var file in fileList)
+        {
+            try
             {
-                PublicFileName = file.Name,
-                MimeType = file.ContentType,
-                FileSize = file.Size
-            };
+                await using var stream = file.OpenReadStream(FileUploadOptions.Value.MaxFileSizeInBytes);
+                var fileModel = new StoredFileCreateModel(file.Name, file.ContentType, file.Size);
 
-            var storedFileName = await StoredFileFacade.StoreAsync(fileModel, stream);
+                var storedFileName = await StoredFileFacade.StoreAsync(fileModel, stream);
 
-            _elements = StoredFileFacade.GetAll();
-            Snackbar.Add($"{storedFileName} uploaded successfully", Severity.Success);
-        }
-        catch (Exception e)
-        {
-            Snackbar.Add($"Error uploading file: {e.Message}", Severity.Error);
+                _elements = await StoredFileFacade.GetAllAsync();
+                Snackbar.Add($"{storedFileName} uploaded successfully", Severity.Success);
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add($"Error uploading file: {e.Message}", Severity.Error);
+            }
         }
     }
 
-    private async Task DeleteFile(string publicFileName)
+    private async Task DeleteFile(string? publicFileName)
     {
+        if (publicFileName is null)
+        {
+            return;
+        }
+
         try
         {
-            await StoredFileFacade.Delete(publicFileName);
-            _elements = StoredFileFacade.GetAll();
+            await StoredFileFacade.DeleteAsync(publicFileName);
+            _elements = await StoredFileFacade.GetAllAsync();
             Snackbar.Add($"{publicFileName} deleted successfully", Severity.Success);
         }
         catch (Exception e)
@@ -87,4 +98,5 @@
             Snackbar.Add($"Error deleting file: {e.Message}", Severity.Error);
         }
     }
+
 }

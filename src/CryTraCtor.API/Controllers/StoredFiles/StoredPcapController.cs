@@ -11,9 +11,9 @@ public class StoredPcapController(
 ) : Controller
 {
     [HttpGet("Index")]
-    public IEnumerable<StoredFileListModel> GetStoredPcapFiles()
+    public async Task<IEnumerable<StoredFileListModel>> GetStoredPcapFiles()
     {
-        return storedFileFacade.GetAll();
+        return await storedFileFacade.GetAllAsync();
     }
 
     [HttpPost]
@@ -24,13 +24,8 @@ public class StoredPcapController(
         try
         {
             var stream = file.OpenReadStream();
-            var storedFileDetailModel = StoredFileDetailModel.Empty() with
-            {
-                PublicFileName = file.FileName,
-                FileSize = file.Length,
-                MimeType = file.ContentType
-            };
-            var storedFileName = await storedFileFacade.StoreAsync(storedFileDetailModel, stream);
+            var storedFileCreateModel = new StoredFileCreateModel(file.FileName, file.ContentType, file.Length);
+            var storedFileName = await storedFileFacade.StoreAsync(storedFileCreateModel, stream);
             return Ok("Successfully stored file: " + storedFileName);
         }
         catch (Exception e)
@@ -44,7 +39,7 @@ public class StoredPcapController(
     {
         try
         {
-            var storedFileName = await storedFileFacade.Rename(oldFileName, newFileName);
+            var storedFileName = await storedFileFacade.RenameAsync(oldFileName, newFileName);
             return Ok("Successfully stored file: " + storedFileName);
         }
         catch (Exception e)
@@ -56,7 +51,7 @@ public class StoredPcapController(
     [HttpDelete]
     public async Task<IActionResult> DeleteStoredPcapFile(string fileName)
     {
-        await storedFileFacade.Delete(fileName);
+        await storedFileFacade.DeleteAsync(fileName);
         return Ok("Successfully deleted file: " + fileName);
     }
 }

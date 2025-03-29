@@ -10,17 +10,10 @@ public class StoredFileFacade(
     StoredFileModelMapper modelMapper
 ) : IStoredFileFacade
 {
-    public List<StoredFileListModel> GetAll()
+    public async Task<List<StoredFileListModel>> GetAllAsync()
     {
-        var storedFileEntities = storedFileRepository.GetMetadataAll();
-        var storedFileListModels = new List<StoredFileListModel>();
-        foreach (var entity in storedFileEntities)
-        {
-            var model = modelMapper.MapToListModel(entity);
-            storedFileListModels.Add(model);
-        }
-
-        return storedFileListModels;
+        var storedFileEntities = await storedFileRepository.GetMetadataAllAsync();
+        return storedFileEntities.Select(modelMapper.MapToListModel).ToList();
     }
     public async Task<StoredFileDetailModel> GetFileMetadataAsync(string filename)
     {
@@ -28,19 +21,19 @@ public class StoredFileFacade(
         return modelMapper.MapToDetailModel(storedFileEntity);
     }
 
-    public async Task<string> StoreAsync(StoredFileDetailModel detailModel, Stream stream)
+    public async Task<string> StoreAsync(StoredFileCreateModel createModel, Stream stream)
     {
-        var entity = modelMapper.MapToEntity(detailModel);
+        var entity = modelMapper.MapCreateModelToEntity(createModel);
         var storedFileEntity = await storedFileRepository.InsertAsync(entity, stream);
         return storedFileEntity.PublicFileName;
     }
 
-    public async Task<string> Rename(string oldFilename, string newFilename)
+    public async Task<string> RenameAsync(string oldFilename, string newFilename)
     {
         return (await storedFileRepository.RenameAsync(oldFilename, newFilename)).PublicFileName;
     }
 
-    public async Task Delete(string publicFileName)
+    public async Task DeleteAsync(string publicFileName)
     {
         await storedFileRepository.DeleteAsync(publicFileName);
     }
