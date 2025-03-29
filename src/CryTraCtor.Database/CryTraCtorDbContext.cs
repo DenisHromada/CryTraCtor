@@ -8,6 +8,7 @@ public class CryTraCtorDbContext : DbContext
     public virtual DbSet<StoredFileEntity> StoredFile { get; set; }
     public virtual DbSet<CryptoProductEntity> CryptoProduct { get; set; }
     public virtual DbSet<KnownDomainEntity> KnownDomain { get; set; }
+    public virtual DbSet<TrafficParticipantEntity> TrafficParticipant { get; set; }
 
     public CryTraCtorDbContext()
     {
