@@ -2,13 +2,15 @@
 using CryTraCtor.Database.Mappers;
 using CryTraCtor.Database.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CryTraCtor.Database.Repositories;
 
 public class StoredFileRepository(
     IDbContextFactory<CryTraCtorDbContext> dbContextFactory,
     IEntityMapper<StoredFileEntity> entityMapper,
-    IFileStorageService fileStorageService
+    IFileStorageService fileStorageService,
+    ILogger<StoredFileRepository> logger
 ) : IStoredFileRepository
 {
     public IQueryable<StoredFileEntity> GetMetadataAll() => dbContextFactory.CreateDbContext().Set<StoredFileEntity>();
@@ -36,6 +38,7 @@ public class StoredFileRepository(
         }
         catch (ArgumentException e)
         {
+            logger.LogWarning(e, "Failed to delete file from disk.");
         }
 
         dbContext.StoredFile.Remove(file);
@@ -80,6 +83,7 @@ public class StoredFileRepository(
         }
         catch (Exception e)
         {
+            logger.LogWarning(e, "Failed to store file metadata.");
             fileStorageService.DeleteFile(entity.InternalFilePath);
             throw new Exception("Failed to store file", e);
         }
@@ -101,6 +105,7 @@ public class StoredFileRepository(
         await dbContext.SaveChangesAsync();
         return existingEntity;
     }
+
     // Unsafe to expose to users. Internal path not sanitized.
     public async Task<StoredFileEntity> UpdateAsync(StoredFileEntity entity)
     {

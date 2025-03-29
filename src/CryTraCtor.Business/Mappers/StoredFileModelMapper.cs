@@ -39,4 +39,17 @@ public class StoredFileModelMapper : ModelMapperBase<StoredFileEntity, StoredFil
             MimeType = model.MimeType,
             FileSize = model.FileSize
         };
+
+    public StoredFileEntity MapCreateModelToEntity(StoredFileCreateModel createModel)
+    {
+        return new StoredFileEntity
+        {
+            Id = Guid.Empty,
+            InternalFilePath = string.Empty,
+
+            PublicFileName = createModel.PublicFileName,
+            MimeType = createModel.MimeType,
+            FileSize = createModel.FileSize
+        };
+    }
 }
