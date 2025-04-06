@@ -8,6 +8,6 @@ public class TrafficParticipantEntityMapper : IEntityMapper<TrafficParticipantEn
     {
         existingEntity.Address = newEntity.Address;
         existingEntity.Port = newEntity.Port;
-        existingEntity.StoredFileId = newEntity.StoredFileId;
+        existingEntity.FileAnalysisId = newEntity.FileAnalysisId;
     }
 } 

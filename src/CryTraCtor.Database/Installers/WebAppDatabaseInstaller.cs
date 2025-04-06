@@ -25,7 +25,8 @@ public class WebAppDatabaseInstaller : IInstaller
             .AddSingleton<IEntityMapper<StoredFileEntity>, StoredFileEntityMapper>()
             .AddSingleton<IEntityMapper<CryptoProductEntity>, CryptoProductEntityMapper>()
             .AddSingleton<IEntityMapper<KnownDomainEntity>, KnownDomainEntityMapper>()
-            .AddSingleton<IEntityMapper<TrafficParticipantEntity>, TrafficParticipantEntityMapper>();
+            .AddSingleton<IEntityMapper<TrafficParticipantEntity>, TrafficParticipantEntityMapper>()
+            .AddSingleton<IEntityMapper<FileAnalysisEntity>, FileAnalysisEntityMapper>();
 
         serviceCollection
             .AddScoped<IStoredFileRepository, StoredFileRepository>();
