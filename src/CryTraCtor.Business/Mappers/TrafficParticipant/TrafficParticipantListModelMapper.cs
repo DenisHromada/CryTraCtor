@@ -11,5 +11,7 @@ public class
         => entity is null
             ? TrafficParticipantListModel.Empty()
             : new TrafficParticipantListModel
-                { Id = entity.Id, Address = entity.Address, Port = entity.Port, StoredFileId = entity.StoredFileId };
+            {
+                Id = entity.Id, Address = entity.Address, Port = entity.Port, FileAnalysisId = entity.FileAnalysisId
+            };
 }

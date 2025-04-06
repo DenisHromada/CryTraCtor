@@ -18,13 +18,13 @@ public class TrafficParticipantFacade(
         TrafficParticipantEntityMapper>(unitOfWorkFactory, modelMapper),
     ITrafficParticipantFacade
 {
-    public async Task<IEnumerable<TrafficParticipantListModel>> GetByStoredFileIdAsync(Guid storedFileId)
+    public async Task<IEnumerable<TrafficParticipantListModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId)
     {
         await using var unitOfWork = UnitOfWorkFactory.Create();
         var repository = unitOfWork.GetRepository<TrafficParticipantEntity, TrafficParticipantEntityMapper>();
         
         var entities = await repository.Get()
-            .Where(tp => tp.StoredFileId == storedFileId)
+            .Where(tp => tp.FileAnalysisId == fileAnalysisId)
             .ToListAsync();
             
         return ModelMapper.MapToListModel(entities);

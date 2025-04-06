@@ -1,5 +1,5 @@
+using CryTraCtor.Business.Mappers.FileAnalysis;
 using CryTraCtor.Business.Mappers.ModelMapperBase;
-using CryTraCtor.Business.Models.StoredFiles;
 using CryTraCtor.Business.Models.TrafficParticipants;
 using CryTraCtor.Database.Entities;
 
@@ -7,7 +7,7 @@ namespace CryTraCtor.Business.Mappers.TrafficParticipant;
 
 public class TrafficParticipantModelMapper(
     TrafficParticipantListModelMapper trafficParticipantListModelMapper,
-    StoredFileModelMapper storedFileModelMapper
+    FileAnalysisModelMapper fileAnalysisModelMapper
 ) : ModelMapperBase<TrafficParticipantEntity, TrafficParticipantListModel, TrafficParticipantDetailModel>
 {
     public override TrafficParticipantListModel MapToListModel(TrafficParticipantEntity? entity)
@@ -21,7 +21,7 @@ public class TrafficParticipantModelMapper(
                 Id = entity.Id,
                 Address = entity.Address,
                 Port = entity.Port,
-                StoredFile = storedFileModelMapper.MapToListModel(entity.StoredFile)
+                FileAnalysis = fileAnalysisModelMapper.MapToListModel(entity.FileAnalysis)
             };
 
     public override TrafficParticipantEntity MapToEntity(TrafficParticipantDetailModel model)
@@ -30,7 +30,7 @@ public class TrafficParticipantModelMapper(
             Id = model.Id,
             Address = model.Address,
             Port = model.Port,
-            StoredFileId = model.StoredFile.Id,
-            StoredFile = null
+            FileAnalysisId = model.FileAnalysis.Id,
+            FileAnalysis = null
         };
 }

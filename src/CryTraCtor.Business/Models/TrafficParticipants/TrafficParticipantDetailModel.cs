@@ -1,4 +1,4 @@
-using CryTraCtor.Business.Models.StoredFiles;
+using CryTraCtor.Business.Models.FileAnalysis;
 
 namespace CryTraCtor.Business.Models.TrafficParticipants;
 
@@ -8,7 +8,7 @@ public class TrafficParticipantDetailModel : IModel
     public string Address { get; set; } = string.Empty;
     public int Port { get; set; }
 
-    public StoredFileListModel StoredFile { get; set; } = StoredFileListModel.Empty();
+    public FileAnalysisListModel FileAnalysis { get; set; } = FileAnalysisListModel.Empty();
 
     public static TrafficParticipantDetailModel Empty() => new();
 }

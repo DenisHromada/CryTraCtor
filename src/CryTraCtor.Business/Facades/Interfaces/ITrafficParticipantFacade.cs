@@ -5,5 +5,5 @@ namespace CryTraCtor.Business.Facades.Interfaces;
 
 public interface ITrafficParticipantFacade : IFacade<TrafficParticipantEntity, TrafficParticipantListModel, TrafficParticipantDetailModel>
 {
-    Task<IEnumerable<TrafficParticipantListModel>> GetByStoredFileIdAsync(Guid storedFileId);
+    Task<IEnumerable<TrafficParticipantListModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId);
 } 

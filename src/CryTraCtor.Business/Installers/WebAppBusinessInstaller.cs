@@ -2,6 +2,7 @@
 using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Mappers;
 using CryTraCtor.Business.Mappers.CryptoProduct;
+using CryTraCtor.Business.Mappers.FileAnalysis;
 using CryTraCtor.Business.Mappers.KnownDomain;
 using CryTraCtor.Business.Mappers.TrafficParticipant;
 using CryTraCtor.Business.Services;
@@ -22,14 +23,17 @@ public class WebAppBusinessInstaller : IInstaller
             .AddSingleton<KnownDomainModelMapper>()
             .AddSingleton<KnownDomainImportModelMapper>()
             .AddSingleton<TrafficParticipantListModelMapper>()
-            .AddSingleton<TrafficParticipantModelMapper>();
+            .AddSingleton<TrafficParticipantModelMapper>()
+            .AddSingleton<FileAnalysisListModelMapper>()
+            .AddSingleton<FileAnalysisModelMapper>();
 
         serviceCollection
             .AddScoped<IStoredFileFacade, StoredFileFacade>()
             .AddScoped<ICryptoProductFacade, CryptoProductFacade>()
             .AddScoped<IKnownDomainFacade, KnownDomainFacade>()
             .AddScoped<IKnownDomainImportFacade, KnownDomainImportFacade>()
-            .AddScoped<ITrafficParticipantFacade, TrafficParticipantFacade>();
+            .AddScoped<ITrafficParticipantFacade, TrafficParticipantFacade>()
+            .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>();
 
         serviceCollection
             .AddScoped<DomainDetector>()
