@@ -7,6 +7,8 @@
 @inject IStoredFileFacade StoredFileFacade
 @inject ISnackbar Snackbar
 @inject IOptions<FileUploadOptions> FileUploadOptions
+@inject IFileAnalysisFacade FileAnalysisFacade
+@inject NavigationManager NavigationManager
 
 <h3>Files</h3>
 
@@ -34,6 +36,9 @@
         <PropertyColumn Property="x => x.FileSize" Title="File Size"/>
         <TemplateColumn>
             <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Analytics"
+                               Color="Color.Primary"
+                               OnClick="@(() => NavigateToFileAnalysis(context.Item?.Id))"/>
                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                Color="Color.Error"
                                OnClick="@(() => DeleteFile(context.Item?.PublicFileName))"/>
@@ -96,6 +101,14 @@
         catch (Exception e)
         {
             Snackbar.Add($"Error deleting file: {e.Message}", Severity.Error);
+        }
+    }
+
+    private void NavigateToFileAnalysis(Guid? storedFileId)
+    {
+        if (storedFileId is not null)
+        {
+            NavigationManager.NavigateTo($"/file-analysis/{storedFileId}");
         }
     }
 

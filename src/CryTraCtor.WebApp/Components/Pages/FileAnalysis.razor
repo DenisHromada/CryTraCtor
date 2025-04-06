@@ -1,0 +1,33 @@
+@page "/file-analysis/{storedFileId:guid}"
+
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models.FileAnalysis
+@inject IFileAnalysisFacade FileAnalysisFacade
+@inject ISnackbar Snackbar
+
+<h3>File Analysis</h3>
+
+<MudDataGrid Items="@_fileAnalysisEntries">
+    <Columns>
+        <PropertyColumn Property="x => x.Id" Title="Id"/>
+        <PropertyColumn Property="x => x.Name" Title="Name"/>
+        <PropertyColumn Property="x => x.CreatedAt" Title="Created At"/>
+    </Columns>
+</MudDataGrid>
+
+@code {
+    [Parameter] public Guid StoredFileId { get; set; }
+    private List<FileAnalysisListModel> _fileAnalysisEntries = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _fileAnalysisEntries = (await FileAnalysisFacade.GetByStoredFileIdAsync(StoredFileId)).ToList();
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error fetching file analysis: {e.Message}", Severity.Error);
+        }
+    }
+} 
