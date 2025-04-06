@@ -1,4 +1,4 @@
-﻿using CryTraCtor.Business.Mappers.ModelMapperBase;
+﻿using CryTraCtor.Business.Mappers.MapperBase;
 using CryTraCtor.Business.Models.StoredFiles;
 using CryTraCtor.Database.Entities;
 

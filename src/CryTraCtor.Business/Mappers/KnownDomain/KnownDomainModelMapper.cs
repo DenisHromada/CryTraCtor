@@ -1,5 +1,5 @@
 ﻿using CryTraCtor.Business.Mappers.CryptoProduct;
-using CryTraCtor.Business.Mappers.ModelMapperBase;
+using CryTraCtor.Business.Mappers.MapperBase;
 using CryTraCtor.Business.Models.KnownDomain;
 using CryTraCtor.Database.Entities;
 

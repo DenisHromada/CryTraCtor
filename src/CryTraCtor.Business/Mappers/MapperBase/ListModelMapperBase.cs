@@ -1,4 +1,4 @@
-﻿namespace CryTraCtor.Business.Mappers.ModelMapperBase;
+﻿namespace CryTraCtor.Business.Mappers.MapperBase;
 
 public abstract class ListModelMapperBase<TEntity, TListModel> : IListModelMapper<TEntity, TListModel>
 {

@@ -1,4 +1,4 @@
-﻿using CryTraCtor.Business.Mappers.ModelMapperBase;
+﻿using CryTraCtor.Business.Mappers.MapperBase;
 using CryTraCtor.Business.Models.CryptoProduct;
 using CryTraCtor.Database.Entities;
 
@@ -10,5 +10,4 @@ public class CryptoProductListModelMapper : ListModelMapperBase<CryptoProductEnt
         => entity is null
             ? CryptoProductListModel.Empty()
             : new CryptoProductListModel { Id = entity.Id, Vendor = entity.Vendor, ProductName = entity.ProductName };
-    
 }

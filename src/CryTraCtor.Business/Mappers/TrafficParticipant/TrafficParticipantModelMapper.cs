@@ -1,5 +1,5 @@
 using CryTraCtor.Business.Mappers.FileAnalysis;
-using CryTraCtor.Business.Mappers.ModelMapperBase;
+using CryTraCtor.Business.Mappers.MapperBase;
 using CryTraCtor.Business.Models.TrafficParticipants;
 using CryTraCtor.Database.Entities;
 
