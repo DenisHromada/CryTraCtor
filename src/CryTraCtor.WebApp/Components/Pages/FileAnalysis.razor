@@ -21,13 +21,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            _fileAnalysisEntries = (await FileAnalysisFacade.GetByStoredFileIdAsync(StoredFileId)).ToList();
-        }
-        catch (Exception e)
-        {
-            Snackbar.Add($"Error fetching file analysis: {e.Message}", Severity.Error);
-        }
+        _fileAnalysisEntries = (await FileAnalysisFacade.GetByStoredFileIdAsync(StoredFileId)).ToList();
     }
-} 
+
+}

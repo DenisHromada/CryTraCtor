@@ -7,7 +7,6 @@
 @inject IStoredFileFacade StoredFileFacade
 @inject ISnackbar Snackbar
 @inject IOptions<FileUploadOptions> FileUploadOptions
-@inject IFileAnalysisFacade FileAnalysisFacade
 @inject NavigationManager NavigationManager
 
 <h3>Files</h3>
@@ -60,7 +59,6 @@
 
     private async Task OnInputFileChange(IReadOnlyList<IBrowserFile>? fileList)
     {
-
         if (fileList is null || fileList.Count == 0)
         {
             return;
@@ -68,20 +66,13 @@
 
         foreach (var file in fileList)
         {
-            try
-            {
-                await using var stream = file.OpenReadStream(FileUploadOptions.Value.MaxFileSizeInBytes);
-                var fileModel = new StoredFileCreateModel(file.Name, file.ContentType, file.Size);
+            await using var stream = file.OpenReadStream(FileUploadOptions.Value.MaxFileSizeInBytes);
+            var fileModel = new StoredFileCreateModel(file.Name, file.ContentType, file.Size);
 
-                var storedFileName = await StoredFileFacade.StoreAsync(fileModel, stream);
+            var storedFileName = await StoredFileFacade.StoreAsync(fileModel, stream);
+            _elements = await StoredFileFacade.GetAllAsync();
 
-                _elements = await StoredFileFacade.GetAllAsync();
-                Snackbar.Add($"{storedFileName} uploaded successfully", Severity.Success);
-            }
-            catch (Exception e)
-            {
-                Snackbar.Add($"Error uploading file: {e.Message}", Severity.Error);
-            }
+            Snackbar.Add($"{storedFileName} uploaded successfully", Severity.Success);
         }
     }
 
@@ -92,16 +83,9 @@
             return;
         }
 
-        try
-        {
-            await StoredFileFacade.DeleteAsync(publicFileName);
-            _elements = await StoredFileFacade.GetAllAsync();
-            Snackbar.Add($"{publicFileName} deleted successfully", Severity.Success);
-        }
-        catch (Exception e)
-        {
-            Snackbar.Add($"Error deleting file: {e.Message}", Severity.Error);
-        }
+        await StoredFileFacade.DeleteAsync(publicFileName);
+        _elements = await StoredFileFacade.GetAllAsync();
+        Snackbar.Add($"{publicFileName} deleted successfully", Severity.Success);
     }
 
     private void NavigateToFileAnalysis(Guid? storedFileId)
