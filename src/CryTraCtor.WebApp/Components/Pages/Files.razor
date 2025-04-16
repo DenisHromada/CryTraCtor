@@ -26,7 +26,8 @@
     </MudFileUpload>
 </MudPaper>
 
-<MudDataGrid Items="@_elements">
+<MudDataGrid Items="@_elements" Hover="true" RowClass="cursor-pointer"
+             RowClick="@((DataGridRowClickEventArgs<StoredFileListModel> args) => NavigateToFileAnalysis(args.Item.Id))">
     <Columns>
         <PropertyColumn Property="x => x.Id" Title="Id"/>
         <PropertyColumn Property="x => x.PublicFileName" Title="Public File Name"/>
