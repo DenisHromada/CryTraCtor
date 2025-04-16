@@ -7,6 +7,15 @@
 
 <h3>File Analysis</h3>
 
+<MudPaper Class="pa-4 mb-4">
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Science"
+               OnClick="@GenerateFileAnalysis">
+        Analyze
+    </MudButton>
+</MudPaper>
+
 <MudDataGrid Items="@_fileAnalysisEntries">
     <Columns>
         <PropertyColumn Property="x => x.Id" Title="Id"/>
@@ -24,4 +33,9 @@
         _fileAnalysisEntries = (await FileAnalysisFacade.GetByStoredFileIdAsync(StoredFileId)).ToList();
     }
 
+    private void GenerateFileAnalysis()
+    {
+        // TODO: Implement actual file analysis logic
+        throw new NotImplementedException("File analysis functionality is not yet implemented.");
+    }
 }
