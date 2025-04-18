@@ -1,7 +1,21 @@
-﻿<MudNavMenu>
+﻿<MudNavMenu Class="nav-menu">
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
 
     <MudNavLink Href="files" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Files</MudNavLink>
-    <MudNavLink Href="status" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MonitorHeart">Status</MudNavLink>
+    <MudNavLink Href="known-domains" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Domain">Known Domains</MudNavLink>
+    <MudNavLink Href="crypto-products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Inventory2">Crypto Products</MudNavLink>
 
+    <MudNavLink Class="nav-menu-bottom" Href="status" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MonitorHeart">Status</MudNavLink>
 </MudNavMenu>
+
+<style>
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .nav-menu-bottom {
+        margin-top: auto;
+    }
+</style>
