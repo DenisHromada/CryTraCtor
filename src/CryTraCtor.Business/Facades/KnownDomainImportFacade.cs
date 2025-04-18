@@ -22,28 +22,27 @@ public class KnownDomainImportFacade(
         foreach (var model in modelCollection)
         {
             var (cryptoProduct, domainName) = mapper.MapToEntity(model);
-            var repositoryContent = cryptoProductRepository.GetLocal().ToList();
-            var existingProduct = cryptoProductRepository.GetLocal().FirstOrDefault(product =>
-                product.ProductName == cryptoProduct.ProductName
-                && product.Vendor == cryptoProduct.Vendor);
-            if (existingProduct is null)
-            {
-                existingProduct = await cryptoProductRepository.InsertAsync(cryptoProduct);
-            }
+            var existingProduct =
+                cryptoProductRepository
+                    .GetLocal().FirstOrDefault(product =>
+                        product.ProductName == cryptoProduct.ProductName
+                        && product.Vendor == cryptoProduct.Vendor)
+                ?? await cryptoProductRepository.InsertAsync(cryptoProduct);
+
             domainName.CryptoProductId = existingProduct.Id;
-            
+
             var existingDomainName = knownDomainRepository.GetLocal().FirstOrDefault(
                 domain => domain.DomainName == domainName.DomainName
-                && domain.Purpose == domainName.Purpose
-                & domain.Description == domainName.Description
-                && domain.CryptoProductId == domainName.CryptoProductId
-                );
+                          && domain.Purpose == domainName.Purpose
+                          & domain.Description == domainName.Description
+                          && domain.CryptoProductId == domainName.CryptoProductId
+            );
             if (existingDomainName is null)
             {
                 await knownDomainRepository.InsertAsync(domainName);
             }
-
         }
+
         await unitOfWork.CommitAsync();
     }
 }

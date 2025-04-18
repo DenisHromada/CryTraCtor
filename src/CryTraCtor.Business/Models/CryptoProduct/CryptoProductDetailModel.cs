@@ -4,16 +4,17 @@ namespace CryTraCtor.Business.Models.CryptoProduct;
 
 public class CryptoProductDetailModel : IModel
 {
-    public Guid Id { get; set; }
-    public string Vendor { get; set; }
-    public string ProductName { get; set; }
-    public ICollection<KnownDomainListModel> KnownDomains { get; set; }
-    
+    public required Guid Id { get; set; }
+    public required string Vendor { get; set; }
+    public required string ProductName { get; set; }
+    public required ICollection<KnownDomainListModel> KnownDomains { get; set; }
+
     public static CryptoProductDetailModel Empty()
-        => new CryptoProductDetailModel
+        => new()
         {
             Id = Guid.Empty,
             Vendor = string.Empty,
             ProductName = string.Empty,
+            KnownDomains = []
         };
 }

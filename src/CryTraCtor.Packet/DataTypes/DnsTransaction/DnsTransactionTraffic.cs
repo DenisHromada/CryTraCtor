@@ -5,8 +5,8 @@ namespace CryTraCtor.Packet.DataTypes.DnsTransaction;
 
 public record DnsTransactionTraffic(Collection<DnsPacketResponse> Responses, Collection<DnsPacketQuery> Queries)
 {
-    public Collection<DnsPacketQuery> Queries { get; } = [];
-    public Collection<DnsPacketResponse> Responses { get; } = [];
+    public Collection<DnsPacketQuery> Queries { get; } = Queries;
+    public Collection<DnsPacketResponse> Responses { get; } = Responses;
 
     public void AddQuery(DnsPacketQuery packetQuery)
     {

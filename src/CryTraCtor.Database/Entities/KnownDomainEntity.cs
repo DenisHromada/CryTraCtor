@@ -2,11 +2,11 @@
 
 public class KnownDomainEntity : IEntity
 {
-    public Guid Id { get; set; }
-    public string DomainName { get; set; } // domain name that matches
-    public string Purpose { get; set; } // e.g. bitcoin blockbook, telemetry
-    public string Description { get; set; } // additional information
+    public required Guid Id { get; set; }
+    public required string DomainName { get; set; } // domain name that matches
+    public required string Purpose { get; set; } // e.g. bitcoin blockbook, telemetry
+    public required string Description { get; set; } // additional information
 
-    public Guid CryptoProductId { get; set; }
+    public required Guid CryptoProductId { get; set; }
     public CryptoProductEntity? CryptoProduct { get; set; }
 }

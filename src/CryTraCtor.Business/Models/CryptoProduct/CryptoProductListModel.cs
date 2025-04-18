@@ -2,9 +2,9 @@
 
 public class CryptoProductListModel : IModel
 {
-    public Guid Id { get; set; }
-    public string Vendor { get; set; }
-    public string ProductName { get; set; }
+    public required Guid Id { get; set; }
+    public required string Vendor { get; set; }
+    public required string ProductName { get; set; }
 
     public static CryptoProductListModel Empty()
         => new CryptoProductListModel
