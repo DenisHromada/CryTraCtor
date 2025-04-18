@@ -1,5 +1,4 @@
-﻿@using CryTraCtor.WebApp.Components.Shared
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
 <MudPopoverProvider/>
@@ -18,9 +17,7 @@
         <NavMenu/>
     </MudDrawer>
     <MudMainContent Class="mt-16 pa-4">
-        <SnackbarExceptionHandler>
-            @Body
-        </SnackbarExceptionHandler>
+        @Body
     </MudMainContent>
 </MudLayout>
 
