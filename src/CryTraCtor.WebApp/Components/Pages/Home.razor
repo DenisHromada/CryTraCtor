@@ -1,59 +1,40 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+@using MudBlazor
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 9 Template!</MudText>
+<PageTitle>CryTraCtor Home</PageTitle>
 
-<MudAlert Severity="Severity.Normal">
-    You can find documentation and examples on our website here:
-    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        <b>www.mudblazor.com</b>
-    </MudLink>
-</MudAlert>
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <MudText Typo="Typo.h3" GutterBottom="true" Align="Align.Center" Class="mt-4 mb-6">Welcome to CryTraCtor</MudText>
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">Interactivity in this Template</MudText>
-<br />
-<MudText Typo="Typo.body2">
-    When you opt for the "Global" Interactivity Location, <br />
-    the render modes are defined in App.razor and consequently apply to all child components.<br />
-    In this case, providers are globally set in the MainLayout.<br />
-    <br />
-    On the other hand, if you choose the "Per page/component" Interactivity Location,<br />
-    it is necessary to include the <br />
-    <br />
-    &lt;MudPopoverProvider /&gt; <br />
-    &lt;MudDialogProvider /&gt; <br />
-    &lt;MudSnackbarProvider /&gt; <br />
-    <br />
-    components on every interactive page.<br />
-    <br />
-    If a render mode is not specified for a page, it defaults to Server-Side Rendering (SSR),<br />
-    similar to this page. While MudBlazor allows pages to be rendered in SSR,<br />
-    please note that interactive features, such as buttons and dropdown menus, will not be functional.
-</MudText>
+    <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-8">
+        Analyze network traffic (PCAP files) to identify connections related to known cryptocurrency services and products.
+    </MudText>
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">What's New in Blazor with the Release of .NET 9</MudText>
-<br />
+    <MudGrid Justify="Justify.Center" Spacing="4">
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="pa-4" Elevation="3">
+                <MudText Typo="Typo.h5" GutterBottom="true">Analyze Traffic</MudText>
+                <MudText Typo="Typo.body2" Class="mb-4">Upload PCAP files to analyze DNS queries and identify potential interactions with crypto services.</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/files" FullWidth="true">Go to Files</MudButton>
+            </MudPaper>
+        </MudItem>
 
-<MudText Typo="Typo.h6" GutterBottom="true">Prerendering</MudText>
-<MudText Typo="Typo.body2" GutterBottom="true">
-    If you're exploring the features of .NET 9 Blazor,<br /> you might be pleasantly surprised to learn that each page is prerendered on the server,<br /> regardless of the selected render mode.<br /><br />
-    This means that you'll need to inject all necessary services on the server,<br /> even when opting for the wasm (WebAssembly) render mode.<br /><br />
-    This prerendering functionality is crucial to ensuring that WebAssembly mode feels fast and responsive,<br /> especially when it comes to initial page load times.<br /><br />
-    For more information on how to detect prerendering and leverage the RenderContext, you can refer to the following link:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issuecomment-1783568121" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="pa-4" Elevation="3">
+                <MudText Typo="Typo.h5" GutterBottom="true">Known Domains</MudText>
+                <MudText Typo="Typo.body2" Class="mb-4">View and manage the list of known domain names associated with cryptocurrency services.</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Href="/known-domains" FullWidth="true" Disabled="true">Manage Domains</MudButton> @* Disabled until page exists *@
+            </MudPaper>
+        </MudItem>
 
-<br />
-<MudText Typo="Typo.h6" GutterBottom="true">InteractiveAuto</MudText>
-<MudText Typo="Typo.body2">
-    A discussion on how to achieve this can be found here:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issue-1950424116" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+        <MudItem xs="12" sm="6" md="4">
+            <MudPaper Class="pa-4" Elevation="3">
+                <MudText Typo="Typo.h5" GutterBottom="true">Crypto Products</MudText>
+                <MudText Typo="Typo.body2" Class="mb-4">Manage the list of cryptocurrency products (wallets, exchanges, etc.) tracked by the system.</MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Href="/crypto-products" FullWidth="true" Disabled="true">Manage Products</MudButton> @* Disabled until page exists *@
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+</MudContainer>
