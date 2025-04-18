@@ -1,0 +1,85 @@
+@page "/status"
+@using Microsoft.EntityFrameworkCore
+@using CryTraCtor.Database
+@inject IDbContextFactory<CryTraCtorDbContext> DbContextFactory
+@inject ILogger<Status> Logger
+
+<PageTitle>Application Status</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudText Typo="Typo.h4" GutterBottom="true" Align="Align.Center" Class="mt-4 mb-6">Application Status</MudText>
+
+    <MudPaper Class="pa-4" Elevation="3">
+        <MudGrid Spacing="2" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudText Typo="Typo.h6">Database Connection</MudText>
+            </MudItem>
+            <MudItem xs="12" Class="d-flex align-center">
+                @if (isChecking)
+                {
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <MudText>Checking...</MudText>
+                }
+                else if (isConnected)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Class="mr-2" />
+                    <MudText>Connected</MudText>
+                }
+                else
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" Class="mr-2" />
+                    <MudText>Disconnected</MudText>
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <MudTooltip Text="@errorMessage">
+                            <MudIcon Icon="@Icons.Material.Filled.Info" Color="Color.Warning" Class="ml-2" />
+                        </MudTooltip>
+                    }
+                }
+            </MudItem>
+            <MudItem xs="12">
+                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CheckDatabaseConnection" Disabled="isChecking">Check Again</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private bool isConnected = false;
+    private bool isChecking = false;
+    private string? errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckDatabaseConnection();
+    }
+
+    private async Task CheckDatabaseConnection()
+    {
+        isChecking = true;
+        isConnected = false;
+        errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            await using var dbContext = await DbContextFactory.CreateDbContextAsync();
+            isConnected = await dbContext.Database.CanConnectAsync();
+            if (!isConnected)
+            {
+                 errorMessage = "Could not establish connection to the database.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Database connection check failed.");
+            isConnected = false;
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isChecking = false;
+            StateHasChanged();
+        }
+    }
+}
