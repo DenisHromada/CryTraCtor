@@ -1,0 +1,60 @@
+@page "/crypto-products"
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models.CryptoProduct
+@inject ICryptoProductFacade CryptoProductFacade
+@inject ISnackbar Snackbar
+
+<PageTitle>Cryptocurrency Products</PageTitle>
+
+<h1>Cryptocurrency Products</h1>
+
+<MudDataGrid Items="@_elements" Hover="true">
+    <Columns>
+        <PropertyColumn Property="x => x.Id" Title="Id"/>
+        <PropertyColumn Property="x => x.Vendor" Title="Vendor"/>
+        <PropertyColumn Property="x => x.ProductName" Title="Product Name"/>
+        <TemplateColumn>
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                               Color="Color.Error"
+                               OnClick="@(() => DeleteCryptoProduct(context.Item?.Id))"/>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+
+@code {
+    private List<CryptoProductListModel>? _elements;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _elements = (await CryptoProductFacade.GetAllAsync()).ToList();
+        StateHasChanged();
+    }
+
+    private async Task DeleteCryptoProduct(Guid? id)
+    {
+        if (id is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await CryptoProductFacade.DeleteAsync(id.Value);
+            await LoadDataAsync();
+            Snackbar.Add($"Crypto product deleted successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error deleting crypto product: {ex.Message}", Severity.Error);
+        }
+    }
+
+}

@@ -1,0 +1,119 @@
+@page "/known-domains"
+
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models.KnownDomain
+@using CryTraCtor.WebApp.Options
+@using Microsoft.Extensions.Options
+@inject IKnownDomainImportFacade KnownDomainImportFacade
+@inject IKnownDomainFacade KnownDomainFacade
+@inject Business.Services.CsvService CsvService
+@inject ISnackbar Snackbar
+@inject IOptions<FileUploadOptions> FileUploadOptions
+
+<PageTitle>Known Domains</PageTitle>
+
+<h1>Known Domains</h1>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="OnInputFileChange" Accept=".csv">
+        <ActivatorContent>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                Upload CSV
+            </MudButton>
+        </ActivatorContent>
+    </MudFileUpload>
+</MudPaper>
+
+<MudDataGrid Items="@_elements" Hover="true" Groupable="true" GroupExpanded="false">
+    <Columns>
+        <PropertyColumn Property="x => x.Id" Title="Id" Groupable="false"/>
+        <PropertyColumn Property="x => x.CryptoProduct.Vendor" Title="Vendor"/>
+        <PropertyColumn Property="x => x.CryptoProduct.ProductName" Title="Product Name" Grouping="true">
+            <GroupTemplate>
+                @{
+                    var vendorName = context.Grouping.FirstOrDefault()?.CryptoProduct.Vendor ?? "Unknown Vendor";
+                }
+                <span style="font-weight:bold">@vendorName - @context.Grouping.Key
+                    <MudChip Variant="Variant.Outlined"
+                             Color="Color.Primary"
+                             Size="Size.Small">@context.Grouping.Count() entries</MudChip></span>
+            </GroupTemplate>
+        </PropertyColumn>
+        <PropertyColumn Property="x => x.DomainName" Title="Domain Name"/>
+        <PropertyColumn Property="x => x.Purpose" Title="Purpose"/>
+        <PropertyColumn Property="x => x.Description" Title="Description"/>
+        <TemplateColumn>
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                               Color="Color.Error"
+                               OnClick="@(() => DeleteKnownDomain(context.Item?.Id))"/>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+@code {
+    private List<KnownDomainDetailModel> _elements = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RendererInfo.IsInteractive)
+        {
+            _elements = (await KnownDomainFacade.GetAllDetailAsync()).ToList();
+        }
+    }
+
+    private async Task OnInputFileChange(IReadOnlyList<IBrowserFile>? fileList)
+    {
+        if (fileList is null || fileList.Count == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            foreach (var file in fileList)
+            {
+                await using var stream = file.OpenReadStream(FileUploadOptions.Value.MaxFileSizeInBytes);
+
+                var modelCollection = new List<KnownDomainImportModel>();
+                await foreach (var model in CsvService.ParseCsvAsync(stream))
+                {
+                    modelCollection.Add(model);
+                }
+
+                await KnownDomainImportFacade.Create(modelCollection);
+                _elements = (await KnownDomainFacade.GetAllDetailAsync()).ToList();
+
+                Snackbar.Add($"{file.Name} uploaded successfully", Severity.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error processing files: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteKnownDomain(Guid? id)
+    {
+        if (id is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await KnownDomainFacade.DeleteAsync(id.Value);
+            _elements = (await KnownDomainFacade.GetAllDetailAsync()).ToList();
+            Snackbar.Add($"Known domain deleted successfully", Severity.Success);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error deleting known domain: {ex.Message}", Severity.Error);
+        }
+    }
+
+}

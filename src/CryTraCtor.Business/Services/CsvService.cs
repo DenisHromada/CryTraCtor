@@ -6,17 +6,14 @@ namespace CryTraCtor.Business.Services;
 
 public class CsvService
 {
-    public IEnumerable<KnownDomainImportModel> ParseCsv(Stream stream)
+    public async IAsyncEnumerable<KnownDomainImportModel> ParseCsvAsync(Stream stream)
     {
-        using (var reader = new StreamReader(stream))
-        using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+        using var reader = new StreamReader(stream);
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        
+        await foreach (var record in csv.GetRecordsAsync<KnownDomainImportModel>())
         {
-            var records = csv.GetRecords<KnownDomainImportModel>();
-            
-            foreach (var record in records)
-            {
-                yield return record;
-            }
+            yield return record;
         }
     }
 }

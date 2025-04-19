@@ -33,14 +33,14 @@ public class KnownDomainController(
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
         await knownDomainFacade.DeleteAsync(id);
         return Ok("Successfully deleted known domain with id: " + id);
     }
-    
+
     [HttpPost("Import")]
     public async Task<IActionResult> Import(Collection<KnownDomainImportModel> modelCollection)
     {
@@ -54,12 +54,13 @@ public class KnownDomainController(
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpPost("Import/csv")]
     public async Task<IActionResult> ImportCsv(IFormFile file)
     {
-        var stream = file.OpenReadStream();
-        var modelCollection = csvService.ParseCsv(stream);
+        await using var stream = file.OpenReadStream();
+        var modelCollection = csvService.ParseCsvAsync(stream).ToBlockingEnumerable();
+
         try
         {
             await knownDomainImportFacade.Create(modelCollection);
@@ -70,6 +71,6 @@ public class KnownDomainController(
             return BadRequest(e.Message);
         }
     }
-    
-    
+
+
 }
