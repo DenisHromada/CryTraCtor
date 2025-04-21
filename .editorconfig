@@ -1,0 +1,20 @@
+# top-most EditorConfig file
+root = true
+
+# Apply to all files
+[*]
+# Indentation style
+indent_style = space
+indent_size = 4
+
+# Encoding
+charset = utf-8
+
+# Line endings
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Solution and Project files specific settings
+[*.{sln,csproj}]
+end_of_line = crlf
