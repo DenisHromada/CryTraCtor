@@ -11,7 +11,7 @@ public class ApiPacketInstaller : IInstaller
     {
         serviceCollection
             .AddTransient<IDnsTrafficMapper, DnsTrafficMapper>()
-            .AddTransient<IDnsTransactionExtractor, DnsTransactionExtractor>()
-            .AddTransient<IDnsPacketReader, DnsPacketReader>();
+            .AddTransient<DnsTransactionExtractor>()
+            .AddTransient<DnsPacketReader>();
     }
 }

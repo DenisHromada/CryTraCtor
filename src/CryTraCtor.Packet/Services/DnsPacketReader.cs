@@ -5,7 +5,7 @@ using SharpPcap.LibPcap;
 
 namespace CryTraCtor.Packet.Services;
 
-public class DnsPacketReader : IDnsPacketReader
+public class DnsPacketReader
 {
     public IEnumerable<IDnsPacketSummary> Read(string fileName)
     {
@@ -20,5 +20,4 @@ public class DnsPacketReader : IDnsPacketReader
 
         device.Close();
     }
-    
 }

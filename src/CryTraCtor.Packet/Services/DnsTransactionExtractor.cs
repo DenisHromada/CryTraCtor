@@ -5,9 +5,9 @@ using CryTraCtor.Packet.Models;
 namespace CryTraCtor.Packet.Services;
 
 public class DnsTransactionExtractor(
-    IDnsPacketReader dnsPacketReader,
+    DnsPacketReader dnsPacketReader,
     IDnsTrafficMapper dnsTrafficMapper
-) : IDnsTransactionExtractor
+)
 {
     public Collection<DnsTransactionSummaryModel> Run(string fileName)
     {

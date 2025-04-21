@@ -7,8 +7,8 @@ namespace CryTraCtor.Business.Services;
 
 public class DomainDetector(
     IStoredFileFacade storedFileFacade,
-    IDnsTransactionExtractor dnsTransactionExtractor
-    ) 
+    DnsTransactionExtractor dnsTransactionExtractor
+    )
 {
     public async Task<Collection<DnsTransactionSummaryModel>> AnalyzeAsync(string fileName)
     {
@@ -16,5 +16,5 @@ public class DomainDetector(
         var dnsTransactions = dnsTransactionExtractor.Run(internalFilePath);
         return dnsTransactions;
     }
-    
+
 }
