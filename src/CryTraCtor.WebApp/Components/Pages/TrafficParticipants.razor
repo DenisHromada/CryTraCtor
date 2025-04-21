@@ -1,0 +1,44 @@
+@page "/files/{fileId:guid}/file-analysis/{fileAnalysisId:guid}/traffic-participants"
+
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models.TrafficParticipants
+
+@inject ITrafficParticipantFacade TrafficParticipantFacade
+@inject ISnackbar Snackbar
+
+<h3>Traffic Participants</h3>
+
+<MudDataGrid Items="@_trafficParticipants">
+    <Columns>
+        <PropertyColumn Property="x => x.Address" Title="Address"/>
+        <PropertyColumn Property="x => x.Port" Title="Port"/>
+    </Columns>
+</MudDataGrid>
+
+@code {
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Guid FileAnalysisId { get; set; }
+    private List<TrafficParticipantListModel> _trafficParticipants = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RendererInfo.IsInteractive)
+        {
+            await LoadTrafficParticipantsAsync();
+        }
+    }
+
+    private async Task LoadTrafficParticipantsAsync()
+    {
+        try
+        {
+            _trafficParticipants = (await TrafficParticipantFacade.GetByFileAnalysisIdAsync(FileAnalysisId)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading traffic participants: {ex.Message}", Severity.Error);
+            _trafficParticipants = new();
+        }
+    }
+
+}

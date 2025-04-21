@@ -1,9 +1,11 @@
-@page "/file-analysis/{storedFileId:guid}"
+@page "/files/{StoredFileId:guid}/file-analysis"
 
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.FileAnalysis
 @inject IFileAnalysisFacade FileAnalysisFacade
+@inject IEndpointAnalysisFacade EndpointAnalysisFacade
 @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 <h3>File Analysis</h3>
 
@@ -16,7 +18,8 @@
     </MudButton>
 </MudPaper>
 
-<MudDataGrid Items="@_fileAnalysisEntries">
+<MudDataGrid Items="@_fileAnalysisEntries" Hover="true" RowClass="cursor-pointer" T="FileAnalysisListModel"
+             RowClick="@RowClicked">
     <Columns>
         <PropertyColumn Property="x => x.Id" Title="Id"/>
         <PropertyColumn Property="x => x.Name" Title="Name"/>
@@ -27,15 +30,51 @@
 @code {
     [Parameter] public Guid StoredFileId { get; set; }
     private List<FileAnalysisListModel> _fileAnalysisEntries = new();
+    private bool _isAnalyzing = false;
 
     protected override async Task OnInitializedAsync()
     {
-        _fileAnalysisEntries = (await FileAnalysisFacade.GetByStoredFileIdAsync(StoredFileId)).ToList();
+        await LoadAnalysesAsync();
     }
 
-    private void GenerateFileAnalysis()
+    private async Task LoadAnalysesAsync()
     {
-        // TODO: Implement actual file analysis logic
-        throw new NotImplementedException("File analysis functionality is not yet implemented.");
+        try
+        {
+            _fileAnalysisEntries = (await FileAnalysisFacade.GetByStoredFileIdAsync(StoredFileId)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading analyses: {ex.Message}", Severity.Error);
+            _fileAnalysisEntries = [];
+        }
     }
+
+    private async Task GenerateFileAnalysis()
+    {
+        if (_isAnalyzing) return;
+
+        _isAnalyzing = true;
+        try
+        {
+            var newAnalysisId = await EndpointAnalysisFacade.AnalyzeEndpointsAsync(StoredFileId);
+            Snackbar.Add($"Endpoint analysis completed successfully (ID: {newAnalysisId}).", Severity.Success);
+            await LoadAnalysesAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error during analysis: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isAnalyzing = false;
+            StateHasChanged();
+        }
+    }
+
+    private void RowClicked(DataGridRowClickEventArgs<FileAnalysisListModel> args)
+    {
+        NavigationManager.NavigateTo($"/files/{StoredFileId}/file-analysis/{args.Item.Id}/traffic-participants");
+    }
+
 }

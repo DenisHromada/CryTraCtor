@@ -26,8 +26,8 @@
     </MudFileUpload>
 </MudPaper>
 
-<MudDataGrid Items="@_elements" Hover="true" RowClass="cursor-pointer"
-             RowClick="@((DataGridRowClickEventArgs<StoredFileListModel> args) => NavigateToFileAnalysis(args.Item.Id))">
+<MudDataGrid Items="@_elements" Hover="true" RowClass="cursor-pointer" T="StoredFileListModel"
+             RowClick="@RowClicked">
     <Columns>
         <PropertyColumn Property="x => x.Id" Title="Id"/>
         <PropertyColumn Property="x => x.PublicFileName" Title="Public File Name"/>
@@ -38,7 +38,7 @@
             <CellTemplate>
                 <MudIconButton Icon="@Icons.Material.Filled.Analytics"
                                Color="Color.Primary"
-                               OnClick="@(() => NavigateToFileAnalysis(context.Item?.Id))"/>
+                               OnClick="@(() => RowClicked(context.Item?.Id))"/>
                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                Color="Color.Error"
                                OnClick="@(() => DeleteFile(context.Item?.PublicFileName))"/>
@@ -89,11 +89,16 @@
         Snackbar.Add($"{publicFileName} deleted successfully", Severity.Success);
     }
 
-    private void NavigateToFileAnalysis(Guid? storedFileId)
+    private void RowClicked(DataGridRowClickEventArgs<StoredFileListModel> args)
     {
-        if (storedFileId is not null)
+        NavigationManager.NavigateTo($"/files/{args.Item.Id}/file-analysis/");
+    }
+
+    private void RowClicked(Guid? id)
+    {
+        if (id is not null)
         {
-            NavigationManager.NavigateTo($"/file-analysis/{storedFileId}");
+            NavigationManager.NavigateTo($"/files/{id}/file-analysis/");
         }
     }
 

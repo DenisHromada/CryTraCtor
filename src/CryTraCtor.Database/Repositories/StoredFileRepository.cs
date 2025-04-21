@@ -22,6 +22,12 @@ public class StoredFileRepository(
         return await dbContext.StoredFile.FirstOrDefaultAsync(f => f.PublicFileName == filename);
     }
 
+    public async Task<StoredFileEntity?> GetMetadataByIdAsync(Guid id)
+    {
+        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
+        return await dbContext.StoredFile.FirstOrDefaultAsync(f => f.Id == id);
+    }
+
     public async Task DeleteAsync(string publicFileName)
     {
         await using var dbContext = await dbContextFactory.CreateDbContextAsync();

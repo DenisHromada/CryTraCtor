@@ -15,7 +15,14 @@ public class StoredFileFacade(
         var storedFileEntities = await storedFileRepository.GetMetadataAllAsync();
         return storedFileEntities.Select(modelMapper.MapToListModel).ToList();
     }
-    public async Task<StoredFileDetailModel> GetFileMetadataAsync(string filename)
+
+    public async Task<StoredFileDetailModel?> GetByIdAsync(Guid id)
+    {
+        var storedFileEntity = await storedFileRepository.GetMetadataByIdAsync(id);
+        return modelMapper.MapToDetailModel(storedFileEntity);
+    }
+
+    public async Task<StoredFileDetailModel?> GetFileMetadataAsync(string filename)
     {
         var storedFileEntity = await storedFileRepository.GetMetadataByFilenameAsync(filename);
         return modelMapper.MapToDetailModel(storedFileEntity);
