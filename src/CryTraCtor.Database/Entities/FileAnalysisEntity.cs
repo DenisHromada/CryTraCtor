@@ -10,5 +10,6 @@ public class FileAnalysisEntity : IEntity
     public Guid StoredFileId { get; set; }
     public StoredFileEntity? StoredFile { get; set; }
 
-    public ICollection<TrafficParticipantEntity> TrafficParticipants { get; set; } = new List<TrafficParticipantEntity>();
+    public virtual ICollection<TrafficParticipantEntity>? TrafficParticipants { get; set; }
+    public virtual ICollection<DnsPacketEntity>? DnsPackets { get; set; }
 }

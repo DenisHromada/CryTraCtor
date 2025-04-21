@@ -10,6 +10,7 @@ public class CryTraCtorDbContext : DbContext
     public virtual DbSet<KnownDomainEntity> KnownDomain { get; set; }
     public virtual DbSet<TrafficParticipantEntity> TrafficParticipant { get; set; }
     public virtual DbSet<FileAnalysisEntity> FileAnalysis { get; set; }
+    public virtual DbSet<DnsPacketEntity> DnsPacket { get; set; }
 
     public CryTraCtorDbContext()
     {

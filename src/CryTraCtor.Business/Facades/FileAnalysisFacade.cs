@@ -24,11 +24,11 @@ public class FileAnalysisFacade(
     {
         await using var unitOfWork = UnitOfWorkFactory.Create();
         var repository = unitOfWork.GetRepository<FileAnalysisEntity, FileAnalysisEntityMapper>();
-        
+
         var entities = await repository.Get()
             .Where(fa => fa.StoredFileId == storedFileId)
             .ToListAsync();
-            
+
         return ModelMapper.MapToListModel(entities);
     }
-} 
+}

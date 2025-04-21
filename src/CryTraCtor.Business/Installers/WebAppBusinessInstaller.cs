@@ -34,7 +34,8 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<IKnownDomainImportFacade, KnownDomainImportFacade>()
             .AddScoped<ITrafficParticipantFacade, TrafficParticipantFacade>()
             .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>()
-            .AddScoped<IEndpointAnalysisFacade, EndpointAnalysisFacade>();
+            .AddScoped<IEndpointAnalysisFacade, EndpointAnalysisFacade>()
+            .AddScoped<IDnsAnalysisFacade, DnsAnalysisFacade>();
 
         serviceCollection
             .AddScoped<DomainDetector>()
