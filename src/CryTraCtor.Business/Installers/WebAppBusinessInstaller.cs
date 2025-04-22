@@ -25,7 +25,8 @@ public class WebAppBusinessInstaller : IInstaller
             .AddSingleton<TrafficParticipantListModelMapper>()
             .AddSingleton<TrafficParticipantModelMapper>()
             .AddSingleton<FileAnalysisListModelMapper>()
-            .AddSingleton<FileAnalysisModelMapper>();
+            .AddSingleton<FileAnalysisModelMapper>()
+            .AddSingleton<DnsPacketModelMapper>();
 
         serviceCollection
             .AddScoped<IStoredFileFacade, StoredFileFacade>()
@@ -34,10 +35,11 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<IKnownDomainImportFacade, KnownDomainImportFacade>()
             .AddScoped<ITrafficParticipantFacade, TrafficParticipantFacade>()
             .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>()
-            .AddScoped<IEndpointAnalysisFacade, EndpointAnalysisFacade>()
+            .AddScoped<IDnsPacketFacade, DnsPacketFacade>()
             .AddScoped<IDnsAnalysisFacade, DnsAnalysisFacade>();
 
         serviceCollection
+            .AddScoped<FileAnalysisService>()
             .AddScoped<DomainDetector>()
             .AddScoped<KnownDomainFilter>()
             .AddScoped<DnsTransactionSummaryModelFormatter>()

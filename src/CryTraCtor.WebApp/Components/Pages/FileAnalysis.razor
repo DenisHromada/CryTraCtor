@@ -2,8 +2,9 @@
 
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.FileAnalysis
+@using CryTraCtor.Business.Services
 @inject IFileAnalysisFacade FileAnalysisFacade
-@inject IEndpointAnalysisFacade EndpointAnalysisFacade
+@inject FileAnalysisService FileAnalysisService
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 
@@ -64,8 +65,8 @@
         _isAnalyzing = true;
         try
         {
-            var newAnalysisId = await EndpointAnalysisFacade.AnalyzeEndpointsAsync(StoredFileId);
-            Snackbar.Add($"Endpoint analysis completed successfully (ID: {newAnalysisId}).", Severity.Success);
+            var newAnalysis = await FileAnalysisService.CreateAnalysis(StoredFileId);
+            Snackbar.Add($"Endpoint analysis '{newAnalysis.Name}' completed successfully (ID: {newAnalysis.Id}).", Severity.Success);
             await LoadAnalysesAsync();
         }
         catch (Exception ex)

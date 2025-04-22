@@ -4,32 +4,22 @@ using CryTraCtor.Business.Models.TrafficParticipants;
 using CryTraCtor.Database.Services;
 using CryTraCtor.Packet.Services;
 
-namespace CryTraCtor.Business.Facades;
-public class EndpointAnalysisFacade(
-    IStoredFileFacade storedFileFacade,
-    IEndpointReader endpointReader,
-    IFileStorageService fileStorageService,
+namespace CryTraCtor.Business.Services;
+
+public class FileAnalysisService(
     IFileAnalysisFacade fileAnalysisFacade,
+    IStoredFileFacade storedFileFacade,
+    IFileStorageService fileStorageService,
+    IEndpointReader endpointReader,
     ITrafficParticipantFacade trafficParticipantFacade)
-    : IEndpointAnalysisFacade
 {
-    public async Task<Guid> AnalyzeEndpointsAsync(Guid storedFileId)
+    public async Task<FileAnalysisDetailModel> CreateAnalysis(Guid storedFileId)
     {
         var storedFile = await storedFileFacade.GetByIdAsync(storedFileId);
-
         if (storedFile == null)
         {
             throw new ArgumentException($"Stored file with ID {storedFileId} not found.", nameof(storedFileId));
         }
-
-        var filePath = Path.Combine(fileStorageService.FileStorageDirectory, storedFile.InternalFilePath);
-        if (string.IsNullOrEmpty(storedFile.InternalFilePath) || !File.Exists(filePath))
-        {
-            throw new InvalidOperationException(
-                $"Pcap file path not found or invalid for stored file ID {storedFileId}. Constructed Path: {filePath}");
-        }
-
-        var endpoints = endpointReader.GetEndpoints(filePath);
 
         var fileAnalysisModel = new FileAnalysisDetailModel
         {
@@ -39,6 +29,15 @@ public class EndpointAnalysisFacade(
             StoredFileId = storedFileId
         };
         var createdAnalysis = await fileAnalysisFacade.CreateOrUpdateAsync(fileAnalysisModel);
+
+        var filePath = Path.Combine(fileStorageService.FileStorageDirectory, storedFile.InternalFilePath);
+        if (string.IsNullOrEmpty(storedFile.InternalFilePath) || !File.Exists(filePath))
+        {
+            throw new InvalidOperationException(
+                $"Pcap file path not found or invalid for stored file ID {storedFile.Id}. Constructed Path: {filePath}");
+        }
+
+        var endpoints = endpointReader.GetEndpoints(filePath);
 
         foreach (var endpoint in endpoints)
         {
@@ -52,6 +51,6 @@ public class EndpointAnalysisFacade(
             await trafficParticipantFacade.CreateOrUpdateAsync(participantModel);
         }
 
-        return createdAnalysis.Id;
+        return createdAnalysis;
     }
 }
