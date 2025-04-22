@@ -12,7 +12,7 @@ public class Repository<TEntity>(
 {
     private DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
     public IQueryable<TEntity> Get() => _dbSet;
-    
+
     // This is a hacky solution to get all entities before the db context is saved
     public IQueryable<TEntity> GetLocal() => _dbSet.Local.AsQueryable();
 
@@ -26,7 +26,7 @@ public class Repository<TEntity>(
         return await _dbSet.AnyAsync(e => e.Id == entity.Id);
     }
 
-    public async Task<TEntity> InsertAsync(TEntity entity) 
+    public async Task<TEntity> InsertAsync(TEntity entity)
         => (await _dbSet.AddAsync(entity)).Entity;
 
     public async Task<TEntity> UpdateAsync(TEntity entity)
@@ -36,6 +36,6 @@ public class Repository<TEntity>(
         return existingEntity;
     }
 
-    public async Task DeleteAsync(Guid entityId) 
+    public async Task DeleteAsync(Guid entityId)
         => _dbSet.Remove(await _dbSet.SingleAsync(i => i.Id == entityId).ConfigureAwait(false));
 }

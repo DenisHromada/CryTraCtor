@@ -1,4 +1,4 @@
-﻿using CryTraCtor.Common.Installers;
+﻿﻿﻿﻿﻿using CryTraCtor.Common.Installers;
 using CryTraCtor.Database.Entities;
 using CryTraCtor.Database.Factories;
 using CryTraCtor.Database.Mappers;
@@ -27,9 +27,10 @@ public class WebAppDatabaseInstaller : IInstaller
             .AddSingleton<IEntityMapper<KnownDomainEntity>, KnownDomainEntityMapper>()
             .AddSingleton<IEntityMapper<TrafficParticipantEntity>, TrafficParticipantEntityMapper>()
             .AddSingleton<IEntityMapper<FileAnalysisEntity>, FileAnalysisEntityMapper>()
-            .AddSingleton<IEntityMapper<DnsPacketEntity>, DnsPacketEntityMapper>(); // Concrete type registration removed
+            .AddSingleton<IEntityMapper<DnsPacketEntity>, DnsPacketEntityMapper>();
 
         serviceCollection
-            .AddScoped<IStoredFileRepository, StoredFileRepository>(); // IDnsPacketRepository registration removed
+            .AddScoped<IStoredFileRepository, StoredFileRepository>()
+            .AddScoped<TrafficParticipantAggregateRepository>();
     }
 }
