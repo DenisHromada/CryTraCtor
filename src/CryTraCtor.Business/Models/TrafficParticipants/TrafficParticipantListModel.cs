@@ -6,6 +6,8 @@ public class TrafficParticipantListModel : IModel
     public string Address { get; set; } = string.Empty;
     public int Port { get; set; }
     public Guid FileAnalysisId { get; set; }
+    public int OutgoingDnsCount { get; set; }
+    public int IncomingDnsCount { get; set; }
 
     public static TrafficParticipantListModel Empty() => new();
 }

@@ -20,13 +20,40 @@ public class TrafficParticipantFacade(
 {
     public async Task<IEnumerable<TrafficParticipantListModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId)
     {
-        await using var unitOfWork = UnitOfWorkFactory.Create();
-        var repository = unitOfWork.GetRepository<TrafficParticipantEntity, TrafficParticipantEntityMapper>();
-        
-        var entities = await repository.Get()
+        await using var uow = UnitOfWorkFactory.Create();
+        var participantRepository = uow.GetRepository<TrafficParticipantEntity, TrafficParticipantEntityMapper>();
+        var dnsPacketRepository = uow.GetRepository<DnsPacketEntity, DnsPacketEntityMapper>();
+
+        var participantsTask = participantRepository.Get()
             .Where(tp => tp.FileAnalysisId == fileAnalysisId)
             .ToListAsync();
-            
-        return ModelMapper.MapToListModel(entities);
+
+        var dnsPacketsTask = dnsPacketRepository.Get()
+            .Where(dns => dns.FileAnalysisId == fileAnalysisId)
+            .Select(dns => new { dns.SenderId, dns.RecipientId }) // Select only needed IDs
+            .ToListAsync();
+
+        await Task.WhenAll(participantsTask, dnsPacketsTask);
+
+        var participantEntities = await participantsTask;
+        var dnsPacketIds = await dnsPacketsTask;
+
+        var outgoingCounts = dnsPacketIds
+            .GroupBy(dns => dns.SenderId)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var incomingCounts = dnsPacketIds
+            .GroupBy(dns => dns.RecipientId)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var participantModels = participantEntities.Select(entity =>
+        {
+            var model = ModelMapper.MapToListModel(entity);
+            model.OutgoingDnsCount = outgoingCounts.TryGetValue(entity.Id, out var outCount) ? outCount : 0;
+            model.IncomingDnsCount = incomingCounts.TryGetValue(entity.Id, out var inCount) ? inCount : 0;
+            return model;
+        }).ToList();
+
+        return participantModels;
     }
-} 
+}
