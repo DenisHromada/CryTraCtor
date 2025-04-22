@@ -24,7 +24,7 @@ public class FileAnalysisModelMapper(
                 StoredFileId = entity.StoredFileId,
                 TrafficParticipants =
                     trafficParticipantListModelMapper
-                        .MapToListModel(entity.TrafficParticipants)
+                        .MapToListModel(entity.TrafficParticipants ?? [])
                         .ToList()
             };
 
