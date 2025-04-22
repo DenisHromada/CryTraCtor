@@ -1,4 +1,4 @@
-﻿using CryTraCtor.Business.Facades;
+﻿﻿﻿using CryTraCtor.Business.Facades;
 using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Mappers;
 using CryTraCtor.Business.Mappers.CryptoProduct;
@@ -35,10 +35,10 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<IKnownDomainImportFacade, KnownDomainImportFacade>()
             .AddScoped<ITrafficParticipantFacade, TrafficParticipantFacade>()
             .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>()
-            .AddScoped<IDnsPacketFacade, DnsPacketFacade>()
-            .AddScoped<IDnsAnalysisFacade, DnsAnalysisFacade>();
+            .AddScoped<IDnsPacketFacade, DnsPacketFacade>();
 
         serviceCollection
+            .AddScoped<DnsAnalysisService>()
             .AddScoped<FileAnalysisService>()
             .AddScoped<DomainDetector>()
             .AddScoped<KnownDomainFilter>()

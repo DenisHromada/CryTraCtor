@@ -2,31 +2,22 @@ using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Models;
 using CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 using CryTraCtor.Packet.Services;
+using Microsoft.Extensions.Logging;
 
-namespace CryTraCtor.Business.Facades;
+namespace CryTraCtor.Business.Services;
 
-public class DnsAnalysisFacade : IDnsAnalysisFacade
+public class DnsAnalysisService(
+    IStoredFileFacade storedFileFacade,
+    DnsPacketReader dnsPacketReader,
+    IDnsPacketFacade dnsPacketFacade,
+    ILogger<DnsAnalysisService> logger)
 {
-    private readonly IStoredFileFacade _storedFileFacade;
-    private readonly DnsPacketReader _dnsPacketReader;
-    private readonly IDnsPacketFacade _dnsPacketFacade;
-
-    public DnsAnalysisFacade(
-        IStoredFileFacade storedFileFacade,
-        DnsPacketReader dnsPacketReader,
-        IDnsPacketFacade dnsPacketFacade)
-    {
-        _storedFileFacade = storedFileFacade;
-        _dnsPacketReader = dnsPacketReader;
-        _dnsPacketFacade = dnsPacketFacade;
-    }
-
     public async Task AnalyzeDnsPacketsAsync(Guid fileAnalysisId, Guid storedFileId)
     {
-        var fileMetadata = await _storedFileFacade.GetByIdAsync(storedFileId);
+        var fileMetadata = await storedFileFacade.GetByIdAsync(storedFileId);
         if (fileMetadata == null || string.IsNullOrEmpty(fileMetadata.InternalFilePath))
         {
-            Console.Error.WriteLine($"[DnsAnalysisFacade] Stored file metadata not found or internal path missing for ID: {storedFileId}. Skipping DNS analysis for FileAnalysisId: {fileAnalysisId}");
+            logger.LogError("[DnsAnalysisService] Stored file metadata not found or internal path missing for ID: {StoredFileId}. Skipping DNS analysis for FileAnalysisId: {FileAnalysisId}", storedFileId, fileAnalysisId);
             return;
         }
         var internalFilePath = fileMetadata.InternalFilePath;
@@ -34,11 +25,11 @@ public class DnsAnalysisFacade : IDnsAnalysisFacade
         IEnumerable<IDnsPacketSummary> dnsPackets;
         try
         {
-            dnsPackets = _dnsPacketReader.Read(internalFilePath);
+            dnsPackets = dnsPacketReader.Read(internalFilePath);
         }
         catch (Exception ex)
         {
-             Console.Error.WriteLine($"[DnsAnalysisFacade] Error reading DNS packets from {internalFilePath} for FileAnalysisId: {fileAnalysisId}. Error: {ex.Message}");
+             logger.LogError(ex, "[DnsAnalysisService] Error reading DNS packets from {InternalFilePath} for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}", internalFilePath, fileAnalysisId, ex.Message);
              return;
         }
 
@@ -93,12 +84,12 @@ public class DnsAnalysisFacade : IDnsAnalysisFacade
 
                 if (dnsPacketModel != null)
                 {
-                    await _dnsPacketFacade.CreateOrUpdateAsync(dnsPacketModel);
+                    await dnsPacketFacade.CreateOrUpdateAsync(dnsPacketModel);
                 }
             }
             catch (Exception ex)
             {
-                 Console.Error.WriteLine($"[DnsAnalysisFacade] Error processing DNS packet for FileAnalysisId: {fileAnalysisId}. TxId: {packetSummary?.TransactionId}. Error: {ex.Message}");
+                 logger.LogError(ex, "[DnsAnalysisService] Error processing DNS packet for FileAnalysisId: {FileAnalysisId}. TxId: {TransactionId}. Error: {ErrorMessage}", fileAnalysisId, packetSummary?.TransactionId, ex.Message);
             }
         }
     }
