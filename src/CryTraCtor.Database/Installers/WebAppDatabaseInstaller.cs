@@ -27,9 +27,9 @@ public class WebAppDatabaseInstaller : IInstaller
             .AddSingleton<IEntityMapper<KnownDomainEntity>, KnownDomainEntityMapper>()
             .AddSingleton<IEntityMapper<TrafficParticipantEntity>, TrafficParticipantEntityMapper>()
             .AddSingleton<IEntityMapper<FileAnalysisEntity>, FileAnalysisEntityMapper>()
-            .AddSingleton<IEntityMapper<DnsPacketEntity>, DnsPacketEntityMapper>();
+            .AddSingleton<IEntityMapper<DnsPacketEntity>, DnsPacketEntityMapper>(); // Concrete type registration removed
 
         serviceCollection
-            .AddScoped<IStoredFileRepository, StoredFileRepository>();
+            .AddScoped<IStoredFileRepository, StoredFileRepository>(); // IDnsPacketRepository registration removed
     }
 }

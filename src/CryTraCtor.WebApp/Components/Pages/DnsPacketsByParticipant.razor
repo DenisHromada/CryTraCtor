@@ -1,0 +1,154 @@
+@page "/files/{fileId:guid}/file-analysis/{fileAnalysisId:guid}/traffic-participants/{participantId:guid}/dns"
+
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models
+
+@using CryTraCtor.Business.Models.TrafficParticipants
+
+@inject IDnsPacketFacade DnsPacketFacade
+@inject ITrafficParticipantFacade TrafficParticipantFacade
+@inject ISnackbar Snackbar
+
+<h3>DNS Packets for Participant @(_participant?.Address):@(_participant?.Port)</h3>
+
+<h4>DNS Transactions</h4>
+<MudDataGrid Items="@_dnsTransactions" Dense="true" Striped="true" Bordered="true">
+    <Columns>
+        <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+        <PropertyColumn Property="x => x.TransactionId" Title="Transaction ID"/>
+        <PropertyColumn Property="x => x.QueryName" Title="Query Name"/>
+        <PropertyColumn Property="x => x.QueryType" Title="Query Type"/>
+        <PropertyColumn Property="x => x.ResponseAddresses" Title="Response Addresses"/>
+        <PropertyColumn Property="x => x.Client.Address" Title="Client Address"/>
+        <PropertyColumn Property="x => x.Client.Port" Title="Client Port"/>
+        <PropertyColumn Property="x => x.Resolver.Address" Title="Resolver Address"/>
+        <PropertyColumn Property="x => x.Resolver.Port" Title="Resolver Port"/>
+    </Columns>
+</MudDataGrid>
+
+@if (_dnsQueries.Any())
+{
+    <h4>Unpaired DNS Queries</h4>
+    <MudDataGrid Items="@_dnsQueries" Dense="true" Striped="true" Bordered="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+            <PropertyColumn Property="x => x.TransactionId" Title="Transaction ID"/>
+            <PropertyColumn Property="x => x.QueryName" Title="Query Name"/>
+            <PropertyColumn Property="x => x.QueryType" Title="Query Type"/>
+            <PropertyColumn Property="x => x.Sender.Address" Title="Sender Address"/>
+            <PropertyColumn Property="x => x.Sender.Port" Title="Sender Port"/>
+            <PropertyColumn Property="x => x.Recipient.Address" Title="Recipient Address"/>
+            <PropertyColumn Property="x => x.Recipient.Port" Title="Recipient Port"/>
+        </Columns>
+    </MudDataGrid>
+}
+
+@if (_dnsResponses.Any())
+{
+    <h4>Unpaired DNS Responses</h4>
+    <MudDataGrid Items="@_dnsResponses" Dense="true" Striped="true" Bordered="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+            <PropertyColumn Property="x => x.TransactionId" Title="Transaction ID"/>
+            <PropertyColumn Property="x => x.QueryName" Title="Query Name"/>
+            <PropertyColumn Property="x => x.QueryType" Title="Query Type"/>
+            <PropertyColumn Property="x => x.ResponseAddresses" Title="Response Addresses"/>
+            <PropertyColumn Property="x => x.Sender.Address" Title="Sender Address"/>
+            <PropertyColumn Property="x => x.Sender.Port" Title="Sender Port"/>
+            <PropertyColumn Property="x => x.Recipient.Address" Title="Recipient Address"/>
+            <PropertyColumn Property="x => x.Recipient.Port" Title="Recipient Port"/>
+        </Columns>
+    </MudDataGrid>
+}
+
+@code {
+
+    private record DnsTransactionDisplayModel(
+        DateTime Timestamp,
+        ushort TransactionId,
+        string QueryName,
+        string QueryType,
+        string ResponseAddresses,
+        TrafficParticipantListModel Client,
+        TrafficParticipantListModel Resolver);
+
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Guid FileAnalysisId { get; set; }
+    [Parameter] public Guid ParticipantId { get; set; }
+
+    private TrafficParticipantDetailModel? _participant;
+    private List<DnsPacketModel> _allDnsPackets = [];
+    private List<DnsPacketModel> _dnsQueries = [];
+    private List<DnsPacketModel> _dnsResponses = [];
+    private List<DnsTransactionDisplayModel> _dnsTransactions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (RendererInfo.IsInteractive)
+        {
+            await LoadDnsPacketsAsync();
+        }
+    }
+
+    private async Task LoadDnsPacketsAsync()
+    {
+        try
+        {
+            _participant = await TrafficParticipantFacade.GetAsync(ParticipantId);
+            if (_participant == null)
+            {
+                Snackbar.Add($"Participant with ID {ParticipantId} not found.", Severity.Error);
+                return;
+            }
+
+            _allDnsPackets = (await DnsPacketFacade.GetByFileAnalysisIdAsync(FileAnalysisId)).ToList();
+
+            var groupedByTransaction = _allDnsPackets.GroupBy(p => p.TransactionId).ToList();
+            var transactionPackets = new HashSet<Guid>();
+            _dnsTransactions = new();
+
+            foreach (var group in groupedByTransaction)
+            {
+                var packetsInGroup = group.ToList();
+                if (packetsInGroup.Count == 2)
+                {
+                    var query = packetsInGroup.FirstOrDefault(p => p.IsQuery);
+                    var response = packetsInGroup.FirstOrDefault(p => !p.IsQuery);
+
+
+                    if (query != null && response != null &&
+                        query.SenderId == response.RecipientId &&
+                        query.RecipientId == response.SenderId &&
+                        query.Sender != null && query.Recipient != null)
+                    {
+                        _dnsTransactions.Add(new DnsTransactionDisplayModel(
+                            query.Timestamp,
+                            query.TransactionId,
+                            query.QueryName,
+                            query.QueryType,
+                            response.ResponseAddresses,
+                            query.Sender,
+                            query.Recipient
+                        ));
+                        transactionPackets.Add(query.Id);
+                        transactionPackets.Add(response.Id);
+                    }
+                }
+            }
+
+            var remainingPackets = _allDnsPackets.Where(p => !transactionPackets.Contains(p.Id)).ToList();
+            _dnsQueries = remainingPackets.Where(p => p.IsQuery).ToList();
+            _dnsResponses = remainingPackets.Where(p => !p.IsQuery).ToList();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
+            _participant = null;
+            _allDnsPackets = [];
+            _dnsQueries = [];
+            _dnsResponses = [];
+            _dnsTransactions = [];
+        }
+    }
+
+}

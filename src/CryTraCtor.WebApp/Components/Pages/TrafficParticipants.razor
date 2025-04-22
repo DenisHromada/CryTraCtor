@@ -5,10 +5,12 @@
 
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 <h3>Traffic Participants</h3>
 
-<MudDataGrid Items="@_trafficParticipants">
+<MudDataGrid Items="@_trafficParticipants" Hover="true" RowClass="cursor-pointer" T="TrafficParticipantListModel"
+             RowClick="@RowClicked">
     <Columns>
         <PropertyColumn Property="x => x.Address" Title="Address"/>
         <PropertyColumn Property="x => x.Port" Title="Port"/>
@@ -39,6 +41,11 @@
             Snackbar.Add($"Error loading traffic participants: {ex.Message}", Severity.Error);
             _trafficParticipants = new();
         }
+    }
+
+    private void RowClicked(DataGridRowClickEventArgs<TrafficParticipantListModel> args)
+    {
+        NavigationManager.NavigateTo($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{args.Item.Id}/dns");
     }
 
 }

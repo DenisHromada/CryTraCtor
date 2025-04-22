@@ -36,7 +36,11 @@ public class DnsPacketModelMapper(
             QueryType = entity.QueryType,
             IsQuery = entity.IsQuery,
             ResponseAddresses = entity.ResponseAddresses,
-            FileAnalysisId = entity.FileAnalysisId
+            FileAnalysisId = entity.FileAnalysisId,
+            Sender = entity.Sender == null ? null : trafficParticipantListModelMapper.MapToListModel(entity.Sender),
+            Recipient = entity.Recipient == null
+                ? null
+                : trafficParticipantListModelMapper.MapToListModel(entity.Recipient)
         };
 
     public override DnsPacketModel MapToDetailModel(DnsPacketEntity entity)
