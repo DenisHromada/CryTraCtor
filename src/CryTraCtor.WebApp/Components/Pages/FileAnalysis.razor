@@ -18,18 +18,25 @@
     </MudButton>
 </MudPaper>
 
-<MudDataGrid Items="@_fileAnalysisEntries" Hover="true" RowClass="cursor-pointer" T="FileAnalysisListModel"
+<MudDataGrid Items="@_elements" Hover="true" RowClass="cursor-pointer" T="FileAnalysisListModel"
              RowClick="@RowClicked">
     <Columns>
         <PropertyColumn Property="x => x.Id" Title="Id"/>
         <PropertyColumn Property="x => x.Name" Title="Name"/>
         <PropertyColumn Property="x => x.CreatedAt" Title="Created At"/>
+        <TemplateColumn>
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                               Color="Color.Error"
+                               OnClick="@(() => DeleteFileAnalysis(context.Item?.Id))"/>
+            </CellTemplate>
+        </TemplateColumn>
     </Columns>
 </MudDataGrid>
 
 @code {
     [Parameter] public Guid StoredFileId { get; set; }
-    private List<FileAnalysisListModel> _fileAnalysisEntries = new();
+    private List<FileAnalysisListModel> _elements = new();
     private bool _isAnalyzing = false;
 
     protected override async Task OnInitializedAsync()
@@ -41,12 +48,12 @@
     {
         try
         {
-            _fileAnalysisEntries = (await FileAnalysisFacade.GetByStoredFileIdAsync(StoredFileId)).ToList();
+            _elements = (await FileAnalysisFacade.GetByStoredFileIdAsync(StoredFileId)).ToList();
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Error loading analyses: {ex.Message}", Severity.Error);
-            _fileAnalysisEntries = [];
+            _elements = [];
         }
     }
 
@@ -70,6 +77,18 @@
             _isAnalyzing = false;
             StateHasChanged();
         }
+    }
+
+    private async Task DeleteFileAnalysis(Guid? id)
+    {
+        if (id is null)
+        {
+            return;
+        }
+
+        await FileAnalysisFacade.DeleteAsync((Guid)id);
+        _elements = (await FileAnalysisFacade.GetAllAsync()).ToList();
+        Snackbar.Add($"Analysis deleted successfully", Severity.Success);
     }
 
     private void RowClicked(DataGridRowClickEventArgs<FileAnalysisListModel> args)
