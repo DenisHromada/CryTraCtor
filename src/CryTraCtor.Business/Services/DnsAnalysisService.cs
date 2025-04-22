@@ -1,5 +1,6 @@
 using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Models;
+using CryTraCtor.Business.Models.StoredFiles;
 using CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 using CryTraCtor.Packet.Services;
 using Microsoft.Extensions.Logging;
@@ -7,20 +8,18 @@ using Microsoft.Extensions.Logging;
 namespace CryTraCtor.Business.Services;
 
 public class DnsAnalysisService(
-    IStoredFileFacade storedFileFacade,
     DnsPacketReader dnsPacketReader,
     IDnsPacketFacade dnsPacketFacade,
     ILogger<DnsAnalysisService> logger)
 {
-    public async Task AnalyzeDnsPacketsAsync(Guid fileAnalysisId, Guid storedFileId)
+    public async Task AnalyzeAsync(StoredFileDetailModel storedFile, Guid fileAnalysisId)
     {
-        var fileMetadata = await storedFileFacade.GetByIdAsync(storedFileId);
-        if (fileMetadata == null || string.IsNullOrEmpty(fileMetadata.InternalFilePath))
+        if (string.IsNullOrEmpty(storedFile.InternalFilePath))
         {
-            logger.LogError("[DnsAnalysisService] Stored file metadata not found or internal path missing for ID: {StoredFileId}. Skipping DNS analysis for FileAnalysisId: {FileAnalysisId}", storedFileId, fileAnalysisId);
+            logger.LogError("[DnsAnalysisService] Stored file internal path missing for ID: {StoredFileId}. Skipping DNS analysis for FileAnalysisId: {FileAnalysisId}", storedFile.Id, fileAnalysisId);
             return;
         }
-        var internalFilePath = fileMetadata.InternalFilePath;
+        var internalFilePath = storedFile.InternalFilePath;
 
         IEnumerable<IDnsPacketSummary> dnsPackets;
         try
