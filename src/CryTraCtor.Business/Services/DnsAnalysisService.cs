@@ -10,15 +10,19 @@ namespace CryTraCtor.Business.Services;
 public class DnsAnalysisService(
     DnsPacketReader dnsPacketReader,
     IDnsPacketFacade dnsPacketFacade,
+    ITrafficParticipantFacade trafficParticipantFacade,
     ILogger<DnsAnalysisService> logger)
 {
     public async Task AnalyzeAsync(StoredFileDetailModel storedFile, Guid fileAnalysisId)
     {
         if (string.IsNullOrEmpty(storedFile.InternalFilePath))
         {
-            logger.LogError("[DnsAnalysisService] Stored file internal path missing for ID: {StoredFileId}. Skipping DNS analysis for FileAnalysisId: {FileAnalysisId}", storedFile.Id, fileAnalysisId);
+            logger.LogError(
+                "[DnsAnalysisService] Stored file internal path missing for ID: {StoredFileId}. Skipping DNS analysis for FileAnalysisId: {FileAnalysisId}",
+                storedFile.Id, fileAnalysisId);
             return;
         }
+
         var internalFilePath = storedFile.InternalFilePath;
 
         IEnumerable<IDnsPacketSummary> dnsPackets;
@@ -28,9 +32,18 @@ public class DnsAnalysisService(
         }
         catch (Exception ex)
         {
-             logger.LogError(ex, "[DnsAnalysisService] Error reading DNS packets from {InternalFilePath} for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}", internalFilePath, fileAnalysisId, ex.Message);
-             return;
+            logger.LogError(ex,
+                "[DnsAnalysisService] Error reading DNS packets from {InternalFilePath} for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}",
+                internalFilePath, fileAnalysisId, ex.Message);
+            return;
         }
+
+
+        var participants = await trafficParticipantFacade.GetByFileAnalysisIdAsync(fileAnalysisId);
+        var participantLookup = participants.ToDictionary(
+            p => $"{p.Address}:{p.Port}",
+            p => p
+        );
 
         foreach (var packetSummary in dnsPackets)
         {
@@ -38,14 +51,30 @@ public class DnsAnalysisService(
 
             try
             {
+                var sourceKey = $"{packetSummary.Source.Address}:{packetSummary.Source.Port}";
+                var destinationKey = $"{packetSummary.Destination.Address}:{packetSummary.Destination.Port}";
+
+                participantLookup.TryGetValue(sourceKey, out var sender);
+                participantLookup.TryGetValue(destinationKey, out var recipient);
+
+                if (sender == null || recipient == null)
+                {
+                    logger.LogWarning(
+                        "[DnsAnalysisService] Could not find sender ({SourceKey}) or recipient ({DestinationKey}) participant in lookup for FileAnalysisId: {FileAnalysisId}. Skipping DNS packet TxId: {TransactionId}",
+                        sourceKey, destinationKey, fileAnalysisId, packetSummary?.TransactionId);
+                    continue;
+                }
+
                 if (packetSummary is DnsPacketQuery query)
                 {
-                    if (query.Query != null && (query.Query.RecordType == "A" || query.Query.RecordType == "AAAA"))
+                    if (query.Query is { RecordType: "A" or "AAAA" })
                     {
                         dnsPacketModel = new DnsPacketModel
                         {
                             Id = Guid.NewGuid(),
                             FileAnalysisId = fileAnalysisId,
+                            SenderId = sender.Id,
+                            RecipientId = recipient.Id,
                             Timestamp = DateTime.UtcNow,
                             TransactionId = (ushort)query.TransactionId,
                             IsQuery = true,
@@ -57,10 +86,12 @@ public class DnsAnalysisService(
                 }
                 else if (packetSummary is DnsPacketResponse response)
                 {
-                    if (response.Query != null && (response.Query.RecordType == "A" || response.Query.RecordType == "AAAA"))
+                    if (response.Query != null &&
+                        response.Query.RecordType is "A" or "AAAA")
                     {
                         var addresses = response.Answers
-                            .Where(a => (a.RecordType == "A" || a.RecordType == "AAAA") && !string.IsNullOrEmpty(a.RecordData))
+                            .Where(a => a.RecordType is "A" or "AAAA" &&
+                                        !string.IsNullOrEmpty(a.RecordData))
                             .Select(a => a.RecordData)
                             .ToList();
 
@@ -70,6 +101,8 @@ public class DnsAnalysisService(
                             {
                                 Id = Guid.NewGuid(),
                                 FileAnalysisId = fileAnalysisId,
+                                SenderId = sender.Id,
+                                RecipientId = recipient.Id,
                                 Timestamp = DateTime.UtcNow,
                                 TransactionId = (ushort)response.TransactionId,
                                 IsQuery = false,
@@ -88,7 +121,9 @@ public class DnsAnalysisService(
             }
             catch (Exception ex)
             {
-                 logger.LogError(ex, "[DnsAnalysisService] Error processing DNS packet for FileAnalysisId: {FileAnalysisId}. TxId: {TransactionId}. Error: {ErrorMessage}", fileAnalysisId, packetSummary?.TransactionId, ex.Message);
+                logger.LogError(ex,
+                    "[DnsAnalysisService] Error processing DNS packet for FileAnalysisId: {FileAnalysisId}. TxId: {TransactionId}. Error: {ErrorMessage}",
+                    fileAnalysisId, packetSummary?.TransactionId, ex.Message);
             }
         }
     }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.Entities;
@@ -12,4 +13,10 @@ public class TrafficParticipantEntity : IEntity
 
     public Guid FileAnalysisId { get; set; }
     public FileAnalysisEntity? FileAnalysis { get; set; }
+
+    [InverseProperty(nameof(DnsPacketEntity.Sender))]
+    public ICollection<DnsPacketEntity>? SentDnsPackets { get; set; } = new List<DnsPacketEntity>();
+
+    [InverseProperty(nameof(DnsPacketEntity.Recipient))]
+    public ICollection<DnsPacketEntity>? ReceivedDnsPackets { get; set; } = new List<DnsPacketEntity>();
 }
