@@ -6,10 +6,11 @@ namespace CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 public record DnsPacketResponse(
     InternetEndpointModel Source,
     InternetEndpointModel Destination,
+    DateTime Timestamp,
     uint TransactionId,
     DnsResourceRecordModel Query,
     Collection<DnsResourceRecordModel> Answers
-) : DnsPacketSummary(Source, Destination, DnsMessageType.Response, TransactionId)
+) : DnsPacketSummary(Source, Destination, Timestamp, DnsMessageType.Response, TransactionId)
 {
     public override string GetSerializedPacketString()
     {

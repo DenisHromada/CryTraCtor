@@ -5,9 +5,10 @@ namespace CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 public record DnsPacketQuery(
     InternetEndpointModel Source,
     InternetEndpointModel Destination,
+    DateTime Timestamp,
     uint TransactionId,
     DnsResourceRecordModel Query
-) : DnsPacketSummary(Source, Destination, DnsMessageType.Query, TransactionId)
+) : DnsPacketSummary(Source, Destination, Timestamp, DnsMessageType.Query, TransactionId)
 {
     public override string GetSerializedPacketString()
     {

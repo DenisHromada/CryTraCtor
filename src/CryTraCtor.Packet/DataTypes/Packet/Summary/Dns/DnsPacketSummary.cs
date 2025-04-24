@@ -5,6 +5,7 @@ namespace CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 public abstract record DnsPacketSummary(
     InternetEndpointModel Source,
     InternetEndpointModel Destination,
+    DateTime Timestamp,
     DnsMessageType MessageType,
     uint TransactionId
 ) : PacketSummary(Source, Destination), IDnsPacketSummary

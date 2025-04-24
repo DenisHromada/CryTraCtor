@@ -2,6 +2,7 @@
 
 public interface IDnsPacketSummary : IPacketSummary
 {
+    public DateTime Timestamp { get; }
     public DnsMessageType MessageType { get; }
     public uint TransactionId { get; }
 }

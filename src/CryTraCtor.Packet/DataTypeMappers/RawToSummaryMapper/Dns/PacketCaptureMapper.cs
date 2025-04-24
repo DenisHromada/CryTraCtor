@@ -18,6 +18,7 @@ public static class PacketCaptureMapper
         }
 
         var ipPacket = (PacketDotNet.IPPacket)udpPacket.ParentPacket;
+        var timestamp = packetCapture.Header.Timeval.Date;
 
         var dnsPacket = new DnsPayloadWrapper(udpPacket.PayloadData);
 
@@ -25,7 +26,7 @@ public static class PacketCaptureMapper
             ipPacket.SourceAddress.ToString(),
             udpPacket.SourcePort
         );
-        
+
         var destination = new InternetEndpointModel(
             ipPacket.DestinationAddress.ToString(),
             udpPacket.DestinationPort
@@ -37,12 +38,14 @@ public static class PacketCaptureMapper
             DnsMessageType.Query => new DnsPacketQuery(
                 source,
                 destination,
+                timestamp,
                 dnsPacket.GetTransactionId(),
                 dnsPacket.GetQuery()
             ),
             DnsMessageType.Response => new DnsPacketResponse(
                 source,
                 destination,
+                timestamp,
                 dnsPacket.GetTransactionId(),
                 dnsPacket.GetQuery(),
                 dnsPacket.GetAnswers()
