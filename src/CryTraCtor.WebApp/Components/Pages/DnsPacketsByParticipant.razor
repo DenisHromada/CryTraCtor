@@ -4,10 +4,12 @@
 @using CryTraCtor.Business.Models
 
 @using CryTraCtor.Business.Models.TrafficParticipants
+@using CryTraCtor.WebApp.Services
 
 @inject IDnsPacketFacade DnsPacketFacade
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
+@inject IBreadcrumbService BreadcrumbService
 
 <h3>DNS Packets for Participant @(_participant?.Address):@(_participant?.Port)</h3>
 
@@ -84,6 +86,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Files", href: "/files"),
+            new BreadcrumbItem("File Analysis", href: $"/files/{FileId}/file-analysis"),
+            new BreadcrumbItem("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
+            new BreadcrumbItem("DNS Packets", href: null, disabled: true)
+        };
+        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+
         if (RendererInfo.IsInteractive)
         {
             await LoadDnsPacketsAsync();

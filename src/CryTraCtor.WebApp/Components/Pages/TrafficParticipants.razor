@@ -2,10 +2,12 @@
 
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.TrafficParticipants
+@using CryTraCtor.WebApp.Services
 
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
+@inject IBreadcrumbService BreadcrumbService
 
 <h3>Traffic Participants</h3>
 
@@ -26,6 +28,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Files", href: "/files"),
+            new BreadcrumbItem("File Analysis", href: $"/files/{FileId}/file-analysis"),
+            new BreadcrumbItem("Traffic Participants", href: null, disabled: true)
+        };
+        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+
         if (RendererInfo.IsInteractive)
         {
             await LoadTrafficParticipantsAsync();

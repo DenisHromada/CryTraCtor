@@ -1,8 +1,10 @@
 @page "/crypto-products"
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.CryptoProduct
+@using CryTraCtor.WebApp.Services
 @inject ICryptoProductFacade CryptoProductFacade
 @inject ISnackbar Snackbar
+@inject IBreadcrumbService BreadcrumbService
 
 <PageTitle>Cryptocurrency Products</PageTitle>
 
@@ -29,6 +31,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Crypto Products", href: "/crypto-products", disabled: true)
+        };
+        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+
         await LoadDataAsync();
     }
 

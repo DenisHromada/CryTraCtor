@@ -1,8 +1,10 @@
 @page "/status"
 @using Microsoft.EntityFrameworkCore
 @using CryTraCtor.Database
+@using CryTraCtor.WebApp.Services
 @inject IDbContextFactory<CryTraCtorDbContext> DbContextFactory
 @inject ILogger<Status> Logger
+@inject IBreadcrumbService BreadcrumbService
 
 <PageTitle>Application Status</PageTitle>
 
@@ -51,6 +53,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Status", href: "/status", disabled: true) // Current page
+        };
+        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+
         await CheckDatabaseConnection();
     }
 

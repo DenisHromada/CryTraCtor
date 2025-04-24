@@ -4,10 +4,12 @@
 @using CryTraCtor.Business.Models.StoredFiles
 @using CryTraCtor.WebApp.Options
 @using Microsoft.Extensions.Options
+@using CryTraCtor.WebApp.Services
 @inject IStoredFileFacade StoredFileFacade
 @inject ISnackbar Snackbar
 @inject IOptions<FileUploadOptions> FileUploadOptions
 @inject NavigationManager NavigationManager
+@inject IBreadcrumbService BreadcrumbService
 
 <h3>Files</h3>
 
@@ -52,6 +54,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Files", href: "/files", disabled: true)
+        };
+        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+
         if (RendererInfo.IsInteractive)
         {
             _elements = await StoredFileFacade.GetAllAsync();

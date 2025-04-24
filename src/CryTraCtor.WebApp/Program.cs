@@ -6,6 +6,7 @@ using MudBlazor.Services;
 using CryTraCtor.WebApp.Components;
 using CryTraCtor.WebApp.Installers;
 using Serilog;
+using CryTraCtor.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddInstaller<WebAppPacketInstaller>();
 builder.Services.AddInstaller<WebAppDatabaseInstaller>();
 builder.Services.AddInstaller<WebAppBusinessInstaller>();
 builder.Services.AddInstaller<WebAppOptionsInstaller>();
+builder.Services.AddInstaller<WebAppServicesInstaller>();
 
 builder.Host.UseSerilog((context, services, loggerConfiguration) =>
 {

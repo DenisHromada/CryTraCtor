@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using CryTraCtor.WebApp.Services
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject IBreadcrumbService BreadcrumbService
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
 <MudPopoverProvider/>
@@ -17,6 +20,7 @@
         <NavMenu/>
     </MudDrawer>
     <MudMainContent Class="mt-16 pa-4">
+        <MudBreadcrumbs Items="@BreadcrumbService.Items" Class="mb-4"/>
         @Body
     </MudMainContent>
 </MudLayout>
@@ -36,6 +40,8 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
+        BreadcrumbService.OnBreadcrumbsChanged += HandleBreadcrumbsChanged;
 
         _theme = new()
         {
@@ -100,4 +106,13 @@
         false => Icons.Material.Outlined.DarkMode,
     };
 
+    private void HandleBreadcrumbsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        BreadcrumbService.OnBreadcrumbsChanged -= HandleBreadcrumbsChanged;
+    }
 }
