@@ -5,6 +5,7 @@ using CryTraCtor.Business.Mappers.CryptoProduct;
 using CryTraCtor.Business.Mappers.FileAnalysis;
 using CryTraCtor.Business.Mappers.KnownDomain;
 using CryTraCtor.Business.Mappers.TrafficParticipant;
+using CryTraCtor.Business.Mappers.DomainMatch;
 using CryTraCtor.Business.Services;
 using CryTraCtor.Common.Installers;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,8 @@ public class WebAppBusinessInstaller : IInstaller
             .AddSingleton<TrafficParticipantModelMapper>()
             .AddSingleton<FileAnalysisListModelMapper>()
             .AddSingleton<FileAnalysisModelMapper>()
-            .AddSingleton<DnsPacketModelMapper>();
+            .AddSingleton<DnsPacketModelMapper>()
+            .AddSingleton<DomainMatchMapper>();
 
         serviceCollection
             .AddScoped<IStoredFileFacade, StoredFileFacade>()
@@ -35,7 +37,8 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<IKnownDomainImportFacade, KnownDomainImportFacade>()
             .AddScoped<ITrafficParticipantFacade, TrafficParticipantFacade>()
             .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>()
-            .AddScoped<IDnsPacketFacade, DnsPacketFacade>();
+            .AddScoped<IDnsPacketFacade, DnsPacketFacade>()
+            .AddScoped<IDomainMatchFacade, DomainMatchFacade>();
 
         serviceCollection
             .AddScoped<DnsAnalysisService>()
@@ -44,6 +47,7 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<DomainDetector>()
             .AddScoped<KnownDomainFilter>()
             .AddScoped<DnsTransactionSummaryModelFormatter>()
-            .AddScoped<CsvService>();
+            .AddScoped<CsvService>()
+            .AddScoped<DomainMatchAssociationService>();
     }
 }

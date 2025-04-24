@@ -11,6 +11,7 @@ public class DnsAnalysisService(
     DnsPacketReader dnsPacketReader,
     IDnsPacketFacade dnsPacketFacade,
     ITrafficParticipantFacade trafficParticipantFacade,
+    DomainMatchAssociationService domainMatchAssociationService,
     ILogger<DnsAnalysisService> logger)
 {
     public async Task AnalyzeAsync(StoredFileDetailModel storedFile, Guid fileAnalysisId)
@@ -125,6 +126,23 @@ public class DnsAnalysisService(
                     "[DnsAnalysisService] Error processing DNS packet for FileAnalysisId: {FileAnalysisId}. TxId: {TransactionId}. Error: {ErrorMessage}",
                     fileAnalysisId, packetSummary?.TransactionId, ex.Message);
             }
+        }
+
+        try
+        {
+            logger.LogInformation(
+                "[DnsAnalysisService] Starting domain association for FileAnalysisId: {FileAnalysisId}",
+                fileAnalysisId);
+            await domainMatchAssociationService.AnalyseAsync(fileAnalysisId);
+            logger.LogInformation(
+                "[DnsAnalysisService] Completed domain association for FileAnalysisId: {FileAnalysisId}",
+                fileAnalysisId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,
+                "[DnsAnalysisService] Error during domain association for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}",
+                fileAnalysisId, ex.Message);
         }
     }
 }

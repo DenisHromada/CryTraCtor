@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿using CryTraCtor.Common.Installers;
+﻿using CryTraCtor.Common.Installers;
 using CryTraCtor.Database.Entities;
 using CryTraCtor.Database.Factories;
 using CryTraCtor.Database.Mappers;
@@ -31,6 +31,7 @@ public class WebAppDatabaseInstaller : IInstaller
 
         serviceCollection
             .AddScoped<IStoredFileRepository, StoredFileRepository>()
+            .AddScoped<IDomainMatchRepository, DomainMatchRepository>()
             .AddScoped<TrafficParticipantAggregateRepository>();
     }
 }
