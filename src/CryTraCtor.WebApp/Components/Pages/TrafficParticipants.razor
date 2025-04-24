@@ -6,18 +6,33 @@
 
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
-@inject NavigationManager NavigationManager
 @inject IBreadcrumbService BreadcrumbService
 
 <h3>Traffic Participants</h3>
 
-<MudDataGrid Items="@_trafficParticipants" Hover="true" RowClass="cursor-pointer" T="TrafficParticipantListModel"
-             RowClick="@RowClicked">
+<MudDataGrid Items="@_trafficParticipants" Hover="true"
+             T="TrafficParticipantListModel">
     <Columns>
         <PropertyColumn Property="x => x.Address" Title="Address"/>
         <PropertyColumn Property="x => x.Port" Title="Port"/>
         <PropertyColumn Property="x => x.OutgoingDnsCount" Title="Outgoing DNS"/>
         <PropertyColumn Property="x => x.IncomingDnsCount" Title="Incoming DNS"/>
+        <PropertyColumn Property="x => x.UniqueMatchedKnownDomainCount"
+                        Title="Unique Matched Domains"/>
+        <PropertyColumn Property="x => x.TotalMatchedKnownDomainCount"
+                        Title="Total Matched Domains"/>
+        <TemplateColumn Title="Actions">
+            <CellTemplate>
+                <MudTooltip Text="View DNS Overview">
+                    <MudIconButton Icon="@Icons.Material.Filled.Dns" Size="Size.Small" Color="Color.Primary"
+                                   Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{context.Item.Id}/dns")"/>
+                </MudTooltip>
+                <MudTooltip Text="View Known Domains Summary">
+                    <MudIconButton Icon="@Icons.Material.Filled.ListAlt" Size="Size.Small" Color="Color.Primary"
+                                   Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{context.Item.Id}/known-domains")"/>
+                </MudTooltip>
+            </CellTemplate>
+        </TemplateColumn>
     </Columns>
 </MudDataGrid>
 
@@ -53,11 +68,6 @@
             Snackbar.Add($"Error loading traffic participants: {ex.Message}", Severity.Error);
             _trafficParticipants = new();
         }
-    }
-
-    private void RowClicked(DataGridRowClickEventArgs<TrafficParticipantListModel> args)
-    {
-        NavigationManager.NavigateTo($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{args.Item.Id}/dns");
     }
 
 }

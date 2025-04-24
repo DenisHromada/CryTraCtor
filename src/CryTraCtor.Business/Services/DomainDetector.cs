@@ -8,13 +8,20 @@ namespace CryTraCtor.Business.Services;
 public class DomainDetector(
     IStoredFileFacade storedFileFacade,
     DnsTransactionExtractor dnsTransactionExtractor
-    )
+)
 {
     public async Task<Collection<DnsTransactionSummaryModel>> AnalyzeAsync(string fileName)
     {
-        var internalFilePath = (await storedFileFacade.GetFileMetadataAsync(fileName)).InternalFilePath;
+        var fileMetadata = await storedFileFacade.GetFileMetadataAsync(fileName);
+        if (fileMetadata == null)
+        {
+            Console.WriteLine(
+                $"Warning: Could not find file metadata for '{fileName}' in DomainDetector.AnalyzeAsync.");
+            return [];
+        }
+
+        var internalFilePath = fileMetadata.InternalFilePath;
         var dnsTransactions = dnsTransactionExtractor.Run(internalFilePath);
         return dnsTransactions;
     }
-
 }

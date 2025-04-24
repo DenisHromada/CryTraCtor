@@ -8,4 +8,6 @@ public class TrafficParticipantAggregateDto
     public required Guid FileAnalysisId { get; set; }
     public int OutgoingDnsCount { get; set; }
     public int IncomingDnsCount { get; set; }
+    public int UniqueMatchedKnownDomainCount { get; set; }
+    public int TotalMatchedKnownDomainCount { get; set; }
 }

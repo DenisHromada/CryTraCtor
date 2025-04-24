@@ -8,6 +8,8 @@ public class TrafficParticipantListModel : IModel
     public Guid FileAnalysisId { get; set; }
     public int OutgoingDnsCount { get; set; }
     public int IncomingDnsCount { get; set; }
+    public int UniqueMatchedKnownDomainCount { get; set; }
+    public int TotalMatchedKnownDomainCount { get; set; }
 
     public static TrafficParticipantListModel Empty() => new();
 }

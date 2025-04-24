@@ -1,0 +1,109 @@
+@page "/files/{FileId:guid}/file-analysis/{FileAnalysisId:guid}/traffic-participants/{TrafficParticipantId:guid}/known-domains"
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models.Agregates
+@inject ITrafficParticipantFacade TrafficParticipantFacade
+@using CryTraCtor.WebApp.Services
+@inject IBreadcrumbService BreadcrumbService
+
+<PageTitle>Known Domains for Traffic Participant</PageTitle>
+
+<MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="mb-4">
+    <MudButton StartIcon="@Icons.Material.Filled.Dns"
+               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{TrafficParticipantId}/dns")">
+        DNS Overview
+    </MudButton>
+    <MudButton StartIcon="@Icons.Material.Filled.ListAlt" Disabled="true">Known Domains Summary</MudButton>
+</MudButtonGroup>
+
+<h1>Known Domains Summary</h1>
+
+@if (_isLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else if (_summary == null)
+{
+    <p><em>Could not load summary data for the specified traffic participant.</em></p>
+}
+else
+{
+    <h2>Participant: @_summary.TrafficParticipantName</h2>
+
+    @if (!_summary.ProductSummaries.Any())
+    {
+        <p><em>No known domain matches found for this participant.</em></p>
+    }
+    else
+    {
+        <MudStack Spacing="4">
+            @foreach (var productSummary in _summary.ProductSummaries.OrderBy(p => p.ProductName))
+            {
+                <MudPaper Class="pa-4" Elevation="2">
+                    <MudText Typo="Typo.h6" GutterBottom="true">Product: @productSummary.ProductName</MudText>
+                    @if (!productSummary.PurposeSummaries.Any())
+                    {
+                        <MudText><em>No specific purposes found for this product.</em></MudText>
+                    }
+                    else
+                    {
+                        <MudDataGrid Items="@productSummary.PurposeSummaries.OrderBy(p => p.Purpose).ToList()"
+                                     T="PurposeDomainSummary" Dense="true"
+                                     Striped="true" Bordered="true" Hover="true">
+                            <Columns>
+                                <PropertyColumn Property="x => x.Purpose" Title="Purpose"/>
+                                <PropertyColumn Property="x => x.TotalUniqueDomains" Title="Total Unique Domains"/>
+                                <TemplateColumn Title="Exact Matches">
+                                    <CellTemplate>
+                                        @context.Item.UniqueExactMatchCount (@context.Item.TotalExactMatchCount)
+                                    </CellTemplate>
+                                </TemplateColumn>
+                                <TemplateColumn Title="Subdomain Matches">
+                                    <CellTemplate>
+                                        @context.Item.UniqueSubdomainMatchCount (@context.Item.TotalSubdomainMatchCount)
+                                    </CellTemplate>
+                                </TemplateColumn>
+                            </Columns>
+                        </MudDataGrid>
+                    }
+                </MudPaper>
+            }
+        </MudStack>
+    }
+}
+
+@code {
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Guid FileAnalysisId { get; set; }
+    [Parameter] public Guid TrafficParticipantId { get; set; }
+
+    private TrafficParticipantKnownDomainSummaryModel? _summary;
+    private bool _isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+
+        var breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Files", href: "/files"),
+            new BreadcrumbItem("File Analysis", href: $"/files/{FileId}/file-analysis"),
+            new BreadcrumbItem("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
+            new BreadcrumbItem("Known Domains", href: null, disabled: true)
+        };
+        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+
+        try
+        {
+            _summary = await TrafficParticipantFacade.GetKnownDomainSummaryAsync(TrafficParticipantId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading known domain summary: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+}
