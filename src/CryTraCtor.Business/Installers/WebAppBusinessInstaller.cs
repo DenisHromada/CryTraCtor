@@ -44,9 +44,6 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<DnsAnalysisService>()
             .AddScoped<FileAnalysisService>()
             .AddScoped<EndpointAnalysisService>()
-            .AddScoped<DomainDetector>()
-            .AddScoped<KnownDomainFilter>()
-            .AddScoped<DnsTransactionSummaryModelFormatter>()
             .AddScoped<CsvService>()
             .AddScoped<DomainMatchAssociationService>();
     }
