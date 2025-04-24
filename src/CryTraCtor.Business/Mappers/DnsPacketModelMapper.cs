@@ -24,8 +24,14 @@ public class DnsPacketModelMapper(
             FileAnalysisId = model.FileAnalysisId,
         };
 
-    public override DnsPacketModel MapToListModel(DnsPacketEntity entity)
-        => new()
+    public override DnsPacketModel MapToListModel(DnsPacketEntity? entity)
+    {
+        if (entity == null)
+        {
+            return null;
+        }
+
+        return new DnsPacketModel
         {
             Id = entity.Id,
             SenderId = entity.SenderId,
@@ -40,25 +46,10 @@ public class DnsPacketModelMapper(
             Sender = entity.Sender == null ? null : trafficParticipantListModelMapper.MapToListModel(entity.Sender),
             Recipient = entity.Recipient == null
                 ? null
-                : trafficParticipantListModelMapper.MapToListModel(entity.Recipient)
-        };
-
-    public override DnsPacketModel MapToDetailModel(DnsPacketEntity entity)
-        => new()
-        {
-            Id = entity.Id,
-            SenderId = entity.SenderId,
-            RecipientId = entity.RecipientId,
-            Sender = entity.Sender == null ? null : trafficParticipantListModelMapper.MapToListModel(entity.Sender),
-            Recipient = entity.Recipient == null
-                ? null
                 : trafficParticipantListModelMapper.MapToListModel(entity.Recipient),
-            Timestamp = entity.Timestamp,
-            TransactionId = entity.TransactionId,
-            QueryName = entity.QueryName,
-            QueryType = entity.QueryType,
-            IsQuery = entity.IsQuery,
-            ResponseAddresses = entity.ResponseAddresses,
-            FileAnalysisId = entity.FileAnalysisId
+            KnownDomainPurpose = null
         };
+    }
+
+    public override DnsPacketModel? MapToDetailModel(DnsPacketEntity? entity) => MapToListModel(entity);
 }

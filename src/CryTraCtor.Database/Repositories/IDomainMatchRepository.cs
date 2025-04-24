@@ -5,6 +5,7 @@ namespace CryTraCtor.Database.Repositories
     public interface IDomainMatchRepository
     {
         Task<List<DomainMatchEntity>> GetByTrafficParticipantIdAsync(Guid trafficParticipantId);
+        Task<List<DomainMatchEntity>> GetByPacketIdsAsync(IEnumerable<Guid> packetIds);
 
         Task InsertAsync(DomainMatchEntity entity);
 

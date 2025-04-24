@@ -26,6 +26,7 @@
         <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
         <PropertyColumn Property="x => x.TransactionId" Title="Transaction ID"/>
         <PropertyColumn Property="x => x.QueryName" Title="Query Name"/>
+        <PropertyColumn Property="x => x.KnownDomainPurpose" Title="Purpose"/>
         <PropertyColumn Property="x => x.QueryType" Title="Query Type"/>
         <PropertyColumn Property="x => x.ResponseAddresses" Title="Response Addresses"/>
         <PropertyColumn Property="x => x.Client.Address" Title="Client Address"/>
@@ -79,7 +80,8 @@
         string QueryType,
         string ResponseAddresses,
         TrafficParticipantListModel Client,
-        TrafficParticipantListModel Resolver);
+        TrafficParticipantListModel Resolver,
+        string? KnownDomainPurpose);
 
     [Parameter] public Guid FileId { get; set; }
     [Parameter] public Guid FileAnalysisId { get; set; }
@@ -146,7 +148,8 @@
                             query.QueryType,
                             response.ResponseAddresses,
                             query.Sender,
-                            query.Recipient
+                            query.Recipient,
+                            query.KnownDomainPurpose
                         ));
                         transactionPackets.Add(query.Id);
                         transactionPackets.Add(response.Id);

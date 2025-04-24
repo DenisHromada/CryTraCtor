@@ -31,7 +31,6 @@ public class WebAppDatabaseInstaller : IInstaller
 
         serviceCollection
             .AddScoped<IStoredFileRepository, StoredFileRepository>()
-            .AddScoped<IDomainMatchRepository, DomainMatchRepository>()
-            .AddScoped<TrafficParticipantAggregateRepository>();
+            ;
     }
 }

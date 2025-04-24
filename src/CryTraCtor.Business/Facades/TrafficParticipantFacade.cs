@@ -5,7 +5,6 @@ using CryTraCtor.Database.Entities;
 using CryTraCtor.Business.Models.Agregates;
 using CryTraCtor.Database.Enums;
 using CryTraCtor.Database.Mappers;
-using CryTraCtor.Database.Repositories;
 using CryTraCtor.Database.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,9 +12,7 @@ namespace CryTraCtor.Business.Facades;
 
 public class TrafficParticipantFacade(
     IUnitOfWorkFactory unitOfWorkFactory,
-    TrafficParticipantModelMapper modelMapper,
-    TrafficParticipantAggregateRepository aggregateRepository,
-    IDomainMatchRepository domainMatchRepository
+    TrafficParticipantModelMapper modelMapper
 ) : FacadeBase<
         TrafficParticipantEntity,
         TrafficParticipantListModel,
@@ -25,6 +22,9 @@ public class TrafficParticipantFacade(
 {
     public async Task<IEnumerable<TrafficParticipantListModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId)
     {
+        await using var uow = UnitOfWorkFactory.Create();
+        var aggregateRepository = uow.TrafficParticipantAggregates;
+
         var aggregateDtos = await aggregateRepository.GetAggregatedByFileAnalysisIdAsync(fileAnalysisId);
 
         var participantModels = aggregateDtos.Select(dto => new TrafficParticipantListModel
@@ -46,6 +46,8 @@ public class TrafficParticipantFacade(
     {
         await using var uow = UnitOfWorkFactory.Create();
         var participantRepo = uow.GetRepository<TrafficParticipantEntity, TrafficParticipantEntityMapper>();
+        var domainMatchRepository = uow.DomainMatches;
+        var knownDomainRepo = uow.GetRepository<KnownDomainEntity, KnownDomainEntityMapper>();
 
         var participant = await participantRepo.Get()
             .FirstOrDefaultAsync(p => p.Id == trafficParticipantId);
@@ -55,10 +57,9 @@ public class TrafficParticipantFacade(
             return null;
         }
 
-
         var domainMatches = await domainMatchRepository.GetByTrafficParticipantIdAsync(trafficParticipantId);
 
-        if (!domainMatches.Any())
+        if (domainMatches.Count == 0)
         {
             return new TrafficParticipantKnownDomainSummaryModel
             {
@@ -96,9 +97,6 @@ public class TrafficParticipantFacade(
             {
                 var purpose = purposeGroup.Key;
                 var purposeMatches = purposeGroup.ToList();
-
-
-                var knownDomainRepo = uow.GetRepository<KnownDomainEntity, KnownDomainEntityMapper>();
 
                 var allKnownDomainsForProduct = await knownDomainRepo.Get()
                     .Where(kd => kd.CryptoProductId == product.Id && kd.Purpose == purpose)

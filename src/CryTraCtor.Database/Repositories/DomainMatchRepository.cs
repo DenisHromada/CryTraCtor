@@ -1,40 +1,45 @@
 using CryTraCtor.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CryTraCtor.Database.Repositories
+namespace CryTraCtor.Database.Repositories;
+
+public class DomainMatchRepository(CryTraCtorDbContext dbContext) : IDomainMatchRepository
 {
-    public class DomainMatchRepository(IDbContextFactory<CryTraCtorDbContext> dbContextFactory)
-        : IDomainMatchRepository
+    private readonly CryTraCtorDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+
+    public async Task<List<DomainMatchEntity>> GetByTrafficParticipantIdAsync(Guid trafficParticipantId)
     {
-        private readonly IDbContextFactory<CryTraCtorDbContext> _dbContextFactory =
-            dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
+        return await _dbContext.DomainMatch
+            .Include(dm => dm.DnsPacket)
+            .Include(dm => dm.KnownDomain)
+            .ThenInclude(kd => kd!.CryptoProduct)
+            .Where(dm => dm.DnsPacket != null &&
+                         (dm.DnsPacket.SenderId == trafficParticipantId ||
+                          dm.DnsPacket.RecipientId == trafficParticipantId))
+            .ToListAsync();
+    }
 
-        public async Task<List<DomainMatchEntity>> GetByTrafficParticipantIdAsync(Guid trafficParticipantId)
+    public async Task<List<DomainMatchEntity>> GetByPacketIdsAsync(IEnumerable<Guid> packetIds)
+    {
+        var packetIdList = packetIds.ToList();
+        if (!packetIdList.Any())
         {
-            await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-            return await dbContext.DomainMatch
-                .Include(dm => dm.DnsPacket)
-                .Include(dm => dm.KnownDomain)
-                .ThenInclude(kd => kd!.CryptoProduct)
-                .Where(dm => dm.DnsPacket != null &&
-                             (dm.DnsPacket.SenderId == trafficParticipantId ||
-                              dm.DnsPacket.RecipientId == trafficParticipantId))
-                .ToListAsync();
+            return new List<DomainMatchEntity>();
         }
 
-        public async Task InsertAsync(DomainMatchEntity entity)
-        {
-            await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-            await dbContext.DomainMatch.AddAsync(entity);
-            await dbContext.SaveChangesAsync();
-        }
+        return await _dbContext.DomainMatch
+            .Include(dm => dm.KnownDomain)
+            .Where(dm => packetIdList.Contains(dm.DnsPacketId))
+            .ToListAsync();
+    }
 
-        public async Task InsertRangeAsync(IEnumerable<DomainMatchEntity> entities)
-        {
-            await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-            await dbContext.DomainMatch.AddRangeAsync(entities);
-            await dbContext.SaveChangesAsync();
-        }
+    public async Task InsertAsync(DomainMatchEntity entity)
+    {
+        await _dbContext.DomainMatch.AddAsync(entity);
+    }
+
+    public async Task InsertRangeAsync(IEnumerable<DomainMatchEntity> entities)
+    {
+        await _dbContext.DomainMatch.AddRangeAsync(entities);
     }
 }

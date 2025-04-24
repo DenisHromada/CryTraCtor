@@ -10,5 +10,9 @@ public interface IUnitOfWork : IAsyncDisposable
         where TEntity : class, IEntity
         where TEntityMapper : IEntityMapper<TEntity>, new();
 
+    IDnsPacketRepository DnsPackets { get; }
+    IDomainMatchRepository DomainMatches { get; }
+    TrafficParticipantAggregateRepository TrafficParticipantAggregates { get; }
+
     Task CommitAsync();
 }

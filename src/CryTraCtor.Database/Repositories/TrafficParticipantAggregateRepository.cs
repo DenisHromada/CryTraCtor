@@ -4,29 +4,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.Repositories;
 
-public class TrafficParticipantAggregateRepository(IDbContextFactory<CryTraCtorDbContext> dbContextFactory)
+public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext)
 {
+    private readonly CryTraCtorDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+
     public async Task<IEnumerable<TrafficParticipantAggregateDto>> GetAggregatedByFileAnalysisIdAsync(
         Guid fileAnalysisId)
     {
-        await using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
-        var participantEntities = await dbContext.Set<TrafficParticipantEntity>()
+        var participantEntities = await _dbContext.Set<TrafficParticipantEntity>()
             .Where(tp => tp.FileAnalysisId == fileAnalysisId)
             .ToListAsync();
 
-        if (!participantEntities.Any())
+        if (participantEntities.Count == 0)
         {
-            return Enumerable.Empty<TrafficParticipantAggregateDto>();
+            return [];
         }
 
-        var dnsPacketIds = await dbContext.Set<DnsPacketEntity>()
+        var dnsPacketIds = await _dbContext.Set<DnsPacketEntity>()
             .Where(dns => dns.FileAnalysisId == fileAnalysisId)
             .Select(dns => new { dns.Id, dns.SenderId, dns.RecipientId })
             .ToListAsync();
 
         var dnsPacketGuids = dnsPacketIds.Select(d => d.Id).ToHashSet();
-        var domainMatches = await dbContext.Set<DomainMatchEntity>()
+        var domainMatches = await _dbContext.Set<DomainMatchEntity>()
             .Where(dm => dnsPacketGuids.Contains(dm.DnsPacketId))
             .Select(dm => new { dm.DnsPacketId, dm.KnownDomainId })
             .ToListAsync();
