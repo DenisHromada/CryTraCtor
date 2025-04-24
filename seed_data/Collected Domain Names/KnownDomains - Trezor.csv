@@ -1,7 +1,7 @@
 Vendor,ProductName,DomainName,Purpose,Description
 Trezor,Trezor Suite,trezor.io,Vendor Root,
 Trezor,Trezor Suite,o117836.ingest.sentry.io,Telemetry,
-Trezor,Trezor Suite,data.trezor.io,Analyrics,
+Trezor,Trezor Suite,data.trezor.io,Analytics,
 Trezor,Trezor Suite,wiki.trezor.io,Website,
 Trezor,Trezor Suite,suite.trezor.io,Website,
 Trezor,Trezor Suite,shop.trezor.io,Website,
