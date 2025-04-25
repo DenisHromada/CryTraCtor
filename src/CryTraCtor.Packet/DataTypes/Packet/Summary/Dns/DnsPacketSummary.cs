@@ -8,11 +8,11 @@ public abstract record DnsPacketSummary(
     DateTime Timestamp,
     DnsMessageType MessageType,
     uint TransactionId
-) : PacketSummary(Source, Destination), IDnsPacketSummary
+) : PacketSummary(Timestamp, Source, Destination), IDnsPacketSummary
 {
     public override string GetSerializedPacketString()
     {
-        return Source + " -> " + Destination +
+        return base.GetSerializedPacketString() +
                Environment.NewLine + "TxId: " + TransactionId + " Type: " + MessageType
             ;
     }
