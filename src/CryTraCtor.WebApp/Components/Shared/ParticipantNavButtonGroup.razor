@@ -1,0 +1,43 @@
+@using Microsoft.Extensions.Logging
+@using CryTraCtor.WebApp.Enums
+@inject ILogger<ParticipantNavButtonGroup> Logger
+
+<MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="mb-4">
+    <MudButton StartIcon="@Icons.Material.Filled.Dns"
+               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/dns")"
+               Disabled="@(ActiveView == ParticipantViewType.Dns)">
+        DNS Overview
+    </MudButton>
+    <MudButton StartIcon="@Icons.Material.Filled.ListAlt"
+               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/known-domains")"
+               Disabled="@(ActiveView == ParticipantViewType.KnownDomains)">
+        Known Domains Summary
+    </MudButton>
+    <MudButton StartIcon="@Icons.Material.Filled.NetworkWifi"
+               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/bitcoin")"
+               Disabled="@(ActiveView == ParticipantViewType.Bitcoin)">
+        Bitcoin Overview
+    </MudButton>
+</MudButtonGroup>
+
+@code {
+    [Parameter, EditorRequired] public Guid FileId { get; set; }
+    [Parameter, EditorRequired] public Guid FileAnalysisId { get; set; }
+    [Parameter, EditorRequired] public Guid ParticipantId { get; set; }
+
+    [Parameter, EditorRequired] public ParticipantViewType ActiveView { get; set; } = ParticipantViewType.Unknown;
+
+    protected override void OnParametersSet()
+    {
+        if (!Enum.IsDefined(typeof(ParticipantViewType), ActiveView) || ActiveView == ParticipantViewType.Unknown)
+        {
+            Logger.LogWarning("Invalid or Unknown ActiveView parameter '{ActiveView}' provided to ParticipantNavButtonGroup.", ActiveView);
+        }
+
+        if (FileId == Guid.Empty || FileAnalysisId == Guid.Empty || ParticipantId == Guid.Empty)
+        {
+            Logger.LogWarning("One or more required ID parameters are empty in ParticipantNavButtonGroup. FileId: {FileId}, FileAnalysisId: {FileAnalysisId}, ParticipantId: {ParticipantId}", FileId, FileAnalysisId, ParticipantId);
+        }
+    }
+
+}

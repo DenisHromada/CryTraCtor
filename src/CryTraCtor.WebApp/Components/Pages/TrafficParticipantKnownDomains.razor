@@ -3,17 +3,15 @@
 @using CryTraCtor.Business.Models.Agregates
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @using CryTraCtor.WebApp.Services
+@using CryTraCtor.WebApp.Enums
 @inject IBreadcrumbService BreadcrumbService
 
 <PageTitle>Known Domains for Traffic Participant</PageTitle>
 
-<MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="mb-4">
-    <MudButton StartIcon="@Icons.Material.Filled.Dns"
-               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{TrafficParticipantId}/dns")">
-        DNS Overview
-    </MudButton>
-    <MudButton StartIcon="@Icons.Material.Filled.ListAlt" Disabled="true">Known Domains Summary</MudButton>
-</MudButtonGroup>
+<ParticipantNavButtonGroup FileId="FileId"
+                           FileAnalysisId="FileAnalysisId"
+                           ParticipantId="TrafficParticipantId"
+                           ActiveView="ParticipantViewType.KnownDomains" />
 
 <h1>Known Domains Summary</h1>
 

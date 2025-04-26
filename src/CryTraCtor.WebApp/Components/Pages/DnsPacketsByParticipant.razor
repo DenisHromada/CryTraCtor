@@ -2,22 +2,20 @@
 
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models
-
 @using CryTraCtor.Business.Models.TrafficParticipants
 @using CryTraCtor.WebApp.Services
+@using CryTraCtor.WebApp.Enums
 
 @inject IDnsPacketFacade DnsPacketFacade
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
 @inject IBreadcrumbService BreadcrumbService
 
-<MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="mb-4">
-    <MudButton StartIcon="@Icons.Material.Filled.Dns" Disabled="true">DNS Overview</MudButton>
-    <MudButton StartIcon="@Icons.Material.Filled.ListAlt"
-               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/known-domains")">
-        Known Domains Summary
-    </MudButton>
-</MudButtonGroup>
+<ParticipantNavButtonGroup FileId="FileId"
+                           FileAnalysisId="FileAnalysisId"
+                           ParticipantId="ParticipantId"
+                           ActiveView="ParticipantViewType.Dns" />
+
 <h3>DNS Packets for Participant @(_participant?.Address):@(_participant?.Port)</h3>
 
 <h4>DNS Transactions</h4>

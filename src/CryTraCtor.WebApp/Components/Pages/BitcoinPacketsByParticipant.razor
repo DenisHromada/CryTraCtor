@@ -4,20 +4,18 @@
 @using CryTraCtor.Business.Models
 @using CryTraCtor.Business.Models.TrafficParticipants
 @using CryTraCtor.WebApp.Services
+@using CryTraCtor.WebApp.Enums
 
 @inject IBitcoinPacketFacade BitcoinPacketFacade
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
 @inject IBreadcrumbService BreadcrumbService
 
-<MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="mb-4">
-    @* TODO: Add link to DNS overview if applicable, or adjust buttons as needed *@
-    <MudButton StartIcon="@Icons.Material.Filled.NetworkWifi" Disabled="true">Bitcoin Overview</MudButton>
-    <MudButton StartIcon="@Icons.Material.Filled.ListAlt"
-               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/known-domains")">
-        Known Domains Summary
-    </MudButton>
-</MudButtonGroup>
+<ParticipantNavButtonGroup FileId="FileId"
+                           FileAnalysisId="FileAnalysisId"
+                           ParticipantId="ParticipantId"
+                           ActiveView="ParticipantViewType.Bitcoin" />
+
 <h3>Bitcoin Packets for Participant @(_participant?.Address):@(_participant?.Port)</h3>
 
 <MudDataGrid Items="@_bitcoinPackets" T="BitcoinPacketDetailModel">
