@@ -35,6 +35,8 @@ public class TrafficParticipantFacade(
             FileAnalysisId = dto.FileAnalysisId,
             OutgoingDnsCount = dto.OutgoingDnsCount,
             IncomingDnsCount = dto.IncomingDnsCount,
+            OutgoingBitcoinCount = dto.OutgoingBitcoinCount,
+            IncomingBitcoinCount = dto.IncomingBitcoinCount,
             UniqueMatchedKnownDomainCount = dto.UniqueMatchedKnownDomainCount,
             TotalMatchedKnownDomainCount = dto.TotalMatchedKnownDomainCount
         }).ToList();

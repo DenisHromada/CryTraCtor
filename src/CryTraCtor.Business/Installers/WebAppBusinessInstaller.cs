@@ -28,7 +28,8 @@ public class WebAppBusinessInstaller : IInstaller
             .AddSingleton<FileAnalysisListModelMapper>()
             .AddSingleton<FileAnalysisModelMapper>()
             .AddSingleton<DnsPacketModelMapper>()
-            .AddSingleton<DomainMatchMapper>();
+            .AddSingleton<DomainMatchMapper>()
+            .AddSingleton<BitcoinPacketModelMapper>();
 
         serviceCollection
             .AddScoped<IStoredFileFacade, StoredFileFacade>()
@@ -38,13 +39,15 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<ITrafficParticipantFacade, TrafficParticipantFacade>()
             .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>()
             .AddScoped<IDnsPacketFacade, DnsPacketFacade>()
-            .AddScoped<IDomainMatchFacade, DomainMatchFacade>();
+            .AddScoped<IDomainMatchFacade, DomainMatchFacade>()
+            .AddScoped<IBitcoinPacketFacade, BitcoinPacketFacade>();
 
         serviceCollection
             .AddScoped<DnsAnalysisService>()
             .AddScoped<FileAnalysisService>()
             .AddScoped<EndpointAnalysisService>()
             .AddScoped<CsvService>()
-            .AddScoped<DomainMatchAssociationService>();
+            .AddScoped<DomainMatchAssociationService>()
+            .AddScoped<BitcoinAnalysisService>();
     }
 }

@@ -21,6 +21,8 @@
                         Title="Unique Matched Domains"/>
         <PropertyColumn Property="x => x.TotalMatchedKnownDomainCount"
                         Title="Total Matched Domains"/>
+        <PropertyColumn Property="x => x.OutgoingBitcoinCount" Title="Outgoing Bitcoin"/>
+        <PropertyColumn Property="x => x.IncomingBitcoinCount" Title="Incoming Bitcoin"/>
         <TemplateColumn Title="Actions">
             <CellTemplate>
                 <MudTooltip Text="View DNS Overview">
@@ -30,6 +32,10 @@
                 <MudTooltip Text="View Known Domains Summary">
                     <MudIconButton Icon="@Icons.Material.Filled.ListAlt" Size="Size.Small" Color="Color.Primary"
                                    Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{context.Item.Id}/known-domains")"/>
+                </MudTooltip>
+                <MudTooltip Text="View Bitcoin Overview">
+                    <MudIconButton Icon="@Icons.Material.Filled.NetworkWifi" Size="Size.Small" Color="Color.Primary"
+                                   Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{context.Item.Id}/bitcoin")"/>
                 </MudTooltip>
             </CellTemplate>
         </TemplateColumn>

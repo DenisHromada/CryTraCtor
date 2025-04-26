@@ -10,6 +10,8 @@ public class TrafficParticipantListModel : IModel
     public int IncomingDnsCount { get; set; }
     public int UniqueMatchedKnownDomainCount { get; set; }
     public int TotalMatchedKnownDomainCount { get; set; }
+    public int OutgoingBitcoinCount { get; set; }
+    public int IncomingBitcoinCount { get; set; }
 
     public static TrafficParticipantListModel Empty() => new();
 }

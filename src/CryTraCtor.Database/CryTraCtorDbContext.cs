@@ -12,6 +12,7 @@ public class CryTraCtorDbContext : DbContext
     public virtual DbSet<FileAnalysisEntity> FileAnalysis { get; set; }
     public virtual DbSet<DnsPacketEntity> DnsPacket { get; set; }
     public virtual DbSet<DomainMatchEntity> DomainMatch { get; set; }
+    public virtual DbSet<BitcoinPacketEntity> BitcoinPacket { get; set; }
     public CryTraCtorDbContext()
     {
     }

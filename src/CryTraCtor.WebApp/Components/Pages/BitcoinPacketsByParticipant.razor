@@ -1,0 +1,92 @@
+@page "/files/{fileId:guid}/file-analysis/{fileAnalysisId:guid}/traffic-participants/{participantId:guid}/bitcoin"
+
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models
+@using CryTraCtor.Business.Models.TrafficParticipants
+@using CryTraCtor.WebApp.Services
+
+@inject IBitcoinPacketFacade BitcoinPacketFacade
+@inject ITrafficParticipantFacade TrafficParticipantFacade
+@inject ISnackbar Snackbar
+@inject IBreadcrumbService BreadcrumbService
+
+<MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="mb-4">
+    @* TODO: Add link to DNS overview if applicable, or adjust buttons as needed *@
+    <MudButton StartIcon="@Icons.Material.Filled.NetworkWifi" Disabled="true">Bitcoin Overview</MudButton>
+    <MudButton StartIcon="@Icons.Material.Filled.ListAlt"
+               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/known-domains")">
+        Known Domains Summary
+    </MudButton>
+</MudButtonGroup>
+<h3>Bitcoin Packets for Participant @(_participant?.Address):@(_participant?.Port)</h3>
+
+<MudDataGrid Items="@_bitcoinPackets" T="BitcoinPacketDetailModel">
+    <Columns>
+        <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+        <PropertyColumn Property="x => x.Sender!.Address" Title="Sender Address"/>
+        <PropertyColumn Property="x => x.Sender!.Port" Title="Sender Port"/>
+        <PropertyColumn Property="x => x.Recipient!.Address" Title="Recipient Address"/>
+        <PropertyColumn Property="x => x.Recipient!.Port" Title="Recipient Port"/>
+    </Columns>
+</MudDataGrid>
+
+
+@code {
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Guid FileAnalysisId { get; set; }
+    [Parameter] public Guid ParticipantId { get; set; }
+
+    private TrafficParticipantDetailModel? _participant;
+    private List<BitcoinPacketDetailModel> _bitcoinPackets = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Files", href: "/files"),
+            new BreadcrumbItem("File Analysis", href: $"/files/{FileId}/file-analysis"),
+            new BreadcrumbItem("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
+            new BreadcrumbItem("Bitcoin Packets", href: null, disabled: true)
+        };
+        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+
+        if (RendererInfo.IsInteractive)
+        {
+            await LoadBitcoinPacketsAsync();
+        }
+    }
+
+
+    private async Task LoadBitcoinPacketsAsync()
+    {
+        try
+        {
+            _participant = await TrafficParticipantFacade.GetAsync(ParticipantId);
+            if (_participant == null)
+            {
+                Snackbar.Add($"Participant with ID {ParticipantId} not found.", Severity.Error);
+                _bitcoinPackets = [];
+                return;
+            }
+
+            var allPackets = await BitcoinPacketFacade.GetByFileAnalysisIdAsync(FileAnalysisId);
+
+            _bitcoinPackets = allPackets
+                .Where(p => p.SenderId == ParticipantId || p.RecipientId == ParticipantId)
+                .OrderBy(p => p.Timestamp)
+                .ToList();
+
+            if (!_bitcoinPackets.Any())
+            {
+                Snackbar.Add($"No Bitcoin packets found for participant {_participant.Address}:{_participant.Port}.", Severity.Info);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading Bitcoin packet data: {ex.Message}", Severity.Error);
+            _participant = null;
+            _bitcoinPackets = [];
+        }
+    }
+
+}

@@ -12,6 +12,7 @@ public class WebAppPacketInstaller : IInstaller
         serviceCollection
             .AddTransient<IDnsTrafficMapper, DnsTrafficMapper>()
             .AddTransient<DnsPacketReader>()
+            .AddTransient<BitcoinPacketReader>()
             .AddTransient<IEndpointReader, EndpointReader>();
     }
 }

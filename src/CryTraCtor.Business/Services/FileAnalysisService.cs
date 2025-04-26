@@ -7,7 +7,8 @@ public class FileAnalysisService(
     IFileAnalysisFacade fileAnalysisFacade,
     IStoredFileFacade storedFileFacade,
     EndpointAnalysisService endpointAnalysisService,
-    DnsAnalysisService dnsAnalysisService
+    DnsAnalysisService dnsAnalysisService,
+    BitcoinAnalysisService bitcoinAnalysisService
 )
 {
     public async Task<FileAnalysisDetailModel> CreateAnalysis(Guid storedFileId)
@@ -30,7 +31,10 @@ public class FileAnalysisService(
 
         await endpointAnalysisService.AnalyzeAsync(storedFile, createdAnalysis.Id);
 
-        await dnsAnalysisService.AnalyzeAsync(storedFile, createdAnalysis.Id);
+        var dnsAnalysisTask = dnsAnalysisService.AnalyzeAsync(storedFile, createdAnalysis.Id);
+        var bitcoinAnalysisTask = bitcoinAnalysisService.AnalyzeAsync(storedFile, createdAnalysis.Id);
+
+        await Task.WhenAll(dnsAnalysisTask, bitcoinAnalysisTask);
 
         return createdAnalysis;
     }

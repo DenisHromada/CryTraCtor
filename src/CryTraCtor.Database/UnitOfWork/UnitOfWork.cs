@@ -11,6 +11,7 @@ public class UnitOfWork(DbContext dbContext) : IUnitOfWork
 
     private IDnsPacketRepository? _dnsPackets;
     private IDomainMatchRepository? _domainMatches;
+    private IBitcoinPacketRepository? _bitcoinPackets;
     private TrafficParticipantAggregateRepository? _trafficParticipantAggregates;
 
     public IRepository<TEntity> GetRepository<TEntity, TEntityMapper>()
@@ -23,6 +24,9 @@ public class UnitOfWork(DbContext dbContext) : IUnitOfWork
 
     public IDomainMatchRepository DomainMatches =>
         _domainMatches ??= new DomainMatchRepository((CryTraCtorDbContext)_dbContext);
+
+    public IBitcoinPacketRepository BitcoinPackets =>
+        _bitcoinPackets ??= new BitcoinPacketRepository((CryTraCtorDbContext)_dbContext, new BitcoinPacketEntityMapper());
 
     public TrafficParticipantAggregateRepository TrafficParticipantAggregates
     {

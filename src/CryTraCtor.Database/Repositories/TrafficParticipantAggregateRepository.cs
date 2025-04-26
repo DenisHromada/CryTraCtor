@@ -11,7 +11,6 @@ public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext
     public async Task<IEnumerable<TrafficParticipantAggregateDto>> GetAggregatedByFileAnalysisIdAsync(
         Guid fileAnalysisId)
     {
-
         var participantEntities = await _dbContext.Set<TrafficParticipantEntity>()
             .Where(tp => tp.FileAnalysisId == fileAnalysisId)
             .ToListAsync();
@@ -24,6 +23,11 @@ public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext
         var dnsPacketIds = await _dbContext.Set<DnsPacketEntity>()
             .Where(dns => dns.FileAnalysisId == fileAnalysisId)
             .Select(dns => new { dns.Id, dns.SenderId, dns.RecipientId })
+            .ToListAsync();
+
+        var bitcoinPacketIds = await _dbContext.Set<BitcoinPacketEntity>()
+            .Where(btc => btc.FileAnalysisId == fileAnalysisId)
+            .Select(btc => new { btc.SenderId, btc.RecipientId })
             .ToListAsync();
 
         var dnsPacketGuids = dnsPacketIds.Select(d => d.Id).ToHashSet();
@@ -64,11 +68,25 @@ public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext
             .GroupBy(dns => dns.RecipientId)
             .ToDictionary(g => g.Key, g => g.Count());
 
+        var outgoingBitcoinCounts = bitcoinPacketIds
+            .Where(btc => btc.SenderId != Guid.Empty)
+            .GroupBy(btc => btc.SenderId)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var incomingBitcoinCounts = bitcoinPacketIds
+            .Where(btc => btc.RecipientId != Guid.Empty)
+            .GroupBy(btc => btc.RecipientId)
+            .ToDictionary(g => g.Key, g => g.Count());
+
 
         var result = participantEntities.Select(entity =>
         {
-            var outgoingDnsCount = outgoingCounts.TryGetValue(entity.Id, out var outCount) ? outCount : 0;
-            var incomingDnsCount = incomingCounts.TryGetValue(entity.Id, out var inCount) ? inCount : 0;
+            var outgoingDnsCount = outgoingCounts.TryGetValue(entity.Id, out var outDnsCount) ? outDnsCount : 0;
+            var incomingDnsCount = incomingCounts.TryGetValue(entity.Id, out var inDnsCount) ? inDnsCount : 0;
+            var outgoingBitcoinCount =
+                outgoingBitcoinCounts.TryGetValue(entity.Id, out var outBtcCount) ? outBtcCount : 0;
+            var incomingBitcoinCount =
+                incomingBitcoinCounts.TryGetValue(entity.Id, out var inBtcCount) ? inBtcCount : 0;
             return new TrafficParticipantAggregateDto
             {
                 Id = entity.Id,
@@ -77,6 +95,8 @@ public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext
                 FileAnalysisId = entity.FileAnalysisId,
                 OutgoingDnsCount = outgoingDnsCount,
                 IncomingDnsCount = incomingDnsCount,
+                OutgoingBitcoinCount = outgoingBitcoinCount,
+                IncomingBitcoinCount = incomingBitcoinCount,
 
                 UniqueMatchedKnownDomainCount =
                     matchedDomainCounts.TryGetValue(entity.Id, out var counts) ? counts.UniqueCount : 0,

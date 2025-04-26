@@ -12,6 +12,7 @@ public interface IUnitOfWork : IAsyncDisposable
 
     IDnsPacketRepository DnsPackets { get; }
     IDomainMatchRepository DomainMatches { get; }
+    IBitcoinPacketRepository BitcoinPackets { get; }
     TrafficParticipantAggregateRepository TrafficParticipantAggregates { get; }
 
     Task CommitAsync();
