@@ -11,100 +11,45 @@ public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext
     public async Task<IEnumerable<TrafficParticipantAggregateDto>> GetAggregatedByFileAnalysisIdAsync(
         Guid fileAnalysisId)
     {
-        var participantEntities = await _dbContext.Set<TrafficParticipantEntity>()
+        var results = await _dbContext.Set<TrafficParticipantEntity>()
+            .AsNoTracking()
             .Where(tp => tp.FileAnalysisId == fileAnalysisId)
-            .ToListAsync();
-
-        if (participantEntities.Count == 0)
-        {
-            return [];
-        }
-
-        var dnsPacketIds = await _dbContext.Set<DnsPacketEntity>()
-            .Where(dns => dns.FileAnalysisId == fileAnalysisId)
-            .Select(dns => new { dns.Id, dns.SenderId, dns.RecipientId })
-            .ToListAsync();
-
-        var bitcoinPacketIds = await _dbContext.Set<BitcoinPacketEntity>()
-            .Where(btc => btc.FileAnalysisId == fileAnalysisId)
-            .Select(btc => new { btc.SenderId, btc.RecipientId })
-            .ToListAsync();
-
-        var dnsPacketGuids = dnsPacketIds.Select(d => d.Id).ToHashSet();
-        var domainMatches = await _dbContext.Set<DomainMatchEntity>()
-            .Where(dm => dnsPacketGuids.Contains(dm.DnsPacketId))
-            .Select(dm => new { dm.DnsPacketId, dm.KnownDomainId })
-            .ToListAsync();
-
-        var dnsPacketParticipantLookup = dnsPacketIds
-            .SelectMany(d => new[]
+            .Select(tp => new TrafficParticipantAggregateDto
             {
-                new { DnsId = d.Id, ParticipantId = d.SenderId }, new { DnsId = d.Id, ParticipantId = d.RecipientId }
+                Id = tp.Id,
+                Address = tp.Address,
+                Port = tp.Port,
+                FileAnalysisId = tp.FileAnalysisId,
+
+                OutgoingDnsCount = _dbContext.Set<DnsPacketEntity>()
+                    .Count(dns => dns.FileAnalysisId == fileAnalysisId && dns.SenderId == tp.Id),
+                IncomingDnsCount = _dbContext.Set<DnsPacketEntity>()
+                    .Count(dns => dns.FileAnalysisId == fileAnalysisId && dns.RecipientId == tp.Id),
+
+                OutgoingBitcoinCount = _dbContext.Set<BitcoinPacketEntity>()
+                    .Count(btc => btc.FileAnalysisId == fileAnalysisId && btc.SenderId == tp.Id),
+                IncomingBitcoinCount = _dbContext.Set<BitcoinPacketEntity>()
+                    .Count(btc => btc.FileAnalysisId == fileAnalysisId && btc.RecipientId == tp.Id),
+
+                TotalMatchedKnownDomainCount = _dbContext.Set<DomainMatchEntity>()
+                    .Count(dm => _dbContext.Set<DnsPacketEntity>()
+                        .Where(dns =>
+                            dns.FileAnalysisId == fileAnalysisId && (dns.SenderId == tp.Id || dns.RecipientId == tp.Id))
+                        .Select(dns => dns.Id)
+                        .Contains(dm.DnsPacketId)),
+
+                UniqueMatchedKnownDomainCount = _dbContext.Set<DomainMatchEntity>()
+                    .Where(dm => _dbContext.Set<DnsPacketEntity>()
+                        .Where(dns =>
+                            dns.FileAnalysisId == fileAnalysisId && (dns.SenderId == tp.Id || dns.RecipientId == tp.Id))
+                        .Select(dns => dns.Id)
+                        .Contains(dm.DnsPacketId))
+                    .Select(dm => dm.KnownDomainId)
+                    .Distinct()
+                    .Count()
             })
-            .Where(x => x.ParticipantId != Guid.Empty)
-            .ToLookup(x => x.DnsId, x => x.ParticipantId);
+            .ToListAsync();
 
-        var matchedDomainCounts = domainMatches
-            .SelectMany(dm =>
-                dnsPacketParticipantLookup[dm.DnsPacketId]
-                    .Select(participantId => new { participantId, dm.KnownDomainId }))
-            .GroupBy(x => x.participantId)
-            .ToDictionary(
-                g => g.Key,
-                g => new
-                {
-                    UniqueCount = g.Select(x => x.KnownDomainId).Distinct().Count(), TotalCount = g.Count()
-                }
-            );
-
-
-        var outgoingCounts = dnsPacketIds
-            .Where(dns => dns.SenderId != Guid.Empty)
-            .GroupBy(dns => dns.SenderId)
-            .ToDictionary(g => g.Key, g => g.Count());
-
-        var incomingCounts = dnsPacketIds
-            .Where(dns => dns.RecipientId != Guid.Empty)
-            .GroupBy(dns => dns.RecipientId)
-            .ToDictionary(g => g.Key, g => g.Count());
-
-        var outgoingBitcoinCounts = bitcoinPacketIds
-            .Where(btc => btc.SenderId != Guid.Empty)
-            .GroupBy(btc => btc.SenderId)
-            .ToDictionary(g => g.Key, g => g.Count());
-
-        var incomingBitcoinCounts = bitcoinPacketIds
-            .Where(btc => btc.RecipientId != Guid.Empty)
-            .GroupBy(btc => btc.RecipientId)
-            .ToDictionary(g => g.Key, g => g.Count());
-
-
-        var result = participantEntities.Select(entity =>
-        {
-            var outgoingDnsCount = outgoingCounts.TryGetValue(entity.Id, out var outDnsCount) ? outDnsCount : 0;
-            var incomingDnsCount = incomingCounts.TryGetValue(entity.Id, out var inDnsCount) ? inDnsCount : 0;
-            var outgoingBitcoinCount =
-                outgoingBitcoinCounts.TryGetValue(entity.Id, out var outBtcCount) ? outBtcCount : 0;
-            var incomingBitcoinCount =
-                incomingBitcoinCounts.TryGetValue(entity.Id, out var inBtcCount) ? inBtcCount : 0;
-            return new TrafficParticipantAggregateDto
-            {
-                Id = entity.Id,
-                Address = entity.Address,
-                Port = entity.Port,
-                FileAnalysisId = entity.FileAnalysisId,
-                OutgoingDnsCount = outgoingDnsCount,
-                IncomingDnsCount = incomingDnsCount,
-                OutgoingBitcoinCount = outgoingBitcoinCount,
-                IncomingBitcoinCount = incomingBitcoinCount,
-
-                UniqueMatchedKnownDomainCount =
-                    matchedDomainCounts.TryGetValue(entity.Id, out var counts) ? counts.UniqueCount : 0,
-                TotalMatchedKnownDomainCount =
-                    matchedDomainCounts.TryGetValue(entity.Id, out counts) ? counts.TotalCount : 0
-            };
-        }).ToList();
-
-        return result;
+        return results;
     }
 }
