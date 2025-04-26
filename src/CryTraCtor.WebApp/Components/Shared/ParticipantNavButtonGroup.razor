@@ -4,17 +4,17 @@
 
 <MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="mb-4">
     <MudButton StartIcon="@Icons.Material.Filled.Dns"
-               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/dns")"
+               Href="@(AppRoutes.TrafficParticipantDnsUrl(FileId, FileAnalysisId, ParticipantId))"
                Disabled="@(ActiveView == ParticipantViewType.Dns)">
         DNS Overview
     </MudButton>
     <MudButton StartIcon="@Icons.Material.Filled.ListAlt"
-               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/known-domains")"
+               Href="@(AppRoutes.TrafficParticipantKnownDomainsUrl(FileId, FileAnalysisId, ParticipantId))"
                Disabled="@(ActiveView == ParticipantViewType.KnownDomains)">
         Known Domains Summary
     </MudButton>
     <MudButton StartIcon="@Icons.Material.Filled.NetworkWifi"
-               Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{ParticipantId}/bitcoin")"
+               Href="@(AppRoutes.TrafficParticipantBitcoinUrl(FileId, FileAnalysisId, ParticipantId))"
                Disabled="@(ActiveView == ParticipantViewType.Bitcoin)">
         Bitcoin Overview
     </MudButton>

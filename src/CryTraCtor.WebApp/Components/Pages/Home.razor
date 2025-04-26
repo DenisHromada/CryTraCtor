@@ -17,7 +17,7 @@
             <MudPaper Class="pa-4" Elevation="3">
                 <MudText Typo="Typo.h5" GutterBottom="true">Analyze Traffic</MudText>
                 <MudText Typo="Typo.body2" Class="mb-4">Upload PCAP files to analyze DNS queries and identify potential interactions with crypto services.</MudText>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/files" FullWidth="true">Go to Files</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@AppRoutes.FilesUrl()" FullWidth="true">Go to Files</MudButton>
             </MudPaper>
         </MudItem>
 
@@ -25,7 +25,7 @@
             <MudPaper Class="pa-4" Elevation="3">
                 <MudText Typo="Typo.h5" GutterBottom="true">Known Domains</MudText>
                 <MudText Typo="Typo.body2" Class="mb-4">View and manage the list of known domain names associated with cryptocurrency services.</MudText>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/known-domains" FullWidth="true">Manage Domains</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@AppRoutes.KnownDomainsUrl()" FullWidth="true">Manage Domains</MudButton>
             </MudPaper>
         </MudItem>
 
@@ -33,7 +33,7 @@
             <MudPaper Class="pa-4" Elevation="3">
                 <MudText Typo="Typo.h5" GutterBottom="true">Crypto Products</MudText>
                 <MudText Typo="Typo.body2" Class="mb-4">Manage the list of cryptocurrency products (wallets, exchanges, etc.) tracked by the system.</MudText>
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/crypto-products" FullWidth="true">Manage Products</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@AppRoutes.CryptoProductsUrl()" FullWidth="true">Manage Products</MudButton>
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -43,10 +43,6 @@
 @code {
     protected override void OnInitialized()
     {
-        var breadcrumbs = new List<BreadcrumbItem>
-        {
-            new("Home", href: "/", disabled: true)
-        };
-        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+        BreadcrumbService.SetBreadcrumbs(AppRoutes.GetHomePageBreadcrumbs());
     }
 }

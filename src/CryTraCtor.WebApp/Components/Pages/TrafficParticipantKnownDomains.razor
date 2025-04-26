@@ -11,7 +11,7 @@
 <ParticipantNavButtonGroup FileId="FileId"
                            FileAnalysisId="FileAnalysisId"
                            ParticipantId="TrafficParticipantId"
-                           ActiveView="ParticipantViewType.KnownDomains" />
+                           ActiveView="ParticipantViewType.KnownDomains"/>
 
 <h1>Known Domains Summary</h1>
 
@@ -81,14 +81,8 @@ else
     {
         _isLoading = true;
 
-        var breadcrumbs = new List<BreadcrumbItem>
-        {
-            new("Files", href: "/files"),
-            new("File Analysis", href: $"/files/{FileId}/file-analysis"),
-            new("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
-            new("Known Domains", href: null, disabled: true)
-        };
-        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+        BreadcrumbService
+            .SetBreadcrumbs(AppRoutes.GetTrafficParticipantKnownDomainsPageBreadcrumbs(FileId, FileAnalysisId, TrafficParticipantId));
 
         try
         {

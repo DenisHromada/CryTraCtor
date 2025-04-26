@@ -54,11 +54,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var breadcrumbs = new List<BreadcrumbItem>
-        {
-            new("Files", href: "/files", disabled: true)
-        };
-        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+        BreadcrumbService.SetBreadcrumbs(AppRoutes.GetFilesPageBreadcrumbs());
 
         if (RendererInfo.IsInteractive)
         {
@@ -99,14 +95,14 @@
 
     private void RowClicked(DataGridRowClickEventArgs<StoredFileListModel> args)
     {
-        NavigationManager.NavigateTo($"/files/{args.Item.Id}/file-analysis/");
+        NavigationManager.NavigateTo(AppRoutes.FileAnalysisUrl(args.Item.Id));
     }
 
     private void RowClicked(Guid? id)
     {
         if (id is not null)
         {
-            NavigationManager.NavigateTo($"/files/{id}/file-analysis/");
+            NavigationManager.NavigateTo(AppRoutes.FileAnalysisUrl((Guid)id));
         }
     }
 

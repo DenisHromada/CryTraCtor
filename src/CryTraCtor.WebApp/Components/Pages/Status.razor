@@ -55,11 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var breadcrumbs = new List<BreadcrumbItem>
-        {
-            new("Status", href: "/status", disabled: true) // Current page
-        };
-        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+        BreadcrumbService.SetBreadcrumbs(AppRoutes.GetStatusPageBreadcrumbs());
 
         await CheckDatabaseConnection();
     }

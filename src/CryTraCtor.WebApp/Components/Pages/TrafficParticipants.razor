@@ -27,15 +27,15 @@
             <CellTemplate>
                 <MudTooltip Text="View DNS Overview">
                     <MudIconButton Icon="@Icons.Material.Filled.Dns" Size="Size.Small" Color="Color.Primary"
-                                   Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{context.Item.Id}/dns")"/>
+                                   Href="@(AppRoutes.TrafficParticipantDnsUrl(FileId, FileAnalysisId, context.Item.Id))"/>
                 </MudTooltip>
                 <MudTooltip Text="View Known Domains Summary">
                     <MudIconButton Icon="@Icons.Material.Filled.ListAlt" Size="Size.Small" Color="Color.Primary"
-                                   Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{context.Item.Id}/known-domains")"/>
+                                   Href="@(AppRoutes.TrafficParticipantKnownDomainsUrl(FileId, FileAnalysisId, context.Item.Id))"/>
                 </MudTooltip>
                 <MudTooltip Text="View Bitcoin Overview">
                     <MudIconButton Icon="@Icons.Material.Filled.NetworkWifi" Size="Size.Small" Color="Color.Primary"
-                                   Href="@($"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants/{context.Item.Id}/bitcoin")"/>
+                                   Href="@(AppRoutes.TrafficParticipantBitcoinUrl(FileId, FileAnalysisId, context.Item.Id))"/>
                 </MudTooltip>
             </CellTemplate>
         </TemplateColumn>
@@ -49,13 +49,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var breadcrumbs = new List<BreadcrumbItem>
-        {
-            new("Files", href: "/files"),
-            new("File Analysis", href: $"/files/{FileId}/file-analysis"),
-            new("Traffic Participants", href: null, disabled: true)
-        };
-        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+        BreadcrumbService.SetBreadcrumbs(AppRoutes.GetTrafficParticipantsPageBreadcrumbs(FileId, FileAnalysisId));
 
         if (RendererInfo.IsInteractive)
         {

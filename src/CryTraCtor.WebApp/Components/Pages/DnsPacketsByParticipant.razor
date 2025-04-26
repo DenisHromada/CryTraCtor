@@ -14,7 +14,7 @@
 <ParticipantNavButtonGroup FileId="FileId"
                            FileAnalysisId="FileAnalysisId"
                            ParticipantId="ParticipantId"
-                           ActiveView="ParticipantViewType.Dns" />
+                           ActiveView="ParticipantViewType.Dns"/>
 
 <h3>DNS Packets for Participant @(_participant?.Address):@(_participant?.Port)</h3>
 
@@ -93,14 +93,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var breadcrumbs = new List<BreadcrumbItem>
-        {
-            new("Files", href: "/files"),
-            new("File Analysis", href: $"/files/{FileId}/file-analysis"),
-            new("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
-            new("DNS Packets", href: null, disabled: true)
-        };
-        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+        BreadcrumbService
+            .SetBreadcrumbs(AppRoutes.GetTrafficParticipantDnsPageBreadcrumbs(FileId, FileAnalysisId, ParticipantId));
 
         if (RendererInfo.IsInteractive)
         {

@@ -1,11 +1,11 @@
 ﻿<MudNavMenu Class="nav-menu">
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <MudNavLink Href="@AppRoutes.HomePage" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
 
-    <MudNavLink Href="files" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Files</MudNavLink>
-    <MudNavLink Href="crypto-products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Inventory2">Crypto Products</MudNavLink>
-    <MudNavLink Href="known-domains" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Domain">Known Domains</MudNavLink>
+    <MudNavLink Href="@AppRoutes.FilesUrl()" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Files</MudNavLink>
+    <MudNavLink Href="@AppRoutes.CryptoProductsUrl()" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Inventory2">Crypto Products</MudNavLink>
+    <MudNavLink Href="@AppRoutes.KnownDomainsUrl()" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Domain">Known Domains</MudNavLink>
 
-    <MudNavLink Class="nav-menu-bottom" Href="status" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MonitorHeart">Status</MudNavLink>
+    <MudNavLink Class="nav-menu-bottom" Href="@AppRoutes.StatusUrl()" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MonitorHeart">Status</MudNavLink>
 </MudNavMenu>
 
 <style>

@@ -31,11 +31,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var breadcrumbs = new List<BreadcrumbItem>
-        {
-            new("Crypto Products", href: "/crypto-products", disabled: true)
-        };
-        BreadcrumbService.SetBreadcrumbs(breadcrumbs);
+        BreadcrumbService.SetBreadcrumbs(AppRoutes.GetCryptoProductsPageBreadcrumbs());
 
         await LoadDataAsync();
     }
