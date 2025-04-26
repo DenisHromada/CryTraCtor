@@ -46,8 +46,8 @@
     {
         var breadcrumbs = new List<BreadcrumbItem>
         {
-            new BreadcrumbItem("Files", href: "/files"),
-            new BreadcrumbItem("File Analysis", href: null, disabled: true)
+            new("Files", href: "/files"),
+            new("File Analysis", href: null, disabled: true)
         };
         BreadcrumbService.SetBreadcrumbs(breadcrumbs);
 

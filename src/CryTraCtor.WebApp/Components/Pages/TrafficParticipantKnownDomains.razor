@@ -83,10 +83,10 @@ else
 
         var breadcrumbs = new List<BreadcrumbItem>
         {
-            new BreadcrumbItem("Files", href: "/files"),
-            new BreadcrumbItem("File Analysis", href: $"/files/{FileId}/file-analysis"),
-            new BreadcrumbItem("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
-            new BreadcrumbItem("Known Domains", href: null, disabled: true)
+            new("Files", href: "/files"),
+            new("File Analysis", href: $"/files/{FileId}/file-analysis"),
+            new("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
+            new("Known Domains", href: null, disabled: true)
         };
         BreadcrumbService.SetBreadcrumbs(breadcrumbs);
 

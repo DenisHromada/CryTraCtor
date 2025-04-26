@@ -95,10 +95,10 @@
     {
         var breadcrumbs = new List<BreadcrumbItem>
         {
-            new BreadcrumbItem("Files", href: "/files"),
-            new BreadcrumbItem("File Analysis", href: $"/files/{FileId}/file-analysis"),
-            new BreadcrumbItem("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
-            new BreadcrumbItem("DNS Packets", href: null, disabled: true)
+            new("Files", href: "/files"),
+            new("File Analysis", href: $"/files/{FileId}/file-analysis"),
+            new("Traffic Participants", href: $"/files/{FileId}/file-analysis/{FileAnalysisId}/traffic-participants"),
+            new("DNS Packets", href: null, disabled: true)
         };
         BreadcrumbService.SetBreadcrumbs(breadcrumbs);
 
@@ -123,7 +123,7 @@
 
             var groupedByTransaction = _allDnsPackets.GroupBy(p => p.TransactionId).ToList();
             var transactionPackets = new HashSet<Guid>();
-            _dnsTransactions = new();
+            _dnsTransactions = [];
 
             foreach (var group in groupedByTransaction)
             {
