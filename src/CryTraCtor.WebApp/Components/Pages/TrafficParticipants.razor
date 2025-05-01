@@ -10,6 +10,10 @@
 
 <h3>Traffic Participants</h3>
 
+<MudPaper Class="pa-4 mb-4">
+    Checksum: @_checksum
+</MudPaper>
+
 <MudDataGrid Items="@_trafficParticipants" Hover="true"
              T="TrafficParticipantListModel">
     <Columns>
@@ -46,6 +50,7 @@
     [Parameter] public Guid FileId { get; set; }
     [Parameter] public Guid FileAnalysisId { get; set; }
     private List<TrafficParticipantListModel> _trafficParticipants = [];
+    private string _checksum = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,6 +67,15 @@
         try
         {
             _trafficParticipants = (await TrafficParticipantFacade.GetByFileAnalysisIdAsync(FileAnalysisId)).ToList();
+
+            // Calculate checksum
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                // Combine all properties into a single string for hashing
+                var combinedString = string.Join(",", _trafficParticipants.Select(e => $"{e.Address},{e.Port},{e.OutgoingDnsCount},{e.IncomingDnsCount},{e.UniqueMatchedKnownDomainCount},{e.TotalMatchedKnownDomainCount},{e.OutgoingBitcoinCount},{e.IncomingBitcoinCount}"));
+                var hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(combinedString));
+                _checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            }
         }
         catch (Exception ex)
         {

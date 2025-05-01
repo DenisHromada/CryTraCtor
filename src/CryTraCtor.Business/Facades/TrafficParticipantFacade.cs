@@ -39,7 +39,7 @@ public class TrafficParticipantFacade(
             IncomingBitcoinCount = dto.IncomingBitcoinCount,
             UniqueMatchedKnownDomainCount = dto.UniqueMatchedKnownDomainCount,
             TotalMatchedKnownDomainCount = dto.TotalMatchedKnownDomainCount
-        }).ToList();
+        }).OrderBy(p => p.Address).ThenBy(p => p.Port).ToList();
 
         return participantModels;
     }
