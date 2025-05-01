@@ -43,11 +43,14 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<IBitcoinPacketFacade, BitcoinPacketFacade>();
 
         serviceCollection
-            .AddScoped<DnsAnalysisService>()
             .AddScoped<FileAnalysisService>()
             .AddScoped<EndpointAnalysisService>()
-            .AddScoped<CsvService>()
+            .AddScoped<DnsAnalysisService>()
             .AddScoped<DomainMatchAssociationService>()
-            .AddScoped<BitcoinAnalysisService>();
+            .AddScoped<BitcoinAnalysisService>()
+            .AddScoped<BitcoinEndpointAssociationService>()
+            .AddScoped<CsvService>()
+
+            ;
     }
 }

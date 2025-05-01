@@ -15,7 +15,11 @@ public class BitcoinPacketModelMapper(TrafficParticipantListModelMapper trafficP
             FileAnalysisId = model.FileAnalysisId,
             SenderId = model.SenderId,
             RecipientId = model.RecipientId,
-            Timestamp = model.Timestamp
+            Timestamp = model.Timestamp,
+            Magic = model.Magic,
+            Command = model.Command,
+            Length = model.Length,
+            Checksum = model.Checksum
         };
 
     public override BitcoinPacketListModel MapToListModel(BitcoinPacketEntity? entity)
@@ -31,7 +35,8 @@ public class BitcoinPacketModelMapper(TrafficParticipantListModelMapper trafficP
             FileAnalysisId = entity.FileAnalysisId,
             SenderId = entity.SenderId,
             RecipientId = entity.RecipientId,
-            Timestamp = entity.Timestamp
+            Timestamp = entity.Timestamp,
+            Command = entity.Command
         };
     }
 
@@ -49,6 +54,10 @@ public class BitcoinPacketModelMapper(TrafficParticipantListModelMapper trafficP
             SenderId = entity.SenderId,
             RecipientId = entity.RecipientId,
             Timestamp = entity.Timestamp,
+            Magic = entity.Magic,
+            Command = entity.Command,
+            Length = entity.Length,
+            Checksum = entity.Checksum,
             Sender = trafficParticipantMapper.MapToListModel(entity.Sender),
             Recipient = trafficParticipantMapper.MapToListModel(entity.Recipient)
         };

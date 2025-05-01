@@ -138,4 +138,16 @@ public class TrafficParticipantFacade(
 
         return summary;
     }
+
+    public async Task<TrafficParticipantDetailModel?> GetByAddressPortAndFileAnalysisIdAsync(Guid fileAnalysisId,
+        string address, int port)
+    {
+        await using var uow = UnitOfWorkFactory.Create();
+        var participantRepo = uow.GetRepository<TrafficParticipantEntity, TrafficParticipantEntityMapper>();
+
+        var entity = await participantRepo.Get()
+            .FirstOrDefaultAsync(p => p.Address == address && p.Port == port && p.FileAnalysisId == fileAnalysisId);
+
+        return entity == null ? null : ModelMapper.MapToDetailModel(entity);
+    }
 }

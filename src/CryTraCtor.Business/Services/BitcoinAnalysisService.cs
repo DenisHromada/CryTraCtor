@@ -8,85 +8,64 @@ using Microsoft.Extensions.Logging;
 namespace CryTraCtor.Business.Services;
 
 public class BitcoinAnalysisService(
-    BitcoinPacketReader bitcoinPacketReader,
     IBitcoinPacketFacade bitcoinPacketFacade,
-    ITrafficParticipantFacade trafficParticipantFacade,
-    ILogger<BitcoinAnalysisService> logger)
+    ILogger<BitcoinAnalysisService> logger,
+    BitcoinPacketAnalyzer bitcoinPacketAnalyzer,
+    BitcoinEndpointAssociationService bitcoinEndpointAssociationService)
 {
     public async Task AnalyzeAsync(StoredFileDetailModel storedFile, Guid fileAnalysisId)
     {
-        if (string.IsNullOrEmpty(storedFile.InternalFilePath))
-        {
-            logger.LogError(
-                "[BitcoinAnalysisService] Stored file internal path missing for ID: {StoredFileId}. Skipping Bitcoin analysis for FileAnalysisId: {FileAnalysisId}",
-                storedFile.Id, fileAnalysisId);
-            return;
-        }
-
-        var internalFilePath = storedFile.InternalFilePath;
         logger.LogInformation(
             "[BitcoinAnalysisService] Starting Bitcoin analysis for FileAnalysisId: {FileAnalysisId} on file: {FilePath}",
-            fileAnalysisId, internalFilePath);
+            fileAnalysisId, storedFile.InternalFilePath);
 
-        IEnumerable<IBitcoinPacketSummary> bitcoinPackets;
+        IEnumerable<IBitcoinPacketSummary> bitcoinMessages;
         try
         {
-            bitcoinPackets = bitcoinPacketReader.Read(internalFilePath);
+            bitcoinMessages = bitcoinPacketAnalyzer.AnalyzeFromFile(storedFile.InternalFilePath);
         }
         catch (Exception ex)
         {
             logger.LogError(ex,
-                "[BitcoinAnalysisService] Error reading Bitcoin packets from {InternalFilePath} for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}",
-                internalFilePath, fileAnalysisId, ex.Message);
+                "[BitcoinAnalysisService] Error processing Bitcoin data chunks from {InternalFilePath} for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}",
+                storedFile.InternalFilePath, fileAnalysisId, ex.Message);
             return;
         }
 
-        var participants = await trafficParticipantFacade.GetByFileAnalysisIdAsync(fileAnalysisId);
-        var participantLookup = participants.ToDictionary(
-            p => $"{p.Address}:{p.Port}",
-            p => p.Id
-        );
-
-        int processedCount = 0;
-        foreach (var packetSummary in bitcoinPackets)
+        var processedMessageCount = 0;
+        foreach (var messageSummary in bitcoinMessages)
         {
             try
             {
-                var sourceKey = $"{packetSummary.Source.Address}:{packetSummary.Source.Port}";
-                var destinationKey = $"{packetSummary.Destination.Address}:{packetSummary.Destination.Port}";
-
-                participantLookup.TryGetValue(sourceKey, out var senderId);
-                participantLookup.TryGetValue(destinationKey, out var recipientId);
-
-                if (senderId == Guid.Empty || recipientId == Guid.Empty)
+                if (messageSummary is not BitcoinMessageSummary concreteSummary)
                 {
                     logger.LogWarning(
-                        "[BitcoinAnalysisService] Could not find sender ({SourceKey}) or recipient ({DestinationKey}) participant ID in lookup for FileAnalysisId: {FileAnalysisId}. Skipping Bitcoin packet at {Timestamp}",
-                        sourceKey, destinationKey, fileAnalysisId, packetSummary.Timestamp);
+                        "[BitcoinAnalysisService] Received unexpected summary type for FileAnalysisId: {FileAnalysisId}. Skipping.",
+                        fileAnalysisId);
                     continue;
                 }
 
-                var bitcoinPacketModel = new BitcoinPacketDetailModel
+                var bitcoinPacketModel = await bitcoinEndpointAssociationService.AssociateAsync(fileAnalysisId, concreteSummary);
+
+                if (bitcoinPacketModel == null)
                 {
-                    FileAnalysisId = fileAnalysisId,
-                    SenderId = senderId,
-                    RecipientId = recipientId,
-                    Timestamp = packetSummary.Timestamp
-                };
+                    continue;
+                }
 
                 await bitcoinPacketFacade.CreateOrUpdateAsync(bitcoinPacketModel);
-                processedCount++;
+                processedMessageCount++;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex,
-                    "[BitcoinAnalysisService] Error processing Bitcoin packet for FileAnalysisId: {FileAnalysisId} at {Timestamp}. Error: {ErrorMessage}",
-                    fileAnalysisId, packetSummary?.Timestamp, ex.Message);
+                logger.LogError(0, ex,
+                    "[BitcoinAnalysisService] Error processing Bitcoin message summary (Command: {Command}) for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}",
+                    messageSummary?.GetSerializedPacketString() ?? "unknown", fileAnalysisId, ex.Message);
             }
         }
 
+
         logger.LogInformation(
-            "[BitcoinAnalysisService] Completed Bitcoin analysis for FileAnalysisId: {FileAnalysisId}. Processed {ProcessedCount} packets.",
-            fileAnalysisId, processedCount);
+            "[BitcoinAnalysisService] Completed Bitcoin analysis for FileAnalysisId: {FileAnalysisId}. Processed {ProcessedMessageCount} messages.",
+            fileAnalysisId, processedMessageCount);
     }
 }

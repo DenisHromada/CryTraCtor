@@ -10,23 +10,58 @@
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
 @inject IBreadcrumbService BreadcrumbService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Bitcoin Messages for Participant</PageTitle>
 
 <ParticipantNavButtonGroup FileId="FileId"
                            FileAnalysisId="FileAnalysisId"
                            ParticipantId="ParticipantId"
                            ActiveView="ParticipantViewType.Bitcoin"/>
 
-<h3>Bitcoin Packets for Participant @(_participant?.Address):@(_participant?.Port)</h3>
+@if (_participant != null)
+{
+    <h3>Bitcoin Messages for Participant @_participant.Address:@_participant.Port</h3>
 
-<MudDataGrid Items="@_bitcoinPackets" T="BitcoinPacketDetailModel">
-    <Columns>
-        <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
-        <PropertyColumn Property="x => x.Sender!.Address" Title="Sender Address"/>
-        <PropertyColumn Property="x => x.Sender!.Port" Title="Sender Port"/>
-        <PropertyColumn Property="x => x.Recipient!.Address" Title="Recipient Address"/>
-        <PropertyColumn Property="x => x.Recipient!.Port" Title="Recipient Port"/>
-    </Columns>
-</MudDataGrid>
+    <h4 class="mt-4">Incoming Messages</h4>
+    @if (_incomingPackets.Any())
+    {
+        <MudDataGrid Items="@_incomingPackets" T="BitcoinPacketDetailModel" Dense="true" Striped="true" Hover="true">
+            <Columns>
+                <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+                <PropertyColumn Property="x => x.Command" Title="Command"/>
+                <PropertyColumn Property="x => x.Sender!.Address" Title="Sender Address"/>
+                <PropertyColumn Property="x => x.Sender!.Port" Title="Sender Port"/>
+            </Columns>
+        </MudDataGrid>
+    }
+    else
+    {
+        <MudText>No incoming Bitcoin messages found for this participant.</MudText>
+    }
+
+
+    <h4 class="mt-6">Outgoing Messages</h4>
+    @if (_outgoingPackets.Any())
+    {
+        <MudDataGrid Items="@_outgoingPackets" T="BitcoinPacketDetailModel" Dense="true" Striped="true" Hover="true">
+            <Columns>
+                <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+                <PropertyColumn Property="x => x.Command" Title="Command"/>
+                <PropertyColumn Property="x => x.Recipient!.Address" Title="Recipient Address"/>
+                <PropertyColumn Property="x => x.Recipient!.Port" Title="Recipient Port"/>
+            </Columns>
+        </MudDataGrid>
+    }
+    else
+    {
+        <MudText>No outgoing Bitcoin messages found for this participant.</MudText>
+    }
+}
+else
+{
+    <MudProgressCircular Indeterminate="true"/>
+}
 
 
 @code {
@@ -35,49 +70,61 @@
     [Parameter] public Guid ParticipantId { get; set; }
 
     private TrafficParticipantDetailModel? _participant;
-    private List<BitcoinPacketDetailModel> _bitcoinPackets = [];
+    private List<BitcoinPacketDetailModel> _incomingPackets = [];
+    private List<BitcoinPacketDetailModel> _outgoingPackets = [];
+    private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        BreadcrumbService
-            .SetBreadcrumbs(AppRoutes.GetTrafficParticipantBitcoinPageBreadcrumbs(FileId, FileAnalysisId, ParticipantId));
+        _isLoading = true;
+        _participant = await TrafficParticipantFacade.GetAsync(ParticipantId);
+        if (_participant != null)
+        {
+            BreadcrumbService.SetBreadcrumbs(AppRoutes.GetTrafficParticipantBitcoinPageBreadcrumbs(FileId, FileAnalysisId, ParticipantId));
+        }
+        else
+        {
+            Snackbar.Add($"Participant with ID {ParticipantId} not found.", Severity.Error);
+        }
 
         if (RendererInfo.IsInteractive)
         {
             await LoadBitcoinPacketsAsync();
         }
+
+        _isLoading = false;
+        StateHasChanged();
     }
 
 
     private async Task LoadBitcoinPacketsAsync()
     {
+        if (_participant == null) return;
+
         try
         {
-            _participant = await TrafficParticipantFacade.GetAsync(ParticipantId);
-            if (_participant == null)
-            {
-                Snackbar.Add($"Participant with ID {ParticipantId} not found.", Severity.Error);
-                _bitcoinPackets = [];
-                return;
-            }
-
             var allPackets = await BitcoinPacketFacade.GetByFileAnalysisIdAsync(FileAnalysisId);
 
-            _bitcoinPackets = allPackets
-                .Where(p => p.SenderId == ParticipantId || p.RecipientId == ParticipantId)
+            _incomingPackets = allPackets
+                .Where(p => p.RecipientId == ParticipantId)
                 .OrderBy(p => p.Timestamp)
                 .ToList();
 
-            if (!_bitcoinPackets.Any())
+            _outgoingPackets = allPackets
+                .Where(p => p.SenderId == ParticipantId)
+                .OrderBy(p => p.Timestamp)
+                .ToList();
+
+            if (!_incomingPackets.Any() && !_outgoingPackets.Any())
             {
-                Snackbar.Add($"No Bitcoin packets found for participant {_participant.Address}:{_participant.Port}.", Severity.Info);
+                Snackbar.Add($"No Bitcoin messages found for participant {_participant.Address}:{_participant.Port}.", Severity.Info);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error loading Bitcoin packet data: {ex.Message}", Severity.Error);
-            _participant = null;
-            _bitcoinPackets = [];
+            Snackbar.Add($"Error loading Bitcoin message data: {ex.Message}", Severity.Error);
+            _incomingPackets = [];
+            _outgoingPackets = [];
         }
     }
 
