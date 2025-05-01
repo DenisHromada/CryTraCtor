@@ -92,7 +92,7 @@
         }
 
         await FileAnalysisFacade.DeleteAsync((Guid)id);
-        _elements = (await FileAnalysisFacade.GetAllAsync()).ToList();
+        await LoadAnalysesAsync();
         Snackbar.Add($"Analysis deleted successfully", Severity.Success);
     }
 
