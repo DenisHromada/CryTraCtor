@@ -8,14 +8,14 @@ using CryTraCtor.Business.Models.TrafficParticipants;
 
 namespace CryTraCtor.Business.Facades;
 
-public class DnsPacketFacade(
+public class DnsMessageFacade(
     IUnitOfWorkFactory unitOfWorkFactory,
-    DnsPacketModelMapper modelMapper
+    DnsMessageModelMapper modelMapper
 )
-    : FacadeBase<DnsPacketEntity, DnsPacketModel, DnsPacketModel, DnsPacketEntityMapper>(unitOfWorkFactory,
-        modelMapper), IDnsPacketFacade
+    : FacadeBase<DnsPacketEntity, DnsMessageModel, DnsMessageModel, DnsPacketEntityMapper>(unitOfWorkFactory,
+        modelMapper), IDnsMessageFacade
 {
-    public async Task<IEnumerable<DnsPacketModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId)
+    public async Task<IEnumerable<DnsMessageModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId)
     {
         await using var uow = UnitOfWorkFactory.Create();
 
@@ -55,7 +55,7 @@ public class DnsPacketFacade(
                     }
                     : null;
 
-                return new DnsPacketModel
+                return new DnsMessageModel
                 {
                     Id = firstDto.Id,
                     Timestamp = firstDto.Timestamp,

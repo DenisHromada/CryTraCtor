@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CryTraCtor.Database.Entities;
 
 [Table("BitcoinPacket")]
-public class BitcoinPacketEntity : PacketEntityBase
+public class BitcoinMessageEntity : PacketEntityBase
 {
     public uint Magic { get; set; }
     public string Command { get; set; } = string.Empty;

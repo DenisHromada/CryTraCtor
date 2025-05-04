@@ -8,9 +8,9 @@ namespace CryTraCtor.Business.Mappers.Bitcoin;
 public class BitcoinPacketModelMapper(
     TrafficParticipantListModelMapper trafficParticipantMapper,
     BitcoinTransactionMapper bitcoinTransactionMapper
-) : ModelMapperBase<BitcoinPacketEntity, BitcoinPacketListModel, BitcoinPacketDetailModel>
+) : ModelMapperBase<BitcoinMessageEntity, BitcoinMessageListModel, BitcoinMessageDetailModel>
 {
-    public override BitcoinPacketEntity MapToEntity(BitcoinPacketDetailModel model)
+    public override BitcoinMessageEntity MapToEntity(BitcoinMessageDetailModel model)
         => new()
         {
             Id = model.Id == Guid.Empty ? Guid.NewGuid() : model.Id,
@@ -24,14 +24,14 @@ public class BitcoinPacketModelMapper(
             Checksum = model.Checksum
         };
 
-    public override BitcoinPacketListModel MapToListModel(BitcoinPacketEntity? entity)
+    public override BitcoinMessageListModel MapToListModel(BitcoinMessageEntity? entity)
     {
         if (entity == null)
         {
             return null!;
         }
 
-        return new BitcoinPacketListModel
+        return new BitcoinMessageListModel
         {
             Id = entity.Id,
             FileAnalysisId = entity.FileAnalysisId,
@@ -45,14 +45,14 @@ public class BitcoinPacketModelMapper(
         };
     }
 
-    public override BitcoinPacketDetailModel MapToDetailModel(BitcoinPacketEntity? entity)
+    public override BitcoinMessageDetailModel MapToDetailModel(BitcoinMessageEntity? entity)
     {
         if (entity == null)
         {
             return null!;
         }
 
-        var detailModel = new BitcoinPacketDetailModel
+        var detailModel = new BitcoinMessageDetailModel
         {
             Id = entity.Id,
             FileAnalysisId = entity.FileAnalysisId,

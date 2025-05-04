@@ -6,7 +6,7 @@
 @using CryTraCtor.WebApp.Services
 @using CryTraCtor.WebApp.Enums
 
-@inject IDnsPacketFacade DnsPacketFacade
+@inject IDnsMessageFacade DnsMessageFacade
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
 @inject IBreadcrumbService BreadcrumbService
@@ -86,9 +86,9 @@
     [Parameter] public Guid ParticipantId { get; set; }
 
     private TrafficParticipantDetailModel? _participant;
-    private List<DnsPacketModel> _allDnsPackets = [];
-    private List<DnsPacketModel> _dnsQueries = [];
-    private List<DnsPacketModel> _dnsResponses = [];
+    private List<DnsMessageModel> _allDnsPackets = [];
+    private List<DnsMessageModel> _dnsQueries = [];
+    private List<DnsMessageModel> _dnsResponses = [];
     private List<DnsTransactionDisplayModel> _dnsTransactions = [];
 
     protected override async Task OnInitializedAsync()
@@ -113,7 +113,7 @@
                 return;
             }
 
-            _allDnsPackets = (await DnsPacketFacade.GetByFileAnalysisIdAsync(FileAnalysisId)).ToList();
+            _allDnsPackets = (await DnsMessageFacade.GetByFileAnalysisIdAsync(FileAnalysisId)).ToList();
 
             var groupedByTransaction = _allDnsPackets.GroupBy(p => p.TransactionId).ToList();
             var transactionPackets = new HashSet<Guid>();

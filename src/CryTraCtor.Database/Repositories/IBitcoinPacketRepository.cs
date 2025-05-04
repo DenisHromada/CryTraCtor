@@ -2,7 +2,7 @@ using CryTraCtor.Database.Entities;
 
 namespace CryTraCtor.Database.Repositories;
 
-public interface IBitcoinPacketRepository : IRepository<BitcoinPacketEntity>
+public interface IBitcoinPacketRepository : IRepository<BitcoinMessageEntity>
 {
-    Task<IEnumerable<BitcoinPacketEntity>> GetByInventoryIdAndAnalysisIdAsync(Guid inventoryId, Guid fileAnalysisId);
+    Task<IEnumerable<BitcoinMessageEntity>> GetByInventoryIdAndAnalysisIdAsync(Guid inventoryId, Guid fileAnalysisId);
 }

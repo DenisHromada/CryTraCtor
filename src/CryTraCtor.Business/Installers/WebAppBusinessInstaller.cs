@@ -28,7 +28,7 @@ public class WebAppBusinessInstaller : IInstaller
             .AddSingleton<TrafficParticipantModelMapper>()
             .AddSingleton<FileAnalysisListModelMapper>()
             .AddSingleton<FileAnalysisModelMapper>()
-            .AddSingleton<DnsPacketModelMapper>()
+            .AddSingleton<DnsMessageModelMapper>()
             .AddSingleton<DomainMatchMapper>()
             .AddSingleton<BitcoinPacketModelMapper>()
             .AddSingleton<BitcoinTransactionMapper>()
@@ -41,9 +41,9 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<IKnownDomainImportFacade, KnownDomainImportFacade>()
             .AddScoped<ITrafficParticipantFacade, TrafficParticipantFacade>()
             .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>()
-            .AddScoped<IDnsPacketFacade, DnsPacketFacade>()
+            .AddScoped<IDnsMessageFacade, DnsMessageFacade>()
             .AddScoped<IDomainMatchFacade, DomainMatchFacade>()
-            .AddScoped<IBitcoinPacketFacade, BitcoinPacketFacade>()
+            .AddScoped<IBitcoinMessageFacade, BitcoinMessageFacade>()
             .AddScoped<IBitcoinInventoryFacade, BitcoinInventoryFacade>();
 
         serviceCollection

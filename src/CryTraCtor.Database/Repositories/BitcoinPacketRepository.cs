@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.Repositories;
 
-public class BitcoinPacketRepository(CryTraCtorDbContext dbContext, IEntityMapper<BitcoinPacketEntity> entityMapper)
-    : Repository<BitcoinPacketEntity>(dbContext, entityMapper), IBitcoinPacketRepository
+public class BitcoinPacketRepository(CryTraCtorDbContext dbContext, IEntityMapper<BitcoinMessageEntity> entityMapper)
+    : Repository<BitcoinMessageEntity>(dbContext, entityMapper), IBitcoinPacketRepository
 {
-    public async Task<IEnumerable<BitcoinPacketEntity>> GetByInventoryIdAndAnalysisIdAsync(Guid inventoryId, Guid fileAnalysisId)
+    public async Task<IEnumerable<BitcoinMessageEntity>> GetByInventoryIdAndAnalysisIdAsync(Guid inventoryId, Guid fileAnalysisId)
     {
         return await Get()
             .Include(p => p.Sender)

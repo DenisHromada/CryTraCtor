@@ -6,7 +6,7 @@ namespace CryTraCtor.Database.Entities;
 public class BitcoinPacketTransactionEntity
 {
     public Guid BitcoinPacketId { get; set; }
-    public BitcoinPacketEntity BitcoinPacket { get; set; } = null!;
+    public BitcoinMessageEntity BitcoinMessage { get; set; } = null!;
 
     public Guid BitcoinTransactionId { get; set; }
     public BitcoinTransactionEntity BitcoinTransaction { get; set; } = null!;

@@ -10,7 +10,7 @@ namespace CryTraCtor.Business.Services;
 
 public class DnsAnalysisService(
     DnsPacketReader dnsPacketReader,
-    IDnsPacketFacade dnsPacketFacade,
+    IDnsMessageFacade dnsMessageFacade,
     ITrafficParticipantFacade trafficParticipantFacade,
     DomainMatchAssociationService domainMatchAssociationService,
     ILogger<DnsAnalysisService> logger)
@@ -49,7 +49,7 @@ public class DnsAnalysisService(
 
         foreach (var packetSummary in dnsPackets)
         {
-            DnsPacketModel? dnsPacketModel = null;
+            DnsMessageModel? dnsPacketModel = null;
 
             try
             {
@@ -71,7 +71,7 @@ public class DnsAnalysisService(
                 {
                     if (query.Query is { RecordType: "A" or "AAAA" })
                     {
-                        dnsPacketModel = new DnsPacketModel
+                        dnsPacketModel = new DnsMessageModel
                         {
                             Id = Guid.NewGuid(),
                             FileAnalysisId = fileAnalysisId,
@@ -99,7 +99,7 @@ public class DnsAnalysisService(
 
                         if (addresses.Any())
                         {
-                            dnsPacketModel = new DnsPacketModel
+                            dnsPacketModel = new DnsMessageModel
                             {
                                 Id = Guid.NewGuid(),
                                 FileAnalysisId = fileAnalysisId,
@@ -118,7 +118,7 @@ public class DnsAnalysisService(
 
                 if (dnsPacketModel != null)
                 {
-                    await dnsPacketFacade.CreateOrUpdateAsync(dnsPacketModel);
+                    await dnsMessageFacade.CreateOrUpdateAsync(dnsPacketModel);
                 }
             }
             catch (Exception ex)

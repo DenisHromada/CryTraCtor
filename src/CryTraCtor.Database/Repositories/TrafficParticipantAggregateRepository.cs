@@ -26,9 +26,9 @@ public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext
                 IncomingDnsCount = _dbContext.Set<DnsPacketEntity>()
                     .Count(dns => dns.FileAnalysisId == fileAnalysisId && dns.RecipientId == tp.Id),
 
-                OutgoingBitcoinCount = _dbContext.Set<BitcoinPacketEntity>()
+                OutgoingBitcoinCount = _dbContext.Set<BitcoinMessageEntity>()
                     .Count(btc => btc.FileAnalysisId == fileAnalysisId && btc.SenderId == tp.Id),
-                IncomingBitcoinCount = _dbContext.Set<BitcoinPacketEntity>()
+                IncomingBitcoinCount = _dbContext.Set<BitcoinMessageEntity>()
                     .Count(btc => btc.FileAnalysisId == fileAnalysisId && btc.RecipientId == tp.Id),
 
                 TotalMatchedKnownDomainCount = _dbContext.Set<DomainMatchEntity>()

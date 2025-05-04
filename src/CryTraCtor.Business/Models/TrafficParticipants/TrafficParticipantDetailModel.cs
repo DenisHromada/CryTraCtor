@@ -10,8 +10,8 @@ public class TrafficParticipantDetailModel : IModel
 
     public FileAnalysisListModel FileAnalysis { get; set; } = FileAnalysisListModel.Empty();
 
-    public ICollection<DnsPacketModel> SentDnsPackets { get; set; } = new List<DnsPacketModel>();
-    public ICollection<DnsPacketModel> ReceivedDnsPackets { get; set; } = new List<DnsPacketModel>();
+    public ICollection<DnsMessageModel> SentDnsPackets { get; set; } = new List<DnsMessageModel>();
+    public ICollection<DnsMessageModel> ReceivedDnsPackets { get; set; } = new List<DnsMessageModel>();
 
     public static TrafficParticipantDetailModel Empty() => new();
 }

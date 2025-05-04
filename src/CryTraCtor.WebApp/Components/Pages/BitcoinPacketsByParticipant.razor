@@ -8,7 +8,7 @@
 @using System.Linq
 @using CryTraCtor.Business.Models.Bitcoin
 
-@inject IBitcoinPacketFacade BitcoinPacketFacade
+@inject IBitcoinMessageFacade BitcoinMessageFacade
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
 @inject IBreadcrumbService BreadcrumbService
@@ -27,7 +27,7 @@
     <h4 class="mt-4">Incoming Messages</h4>
     @if (_incomingPackets.Any())
     {
-        <MudDataGrid Items="@_incomingPackets" T="BitcoinPacketDetailModel" Dense="true" Striped="true" Hover="true">
+        <MudDataGrid Items="@_incomingPackets" T="BitcoinMessageDetailModel" Dense="true" Striped="true" Hover="true">
             <Columns>
                 <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
                 <PropertyColumn Property="x => x.Command" Title="Command"/>
@@ -70,7 +70,7 @@
     <h4 class="mt-6">Outgoing Messages</h4>
     @if (_outgoingPackets.Any())
     {
-        <MudDataGrid Items="@_outgoingPackets" T="BitcoinPacketDetailModel" Dense="true" Striped="true" Hover="true">
+        <MudDataGrid Items="@_outgoingPackets" T="BitcoinMessageDetailModel" Dense="true" Striped="true" Hover="true">
             <Columns>
                 <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
                 <PropertyColumn Property="x => x.Command" Title="Command"/>
@@ -117,8 +117,8 @@ else
     [Parameter] public Guid ParticipantId { get; set; }
 
     private TrafficParticipantDetailModel? _participant;
-    private List<BitcoinPacketDetailModel> _incomingPackets = [];
-    private List<BitcoinPacketDetailModel> _outgoingPackets = [];
+    private List<BitcoinMessageDetailModel> _incomingPackets = [];
+    private List<BitcoinMessageDetailModel> _outgoingPackets = [];
     private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
@@ -150,7 +150,7 @@ else
 
         try
         {
-            var allPackets = await BitcoinPacketFacade.GetByFileAnalysisIdAsync(FileAnalysisId);
+            var allPackets = await BitcoinMessageFacade.GetByFileAnalysisIdAsync(FileAnalysisId);
 
             _incomingPackets = allPackets
                 .Where(p => p.RecipientId == ParticipantId)

@@ -1,6 +1,6 @@
 namespace CryTraCtor.Business.Models;
 
-public interface IPacketModelBase : IModel
+public interface IMessageModelBase : IModel
 {
     Guid FileAnalysisId { get; set; }
     Guid SenderId { get; set; }

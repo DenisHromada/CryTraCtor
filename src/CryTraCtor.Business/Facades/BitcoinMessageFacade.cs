@@ -9,30 +9,30 @@ using Microsoft.Extensions.Logging;
 
 namespace CryTraCtor.Business.Facades;
 
-public class BitcoinPacketFacade(
+public class BitcoinMessageFacade(
     IUnitOfWorkFactory unitOfWorkFactory,
     BitcoinPacketModelMapper modelMapper,
-    ILogger<BitcoinPacketFacade> logger)
-    : FacadeBase<BitcoinPacketEntity, BitcoinPacketListModel, BitcoinPacketDetailModel, BitcoinPacketEntityMapper>(
-        unitOfWorkFactory, modelMapper), IBitcoinPacketFacade
+    ILogger<BitcoinMessageFacade> logger)
+    : FacadeBase<BitcoinMessageEntity, BitcoinMessageListModel, BitcoinMessageDetailModel, BitcoinPacketEntityMapper>(
+        unitOfWorkFactory, modelMapper), IBitcoinMessageFacade
 {
     protected override ICollection<string> IncludesNavigationPathDetail =>
         new List<string>
         {
-            nameof(BitcoinPacketEntity.Sender),
-            nameof(BitcoinPacketEntity.Recipient),
-            $"{nameof(BitcoinPacketEntity.BitcoinPacketInventories)}.{nameof(BitcoinPacketInventoryEntity.BitcoinInventory)}",
-            $"{nameof(BitcoinPacketEntity.BitcoinPacketTransactions)}.{nameof(BitcoinPacketTransactionEntity.BitcoinTransaction)}.{nameof(BitcoinTransactionEntity.Inputs)}",
-            $"{nameof(BitcoinPacketEntity.BitcoinPacketTransactions)}.{nameof(BitcoinPacketTransactionEntity.BitcoinTransaction)}.{nameof(BitcoinTransactionEntity.Outputs)}",
-            $"{nameof(BitcoinPacketEntity.BitcoinPacketHeaders)}.{nameof(BitcoinPacketHeaderEntity.BitcoinBlockHeader)}"
+            nameof(BitcoinMessageEntity.Sender),
+            nameof(BitcoinMessageEntity.Recipient),
+            $"{nameof(BitcoinMessageEntity.BitcoinPacketInventories)}.{nameof(BitcoinPacketInventoryEntity.BitcoinInventory)}",
+            $"{nameof(BitcoinMessageEntity.BitcoinPacketTransactions)}.{nameof(BitcoinPacketTransactionEntity.BitcoinTransaction)}.{nameof(BitcoinTransactionEntity.Inputs)}",
+            $"{nameof(BitcoinMessageEntity.BitcoinPacketTransactions)}.{nameof(BitcoinPacketTransactionEntity.BitcoinTransaction)}.{nameof(BitcoinTransactionEntity.Outputs)}",
+            $"{nameof(BitcoinMessageEntity.BitcoinPacketHeaders)}.{nameof(BitcoinPacketHeaderEntity.BitcoinBlockHeader)}"
         };
 
-    public override async Task<BitcoinPacketDetailModel> CreateOrUpdateAsync(BitcoinPacketDetailModel model)
+    public override async Task<BitcoinMessageDetailModel> CreateOrUpdateAsync(BitcoinMessageDetailModel model)
     {
         try
         {
             await using var uow = UnitOfWorkFactory.Create();
-            var packetRepository = uow.GetRepository<BitcoinPacketEntity, BitcoinPacketEntityMapper>();
+            var packetRepository = uow.GetRepository<BitcoinMessageEntity, BitcoinPacketEntityMapper>();
             var inventoryRepository = uow.BitcoinInventories;
             var transactionRepository = uow.BitcoinTransactions;
             var blockHeaderRepository = uow.BitcoinBlockHeaders;
@@ -51,7 +51,7 @@ public class BitcoinPacketFacade(
 
                         var packetInventoryEntity = new BitcoinPacketInventoryEntity
                         {
-                            BitcoinPacket = entity,
+                            BitcoinMessage = entity,
                             BitcoinInventory = inventoryEntity
                         };
 
@@ -94,7 +94,7 @@ public class BitcoinPacketFacade(
 
                     var packetTransactionEntity = new BitcoinPacketTransactionEntity
                     {
-                        BitcoinPacket = entity,
+                        BitcoinMessage = entity,
                         BitcoinTransaction = transactionEntity
                     };
 
@@ -120,7 +120,7 @@ public class BitcoinPacketFacade(
 
                         var packetHeaderEntity = new BitcoinPacketHeaderEntity
                         {
-                            BitcoinPacket = entity,
+                            BitcoinMessage = entity,
                             BitcoinBlockHeader = blockHeaderEntity
                         };
 
@@ -146,13 +146,13 @@ public class BitcoinPacketFacade(
     }
 
 
-    public async Task<IEnumerable<BitcoinPacketDetailModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId)
+    public async Task<IEnumerable<BitcoinMessageDetailModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId)
     {
         try
         {
             await using var uow = UnitOfWorkFactory.Create();
 
-            var repository = uow.GetRepository<BitcoinPacketEntity, BitcoinPacketEntityMapper>();
+            var repository = uow.GetRepository<BitcoinMessageEntity, BitcoinPacketEntityMapper>();
 
             var entities = await repository.Get()
                 .Include(p => p.Sender)
@@ -182,7 +182,7 @@ public class BitcoinPacketFacade(
         }
     }
 
-    public async Task<IEnumerable<BitcoinPacketListModel>> GetPacketListByInventoryIdAndAnalysisIdAsync(
+    public async Task<IEnumerable<BitcoinMessageListModel>> GetPacketListByInventoryIdAndAnalysisIdAsync(
         Guid inventoryId, Guid fileAnalysisId)
     {
         await using var uow = UnitOfWorkFactory.Create();

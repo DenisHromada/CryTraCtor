@@ -15,7 +15,7 @@
 
     @if (_inventoryDetailModel.ReferencingPackets != null)
     {
-        <MudDataGrid Items="@_inventoryDetailModel.ReferencingPackets" T="BitcoinPacketDetailModel" Dense="true"
+        <MudDataGrid Items="@_inventoryDetailModel.ReferencingPackets" T="BitcoinMessageDetailModel" Dense="true"
                      Striped="true" Hover="true">
             <Columns>
                 <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>

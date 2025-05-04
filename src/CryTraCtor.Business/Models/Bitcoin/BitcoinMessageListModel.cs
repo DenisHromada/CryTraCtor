@@ -1,6 +1,6 @@
 namespace CryTraCtor.Business.Models.Bitcoin;
 
-public class BitcoinPacketListModel : IPacketModelBase
+public class BitcoinMessageListModel : IMessageModelBase
 {
     public Guid Id { get; set; }
 

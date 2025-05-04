@@ -5,11 +5,11 @@ using CryTraCtor.Database.Entities;
 
 namespace CryTraCtor.Business.Mappers;
 
-public class DnsPacketModelMapper(
+public class DnsMessageModelMapper(
     TrafficParticipantListModelMapper trafficParticipantListModelMapper
-) : ModelMapperBase<DnsPacketEntity, DnsPacketModel, DnsPacketModel>
+) : ModelMapperBase<DnsPacketEntity, DnsMessageModel, DnsMessageModel>
 {
-    public override DnsPacketEntity MapToEntity(DnsPacketModel model)
+    public override DnsPacketEntity MapToEntity(DnsMessageModel model)
         => new()
         {
             Id = model.Id,
@@ -24,14 +24,14 @@ public class DnsPacketModelMapper(
             FileAnalysisId = model.FileAnalysisId,
         };
 
-    public override DnsPacketModel MapToListModel(DnsPacketEntity? entity)
+    public override DnsMessageModel MapToListModel(DnsPacketEntity? entity)
     {
         if (entity == null)
         {
             return null;
         }
 
-        return new DnsPacketModel
+        return new DnsMessageModel
         {
             Id = entity.Id,
             SenderId = entity.SenderId,
@@ -51,5 +51,5 @@ public class DnsPacketModelMapper(
         };
     }
 
-    public override DnsPacketModel? MapToDetailModel(DnsPacketEntity? entity) => MapToListModel(entity);
+    public override DnsMessageModel? MapToDetailModel(DnsPacketEntity? entity) => MapToListModel(entity);
 }

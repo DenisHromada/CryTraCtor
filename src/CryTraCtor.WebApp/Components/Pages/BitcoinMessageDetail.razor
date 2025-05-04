@@ -4,7 +4,7 @@
 @using CryTraCtor.Business.Models.Bitcoin
 @using CryTraCtor.WebApp.Services
 
-@inject IBitcoinPacketFacade BitcoinPacketFacade
+@inject IBitcoinMessageFacade BitcoinMessageFacade
 @inject ISnackbar Snackbar
 @inject IBreadcrumbService BreadcrumbService
 
@@ -148,7 +148,7 @@ else
     [Parameter] public Guid ParticipantId { get; set; }
     [Parameter] public Guid MessageId { get; set; }
 
-    private BitcoinPacketDetailModel? _messageDetail;
+    private BitcoinMessageDetailModel? _messageDetail;
 
     protected override async Task OnInitializedAsync()
     {
@@ -164,7 +164,7 @@ else
     {
         try
         {
-            _messageDetail = await BitcoinPacketFacade.GetAsync(MessageId);
+            _messageDetail = await BitcoinMessageFacade.GetAsync(MessageId);
             if (_messageDetail == null)
             {
                 Snackbar.Add($"Bitcoin message with ID {MessageId} not found.", Severity.Warning);

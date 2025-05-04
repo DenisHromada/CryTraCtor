@@ -2,7 +2,7 @@ using CryTraCtor.Business.Models.TrafficParticipants;
 
 namespace CryTraCtor.Business.Models.Bitcoin;
 
-public class BitcoinPacketDetailModel : IPacketModelBase
+public class BitcoinMessageDetailModel : IMessageModelBase
 {
     public Guid Id { get; set; }
 

@@ -38,10 +38,10 @@ public class BitcoinInventoryFacade(
         var inventoryEntity = await inventoryRepository.Get()
             .Where(inv => inv.Id == inventoryId)
             .Include(inv => inv.BitcoinPacketInventories)
-            .ThenInclude(bpi => bpi.BitcoinPacket)
+            .ThenInclude(bpi => bpi.BitcoinMessage)
             .ThenInclude(packet => packet.Sender)
             .Include(inv => inv.BitcoinPacketInventories)
-            .ThenInclude(bpi => bpi.BitcoinPacket)
+            .ThenInclude(bpi => bpi.BitcoinMessage)
             .ThenInclude(packet => packet.Recipient)
             .FirstOrDefaultAsync();
 
@@ -56,29 +56,29 @@ public class BitcoinInventoryFacade(
             Type = inventoryEntity.Type,
             Hash = inventoryEntity.Hash,
             ReferencingPackets = inventoryEntity.BitcoinPacketInventories
-                .Where(bpi => bpi.BitcoinPacket.FileAnalysisId == fileAnalysisId)
-                .Select(bpi => new BitcoinPacketDetailModel
+                .Where(bpi => bpi.BitcoinMessage.FileAnalysisId == fileAnalysisId)
+                .Select(bpi => new BitcoinMessageDetailModel
                 {
-                    Id = bpi.BitcoinPacket.Id,
-                    FileAnalysisId = bpi.BitcoinPacket.FileAnalysisId,
-                    SenderId = bpi.BitcoinPacket.SenderId,
-                    RecipientId = bpi.BitcoinPacket.RecipientId,
-                    Timestamp = bpi.BitcoinPacket.Timestamp,
-                    Command = bpi.BitcoinPacket.Command,
-                    Sender = bpi.BitcoinPacket.Sender != null
+                    Id = bpi.BitcoinMessage.Id,
+                    FileAnalysisId = bpi.BitcoinMessage.FileAnalysisId,
+                    SenderId = bpi.BitcoinMessage.SenderId,
+                    RecipientId = bpi.BitcoinMessage.RecipientId,
+                    Timestamp = bpi.BitcoinMessage.Timestamp,
+                    Command = bpi.BitcoinMessage.Command,
+                    Sender = bpi.BitcoinMessage.Sender != null
                         ? new TrafficParticipantListModel
                         {
-                            Id = bpi.BitcoinPacket.Sender.Id,
-                            Address = bpi.BitcoinPacket.Sender.Address,
-                            Port = bpi.BitcoinPacket.Sender.Port,
+                            Id = bpi.BitcoinMessage.Sender.Id,
+                            Address = bpi.BitcoinMessage.Sender.Address,
+                            Port = bpi.BitcoinMessage.Sender.Port,
                         }
                         : null,
-                    Recipient = bpi.BitcoinPacket.Recipient != null
+                    Recipient = bpi.BitcoinMessage.Recipient != null
                         ? new TrafficParticipantListModel
                         {
-                            Id = bpi.BitcoinPacket.Recipient.Id,
-                            Address = bpi.BitcoinPacket.Recipient.Address,
-                            Port = bpi.BitcoinPacket.Recipient.Port,
+                            Id = bpi.BitcoinMessage.Recipient.Id,
+                            Address = bpi.BitcoinMessage.Recipient.Address,
+                            Port = bpi.BitcoinMessage.Recipient.Port,
                         }
                         : null,
                 })

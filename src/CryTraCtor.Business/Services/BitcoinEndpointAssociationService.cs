@@ -12,7 +12,7 @@ public class BitcoinEndpointAssociationService(
     BitcoinTransactionMapper bitcoinTransactionMapper,
     BitcoinBlockHeaderMapper bitcoinBlockHeaderMapper)
 {
-    public async Task<BitcoinPacketDetailModel?> AssociateAsync(Guid fileAnalysisId,
+    public async Task<BitcoinMessageDetailModel?> AssociateAsync(Guid fileAnalysisId,
         BitcoinMessageSummary concreteSummary)
     {
         var senderParticipant = await trafficParticipantFacade.GetByAddressPortAndFileAnalysisIdAsync(
@@ -38,7 +38,7 @@ public class BitcoinEndpointAssociationService(
             return null;
         }
 
-        var bitcoinPacketModel = new BitcoinPacketDetailModel
+        var bitcoinMessageDetailModel = new BitcoinMessageDetailModel
         {
             FileAnalysisId = fileAnalysisId,
             SenderId = senderId,
@@ -58,16 +58,16 @@ public class BitcoinEndpointAssociationService(
 
         if (concreteSummary.Transaction != null)
         {
-            bitcoinPacketModel.Transaction = bitcoinTransactionMapper.Map(concreteSummary.Transaction);
+            bitcoinMessageDetailModel.Transaction = bitcoinTransactionMapper.Map(concreteSummary.Transaction);
         }
 
         if (concreteSummary.Headers != null)
         {
-            bitcoinPacketModel.Headers = concreteSummary.Headers
+            bitcoinMessageDetailModel.Headers = concreteSummary.Headers
                 .Select(h => bitcoinBlockHeaderMapper.Map(h))
                 .ToList();
         }
 
-        return bitcoinPacketModel;
+        return bitcoinMessageDetailModel;
     }
 }

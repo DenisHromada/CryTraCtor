@@ -41,7 +41,7 @@ public class BitcoinAnalysisService(
 
         await using var uow = unitOfWorkFactory.Create();
         var packetRepository =
-            uow.GetRepository<BitcoinPacketEntity,
+            uow.GetRepository<BitcoinMessageEntity,
                 Database.Mappers.BitcoinPacketEntityMapper>();
 
         int processedMessageCount = 0;
@@ -98,7 +98,7 @@ public class BitcoinAnalysisService(
                     continue;
                 }
 
-                var packetEntity = new BitcoinPacketEntity
+                var packetEntity = new BitcoinMessageEntity
                 {
                     Id = Guid.NewGuid(),
                     FileAnalysisId = fileAnalysisId,
@@ -160,7 +160,7 @@ public class BitcoinAnalysisService(
             fileAnalysisId, processedMessageCount, stopwatch.ElapsedMilliseconds);
     }
 
-    private async Task HandleInventoryRelatedMessageAsync(BitcoinPacketEntity packetEntity,
+    private async Task HandleInventoryRelatedMessageAsync(BitcoinMessageEntity messageEntity,
         BitcoinMessageSummary summary, IUnitOfWork uow)
     {
         foreach (var invItem in summary.Inventories)
@@ -168,15 +168,15 @@ public class BitcoinAnalysisService(
             var inventoryEntity =
                 await uow.BitcoinInventories.GetOrCreateAsync(invItem.Type.ToString(),
                     invItem.Hash.ToString());
-            packetEntity.BitcoinPacketInventories.Add(new BitcoinPacketInventoryEntity
+            messageEntity.BitcoinPacketInventories.Add(new BitcoinPacketInventoryEntity
             {
-                BitcoinPacket = packetEntity,
+                BitcoinMessage = messageEntity,
                 BitcoinInventory = inventoryEntity
             });
         }
     }
 
-    private async Task HandleTransactionMessageAsync(BitcoinPacketEntity packetEntity, BitcoinMessageSummary summary,
+    private async Task HandleTransactionMessageAsync(BitcoinMessageEntity messageEntity, BitcoinMessageSummary summary,
         IUnitOfWork uow)
     {
         var transactionRepository = uow.BitcoinTransactions;
@@ -213,14 +213,14 @@ public class BitcoinAnalysisService(
             await transactionRepository.InsertAsync(transactionEntity);
         }
 
-        packetEntity.BitcoinPacketTransactions.Add(new BitcoinPacketTransactionEntity
+        messageEntity.BitcoinPacketTransactions.Add(new BitcoinPacketTransactionEntity
         {
-            BitcoinPacket = packetEntity,
+            BitcoinMessage = messageEntity,
             BitcoinTransaction = transactionEntity
         });
     }
 
-    private async Task HandleHeadersMessageAsync(BitcoinPacketEntity packetEntity, BitcoinMessageSummary summary,
+    private async Task HandleHeadersMessageAsync(BitcoinMessageEntity messageEntity, BitcoinMessageSummary summary,
         IUnitOfWork uow)
     {
         var blockHeaderRepository = uow.BitcoinBlockHeaders;
@@ -237,9 +237,9 @@ public class BitcoinAnalysisService(
                     Bits = header.Bits,
                     Nonce = header.Nonce
                 });
-            packetEntity.BitcoinPacketHeaders.Add(new BitcoinPacketHeaderEntity
+            messageEntity.BitcoinPacketHeaders.Add(new BitcoinPacketHeaderEntity
             {
-                BitcoinPacket = packetEntity,
+                BitcoinMessage = messageEntity,
                 BitcoinBlockHeader = blockHeaderEntity
             });
         }

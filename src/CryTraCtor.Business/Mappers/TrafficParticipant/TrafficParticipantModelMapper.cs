@@ -8,7 +8,7 @@ namespace CryTraCtor.Business.Mappers.TrafficParticipant;
 public class TrafficParticipantModelMapper(
     TrafficParticipantListModelMapper trafficParticipantListModelMapper,
     FileAnalysisModelMapper fileAnalysisModelMapper,
-    DnsPacketModelMapper dnsPacketModelMapper
+    DnsMessageModelMapper dnsMessageModelMapper
 ) : ModelMapperBase<TrafficParticipantEntity, TrafficParticipantListModel, TrafficParticipantDetailModel>
 {
     public override TrafficParticipantListModel MapToListModel(TrafficParticipantEntity? entity)
@@ -24,9 +24,9 @@ public class TrafficParticipantModelMapper(
                 Port = entity.Port,
                 FileAnalysis = fileAnalysisModelMapper.MapToListModel(entity.FileAnalysis),
                 SentDnsPackets = entity.SentDnsPackets?
-                    .Select(dnsPacketModelMapper.MapToListModel).ToList() ?? [],
+                    .Select(dnsMessageModelMapper.MapToListModel).ToList() ?? [],
                 ReceivedDnsPackets = entity.ReceivedDnsPackets?
-                    .Select(dnsPacketModelMapper.MapToListModel).ToList() ?? []
+                    .Select(dnsMessageModelMapper.MapToListModel).ToList() ?? []
             };
 
     public override TrafficParticipantEntity MapToEntity(TrafficParticipantDetailModel model)

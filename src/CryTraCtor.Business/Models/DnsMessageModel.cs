@@ -2,7 +2,7 @@ using CryTraCtor.Business.Models.TrafficParticipants;
 
 namespace CryTraCtor.Business.Models;
 
-public record DnsPacketModel : IPacketModelBase
+public record DnsMessageModel : IMessageModelBase
 {
     public required Guid Id { get; set; }
 

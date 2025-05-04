@@ -6,7 +6,7 @@ namespace CryTraCtor.Business.Services
 {
     public class DomainMatchAssociationService(
         IKnownDomainFacade knownDomainFacade,
-        IDnsPacketFacade dnsPacketFacade,
+        IDnsMessageFacade dnsMessageFacade,
         IDomainMatchFacade domainMatchFacade)
     {
         public async Task AnalyseAsync(Guid fileAnalysisId)
@@ -17,7 +17,7 @@ namespace CryTraCtor.Business.Services
                 return;
             }
 
-            var allDnsPackets = await dnsPacketFacade.GetAllAsync();
+            var allDnsPackets = await dnsMessageFacade.GetAllAsync();
             var dnsPacketsForAnalysis = allDnsPackets.Where(p => p.FileAnalysisId == fileAnalysisId).ToList();
 
             if (!dnsPacketsForAnalysis.Any())

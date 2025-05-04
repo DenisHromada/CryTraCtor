@@ -2,9 +2,9 @@ using CryTraCtor.Database.Entities;
 
 namespace CryTraCtor.Database.Mappers;
 
-public class BitcoinPacketEntityMapper : IEntityMapper<BitcoinPacketEntity>
+public class BitcoinPacketEntityMapper : IEntityMapper<BitcoinMessageEntity>
 {
-    public void MapToExistingEntity(BitcoinPacketEntity existingEntity, BitcoinPacketEntity newEntity)
+    public void MapToExistingEntity(BitcoinMessageEntity existingEntity, BitcoinMessageEntity newEntity)
     {
         existingEntity.FileAnalysisId = newEntity.FileAnalysisId;
         existingEntity.SenderId = newEntity.SenderId;
