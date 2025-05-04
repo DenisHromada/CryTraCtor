@@ -18,7 +18,7 @@ public class BitcoinPacketDetailModel : IPacketModelBase
     public TrafficParticipantListModel? Sender { get; set; }
     public TrafficParticipantListModel? Recipient { get; set; }
 
-    public List<BitcoinInventoryItemModel>? Inventories { get; set; }
+    public List<BitcoinInventoryItemListModel>? Inventories { get; set; }
     public int? InventoryCount { get; set; }
 
     public BitcoinTransactionDetailModel? Transaction { get; set; }

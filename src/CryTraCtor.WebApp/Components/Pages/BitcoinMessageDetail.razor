@@ -1,7 +1,6 @@
 @page "/files/{FileId:guid}/file-analysis/{FileAnalysisId:guid}/traffic-participants/{ParticipantId:guid}/bitcoin/message/{MessageId:guid}"
 
 @using CryTraCtor.Business.Facades.Interfaces
-@using CryTraCtor.Business.Models
 @using CryTraCtor.Business.Models.Bitcoin
 @using CryTraCtor.WebApp.Services
 
@@ -13,7 +12,7 @@
 
 @if (_messageDetail == null)
 {
-    <MudProgressCircular Indeterminate="true" />
+    <MudProgressCircular Indeterminate="true"/>
 }
 else
 {
@@ -22,13 +21,13 @@ else
         <MudText><strong>Command:</strong> @_messageDetail.Command</MudText>
         <MudText><strong>Timestamp:</strong> @_messageDetail.Timestamp</MudText>
         <MudText><strong>Sender:</strong> @_messageDetail.Sender?.Address:@_messageDetail.Sender?.Port</MudText>
-        <MudText><strong>Recipient:</strong> @_messageDetail.Recipient?.Address:@_messageDetail.Recipient?.Port</MudText>
+        <MudText><strong>Recipient:</strong> @_messageDetail.Recipient?.Address:@_messageDetail.Recipient?.Port
+        </MudText>
         <MudText><strong>Length:</strong> @_messageDetail.Length</MudText>
         <MudText><strong>Checksum:</strong> @_messageDetail.Checksum</MudText>
         <MudText><strong>Magic:</strong> @_messageDetail.Magic</MudText>
     </MudPaper>
 
-    @* TODO: Add specific display logic for different message types, e.g., MudDataGrid for 'inv' and 'getdata' items *@
     @if (_messageDetail.Command is "inv" or "getdata" or "notfound")
     {
         <MudPaper Class="pa-4 mb-4">
@@ -40,14 +39,15 @@ else
             else
             {
                 <MudDataGrid Items="@_messageDetail.Inventories" Hover="true" Dense="true" Striped="true"
-                             T="BitcoinInventoryItemModel">
+                             T="BitcoinInventoryItemListModel">
                     <Columns>
                         <PropertyColumn Property="x => x.Type" Title="Type"/>
                         <PropertyColumn Property="x => x.Hash" Title="Hash"/>
                         <TemplateColumn Title="Actions">
                             <CellTemplate>
                                 <MudTooltip Text="View Inventory References">
-                                    <MudIconButton Icon="@Icons.Material.Filled.Link" Size="Size.Small" Color="Color.Primary"
+                                    <MudIconButton Icon="@Icons.Material.Filled.Link" Size="Size.Small"
+                                                   Color="Color.Primary"
                                                    Href="@(AppRoutes.BitcoinInventoryReferencesUrl(FileId, FileAnalysisId, ParticipantId, MessageId, context.Item.Id))"/>
                                 </MudTooltip>
                             </CellTemplate>
@@ -115,7 +115,7 @@ else
                 }
 
                 <MudText Typo="Typo.h6" Class="mt-4">Outputs</MudText>
-                 @if (!_messageDetail.Transaction.Outputs.Any())
+                @if (!_messageDetail.Transaction.Outputs.Any())
                 {
                     <MudText>No outputs found for this transaction.</MudText>
                 }
@@ -134,7 +134,7 @@ else
     }
     else
     {
-         <MudPaper Class="pa-4 mb-4">
+        <MudPaper Class="pa-4 mb-4">
             <MudText Typo="Typo.h6">Payload</MudText>
             <MudText>Payload details for command '@_messageDetail.Command' will be displayed here.</MudText>
         </MudPaper>
@@ -167,8 +167,9 @@ else
             _messageDetail = await BitcoinPacketFacade.GetAsync(MessageId);
             if (_messageDetail == null)
             {
-                 Snackbar.Add($"Bitcoin message with ID {MessageId} not found.", Severity.Warning);
+                Snackbar.Add($"Bitcoin message with ID {MessageId} not found.", Severity.Warning);
             }
+
             StateHasChanged();
         }
         catch (Exception ex)
@@ -177,4 +178,5 @@ else
             _messageDetail = null;
         }
     }
+
 }

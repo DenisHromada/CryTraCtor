@@ -4,5 +4,6 @@ namespace CryTraCtor.Business.Facades.Interfaces;
 
 public interface IBitcoinInventoryFacade
 {
-    Task<BitcoinInventoryItemModel?> GetModelByIdAsync(Guid inventoryId);
+    Task<BitcoinInventoryItemListModel?> GetModelByIdAsync(Guid inventoryId);
+    Task<BitcoinInventoryItemDetailModel?> GetDetailModelByIdAsync(Guid inventoryId, Guid fileAnalysisId);
 }

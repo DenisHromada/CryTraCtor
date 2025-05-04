@@ -49,7 +49,7 @@ public class BitcoinEndpointAssociationService(
             Length = concreteSummary.PayloadSize,
             Checksum = concreteSummary.Checksum,
             Inventories = concreteSummary.Inventories?
-                .Select(inv => new BitcoinInventoryItemModel
+                .Select(inv => new BitcoinInventoryItemListModel
                 {
                     Type = inv.Type.ToString(),
                     Hash = inv.Hash.ToString()

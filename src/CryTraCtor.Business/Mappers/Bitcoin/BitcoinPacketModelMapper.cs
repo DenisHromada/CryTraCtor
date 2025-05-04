@@ -76,7 +76,7 @@ public class BitcoinPacketModelMapper(
             {
                 detailModel.Inventories = entity.BitcoinPacketInventories
                     .Where(joinEntity => joinEntity?.BitcoinInventory != null)
-                    .Select(joinEntity => new BitcoinInventoryItemModel
+                    .Select(joinEntity => new BitcoinInventoryItemListModel
                     {
                         Id = joinEntity.BitcoinInventory.Id,
                         Type = joinEntity.BitcoinInventory.Type,

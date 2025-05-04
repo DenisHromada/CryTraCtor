@@ -3,30 +3,38 @@
 @using CryTraCtor.Business.Facades.Interfaces
 @using CryTraCtor.Business.Models.Bitcoin
 @using CryTraCtor.WebApp.Services
-@inject IBitcoinPacketFacade BitcoinPacketFacade
 @inject IBitcoinInventoryFacade BitcoinInventoryFacade
 @inject IBreadcrumbService BreadcrumbService
 @inject ISnackbar Snackbar
 
 <PageTitle>Bitcoin Inventory References</PageTitle>
 
-@if (_inventoryItem != null)
+@if (_inventoryDetailModel != null)
 {
-    <h3>References for Inventory Item: @_inventoryItem.Type / @_inventoryItem.Hash</h3>
+    <h3>References for Inventory Item: @_inventoryDetailModel.Type / @_inventoryDetailModel.Hash</h3>
 
-    @if (_referencingPackets != null)
+    @if (_inventoryDetailModel.ReferencingPackets != null)
     {
-        <MudDataGrid Items="@_referencingPackets" T="BitcoinPacketListModel" Dense="true" Striped="true" Hover="true">
+        <MudDataGrid Items="@_inventoryDetailModel.ReferencingPackets" T="BitcoinPacketDetailModel" Dense="true"
+                     Striped="true" Hover="true">
             <Columns>
                 <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
                 <PropertyColumn Property="x => x.Command" Title="Command"/>
-                <PropertyColumn Property="x => x.SenderId" Title="Sender"/>
-                <PropertyColumn Property="x => x.RecipientId" Title="Recipient"/>
+                <TemplateColumn Title="Sender">
+                    <CellTemplate>
+                        @context.Item.Sender?.Address:@context.Item.Sender?.Port
+                    </CellTemplate>
+                </TemplateColumn>
+                <TemplateColumn Title="Recipient">
+                    <CellTemplate>
+                        @context.Item.Recipient?.Address:@context.Item.Recipient?.Port
+                    </CellTemplate>
+                </TemplateColumn>
                 <TemplateColumn Title="Actions">
                     <CellTemplate>
                         <MudTooltip Text="View Message Details">
                             <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary"
-                                           Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, MessageId))"/>
+                                           Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, context.Item.Id))"/>
                         </MudTooltip>
                     </CellTemplate>
                 </TemplateColumn>
@@ -50,27 +58,24 @@ else
     [Parameter] public Guid MessageId { get; set; }
     [Parameter] public Guid InventoryId { get; set; }
 
-    private BitcoinInventoryItemModel? _inventoryItem;
-    private List<BitcoinPacketListModel>? _referencingPackets;
+    private BitcoinInventoryItemDetailModel? _inventoryDetailModel;
 
     protected override async Task OnInitializedAsync()
     {
         BreadcrumbService.SetBreadcrumbs(AppRoutes.GetBitcoinInventoryReferencesBreadcrumbs(FileId, FileAnalysisId, ParticipantId, MessageId, InventoryId));
         try
         {
-            _inventoryItem = await BitcoinInventoryFacade.GetModelByIdAsync(InventoryId);
-            if (_inventoryItem != null)
+            _inventoryDetailModel = await BitcoinInventoryFacade.GetDetailModelByIdAsync(InventoryId, FileAnalysisId);
+
+            if (_inventoryDetailModel == null)
             {
-                _referencingPackets = (await BitcoinPacketFacade.GetPacketListByInventoryIdAndAnalysisIdAsync(InventoryId, FileAnalysisId)).ToList();
-            }
-            else
-            {
-                Snackbar.Add("Inventory item not found.", Severity.Error);
+                Snackbar.Add($"Inventory item with ID {InventoryId} not found.", Severity.Warning);
             }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Error loading Bitcoin inventory references: {ex.Message}", Severity.Error);
+            _inventoryDetailModel = null;
         }
     }
 
