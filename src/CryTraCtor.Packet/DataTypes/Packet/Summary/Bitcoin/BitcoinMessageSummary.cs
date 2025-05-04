@@ -11,6 +11,9 @@ namespace CryTraCtor.Packet.DataTypes.Packet.Summary.Bitcoin
         public uint PayloadSize { get; set; }
         public uint Magic { get; set; }
         public uint Checksum { get; set; }
+        public List<NBitcoin.Protocol.InventoryVector>? Inventories { get; set; }
+        public NBitcoin.Transaction? Transaction { get; set; }
+        public List<NBitcoin.BlockHeader>? Headers { get; set; }
 
         public string GetSerializedPacketString()
         {

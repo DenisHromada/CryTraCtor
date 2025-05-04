@@ -1,6 +1,6 @@
 using CryTraCtor.Business.Models.TrafficParticipants;
 
-namespace CryTraCtor.Business.Models;
+namespace CryTraCtor.Business.Models.Bitcoin;
 
 public class BitcoinPacketDetailModel : IPacketModelBase
 {
@@ -17,4 +17,11 @@ public class BitcoinPacketDetailModel : IPacketModelBase
 
     public TrafficParticipantListModel? Sender { get; set; }
     public TrafficParticipantListModel? Recipient { get; set; }
+
+    public List<BitcoinInventoryItemModel>? Inventories { get; set; }
+    public int? InventoryCount { get; set; }
+
+    public BitcoinTransactionDetailModel? Transaction { get; set; }
+
+    public List<BitcoinBlockHeaderModel>? Headers { get; set; }
 }

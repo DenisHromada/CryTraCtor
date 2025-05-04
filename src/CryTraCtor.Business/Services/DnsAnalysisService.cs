@@ -4,6 +4,7 @@ using CryTraCtor.Business.Models.StoredFiles;
 using CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
 using CryTraCtor.Packet.Services;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace CryTraCtor.Business.Services;
 
@@ -133,10 +134,12 @@ public class DnsAnalysisService(
             logger.LogInformation(
                 "[DnsAnalysisService] Starting domain association for FileAnalysisId: {FileAnalysisId}",
                 fileAnalysisId);
+            var stopwatch = Stopwatch.StartNew();
             await domainMatchAssociationService.AnalyseAsync(fileAnalysisId);
+            stopwatch.Stop();
             logger.LogInformation(
-                "[DnsAnalysisService] Completed domain association for FileAnalysisId: {FileAnalysisId}",
-                fileAnalysisId);
+                "[DnsAnalysisService] Completed domain association for FileAnalysisId: {FileAnalysisId} in {ElapsedMilliseconds} ms",
+                fileAnalysisId, stopwatch.ElapsedMilliseconds);
         }
         catch (Exception ex)
         {

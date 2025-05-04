@@ -1,6 +1,7 @@
 ﻿using CryTraCtor.Database.Entities;
 using CryTraCtor.Database.Mappers;
 using CryTraCtor.Database.Repositories;
+using CryTraCtor.Database.Repositories.Interfaces;
 
 namespace CryTraCtor.Database.UnitOfWork;
 
@@ -13,6 +14,10 @@ public interface IUnitOfWork : IAsyncDisposable
     IDnsPacketRepository DnsPackets { get; }
     IDomainMatchRepository DomainMatches { get; }
     IBitcoinPacketRepository BitcoinPackets { get; }
+    IBitcoinInventoryRepository BitcoinInventories { get; }
+    IBitcoinPacketInventoryRepository BitcoinPacketInventories { get; }
+    IBitcoinTransactionRepository BitcoinTransactions { get; }
+    IBitcoinBlockHeaderRepository BitcoinBlockHeaders { get; }
     TrafficParticipantAggregateRepository TrafficParticipantAggregates { get; }
 
     Task CommitAsync();

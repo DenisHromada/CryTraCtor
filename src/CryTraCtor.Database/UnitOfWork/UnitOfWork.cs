@@ -1,6 +1,7 @@
 ﻿using CryTraCtor.Database.Entities;
 using CryTraCtor.Database.Mappers;
 using CryTraCtor.Database.Repositories;
+using CryTraCtor.Database.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.UnitOfWork;
@@ -12,6 +13,10 @@ public class UnitOfWork(DbContext dbContext) : IUnitOfWork
     private IDnsPacketRepository? _dnsPackets;
     private IDomainMatchRepository? _domainMatches;
     private IBitcoinPacketRepository? _bitcoinPackets;
+    private IBitcoinInventoryRepository? _bitcoinInventories;
+    private IBitcoinPacketInventoryRepository? _bitcoinPacketInventories;
+    private IBitcoinTransactionRepository? _bitcoinTransactions;
+    private IBitcoinBlockHeaderRepository? _bitcoinBlockHeaders;
     private TrafficParticipantAggregateRepository? _trafficParticipantAggregates;
 
     public IRepository<TEntity> GetRepository<TEntity, TEntityMapper>()
@@ -26,7 +31,23 @@ public class UnitOfWork(DbContext dbContext) : IUnitOfWork
         _domainMatches ??= new DomainMatchRepository((CryTraCtorDbContext)_dbContext);
 
     public IBitcoinPacketRepository BitcoinPackets =>
-        _bitcoinPackets ??= new BitcoinPacketRepository((CryTraCtorDbContext)_dbContext, new BitcoinPacketEntityMapper());
+        _bitcoinPackets ??=
+            new BitcoinPacketRepository((CryTraCtorDbContext)_dbContext, new BitcoinPacketEntityMapper());
+
+    public IBitcoinInventoryRepository BitcoinInventories =>
+        _bitcoinInventories ??=
+            new BitcoinInventoryRepository((CryTraCtorDbContext)_dbContext, new BitcoinInventoryEntityMapper());
+
+    public IBitcoinPacketInventoryRepository BitcoinPacketInventories =>
+        _bitcoinPacketInventories ??= new BitcoinPacketInventoryRepository((CryTraCtorDbContext)_dbContext);
+
+    public IBitcoinTransactionRepository BitcoinTransactions =>
+        _bitcoinTransactions ??=
+            new BitcoinTransactionRepository((CryTraCtorDbContext)_dbContext, new BitcoinTransactionEntityMapper());
+
+    public IBitcoinBlockHeaderRepository BitcoinBlockHeaders =>
+        _bitcoinBlockHeaders ??=
+            new BitcoinBlockHeaderRepository((CryTraCtorDbContext)_dbContext, new BitcoinBlockHeaderEntityMapper());
 
     public TrafficParticipantAggregateRepository TrafficParticipantAggregates
     {

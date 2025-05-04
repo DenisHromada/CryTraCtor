@@ -5,12 +5,13 @@
 @using CryTraCtor.Business.Models.TrafficParticipants
 @using CryTraCtor.WebApp.Services
 @using CryTraCtor.WebApp.Enums
+@using System.Linq
+@using CryTraCtor.Business.Models.Bitcoin
 
 @inject IBitcoinPacketFacade BitcoinPacketFacade
 @inject ITrafficParticipantFacade TrafficParticipantFacade
 @inject ISnackbar Snackbar
 @inject IBreadcrumbService BreadcrumbService
-@inject NavigationManager NavigationManager
 
 <PageTitle>Bitcoin Messages for Participant</PageTitle>
 
@@ -30,8 +31,33 @@
             <Columns>
                 <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
                 <PropertyColumn Property="x => x.Command" Title="Command"/>
+                <TemplateColumn Title="Summary">
+                    <CellTemplate>
+                        @if (context.Item.Command is "inv" or "getdata" or "notfound")
+                        {
+                            <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
+                        }
+                        else if (context.Item.Command == "headers")
+                        {
+                            <MudText>@(context.Item.Headers?.Count.ToString() ?? "N/A") headers</MudText>
+                        }
+                        else if (context.Item.Command == "tx")
+                        {
+                            var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
+                            <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0), Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0), Value: @(totalValueBtc.ToString("0.########")) BTC</MudText>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
                 <PropertyColumn Property="x => x.Sender!.Address" Title="Sender Address"/>
                 <PropertyColumn Property="x => x.Sender!.Port" Title="Sender Port"/>
+                <TemplateColumn Title="Actions">
+                    <CellTemplate>
+                        <MudTooltip Text="View Message Details">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary"
+                                           Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, context.Item.Id))"/>
+                        </MudTooltip>
+                    </CellTemplate>
+                </TemplateColumn>
             </Columns>
         </MudDataGrid>
     }
@@ -48,8 +74,29 @@
             <Columns>
                 <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
                 <PropertyColumn Property="x => x.Command" Title="Command"/>
+                 <TemplateColumn Title="Summary">
+                    <CellTemplate>
+                        @if (context.Item.Command is "inv" or "getdata" or "notfound")
+                        {
+                            <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
+                        }
+                         else if (context.Item.Command == "tx")
+                        {
+                            var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
+                            <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0), Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0), Value: @(totalValueBtc.ToString("0.########")) BTC</MudText>
+                        }
+                    </CellTemplate>
+                </TemplateColumn>
                 <PropertyColumn Property="x => x.Recipient!.Address" Title="Recipient Address"/>
                 <PropertyColumn Property="x => x.Recipient!.Port" Title="Recipient Port"/>
+                 <TemplateColumn Title="Actions">
+                    <CellTemplate>
+                        <MudTooltip Text="View Message Details">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary"
+                                           Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, context.Item.Id))"/>
+                        </MudTooltip>
+                    </CellTemplate>
+                </TemplateColumn>
             </Columns>
         </MudDataGrid>
     }

@@ -1,5 +1,6 @@
 using CryTraCtor.Business.Facades.Interfaces;
-using CryTraCtor.Business.Models;
+using CryTraCtor.Business.Mappers.Bitcoin;
+using CryTraCtor.Business.Models.Bitcoin;
 using CryTraCtor.Packet.DataTypes.Packet.Summary.Bitcoin;
 using Microsoft.Extensions.Logging;
 
@@ -7,15 +8,18 @@ namespace CryTraCtor.Business.Services;
 
 public class BitcoinEndpointAssociationService(
     ITrafficParticipantFacade trafficParticipantFacade,
-    ILogger<BitcoinEndpointAssociationService> logger)
+    ILogger<BitcoinEndpointAssociationService> logger,
+    BitcoinTransactionMapper bitcoinTransactionMapper,
+    BitcoinBlockHeaderMapper bitcoinBlockHeaderMapper)
 {
-    public async Task<BitcoinPacketDetailModel?> AssociateAsync(Guid fileAnalysisId, BitcoinMessageSummary concreteSummary)
+    public async Task<BitcoinPacketDetailModel?> AssociateAsync(Guid fileAnalysisId,
+        BitcoinMessageSummary concreteSummary)
     {
         var senderParticipant = await trafficParticipantFacade.GetByAddressPortAndFileAnalysisIdAsync(
             fileAnalysisId,
             concreteSummary.Source.Address,
             concreteSummary.Source.Port
-            );
+        );
 
         var recipientParticipant = await trafficParticipantFacade.GetByAddressPortAndFileAnalysisIdAsync(
             fileAnalysisId,
@@ -29,7 +33,8 @@ public class BitcoinEndpointAssociationService(
         {
             logger.LogWarning(
                 "[BitcoinEndpointAssociationService] Could not find sender ({SourceAddress}:{SourcePort}) or recipient ({DestinationAddress}:{DestinationPort}) participant ID in lookup for FileAnalysisId: {FileAnalysisId}. Skipping Bitcoin message: {Command}",
-                concreteSummary.Source.Address, concreteSummary.Source.Port, concreteSummary.Destination.Address, concreteSummary.Destination.Port, fileAnalysisId, concreteSummary.Command);
+                concreteSummary.Source.Address, concreteSummary.Source.Port, concreteSummary.Destination.Address,
+                concreteSummary.Destination.Port, fileAnalysisId, concreteSummary.Command);
             return null;
         }
 
@@ -42,8 +47,26 @@ public class BitcoinEndpointAssociationService(
             Magic = concreteSummary.Magic,
             Command = concreteSummary.Command,
             Length = concreteSummary.PayloadSize,
-            Checksum = concreteSummary.Checksum
+            Checksum = concreteSummary.Checksum,
+            Inventories = concreteSummary.Inventories?
+                .Select(inv => new BitcoinInventoryItemModel
+                {
+                    Type = inv.Type.ToString(),
+                    Hash = inv.Hash.ToString()
+                }).ToList()
         };
+
+        if (concreteSummary.Transaction != null)
+        {
+            bitcoinPacketModel.Transaction = bitcoinTransactionMapper.Map(concreteSummary.Transaction);
+        }
+
+        if (concreteSummary.Headers != null)
+        {
+            bitcoinPacketModel.Headers = concreteSummary.Headers
+                .Select(h => bitcoinBlockHeaderMapper.Map(h))
+                .ToList();
+        }
 
         return bitcoinPacketModel;
     }

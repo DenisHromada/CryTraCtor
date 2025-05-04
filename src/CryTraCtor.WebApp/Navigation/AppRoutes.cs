@@ -86,6 +86,34 @@ public static class AppRoutes
             "Bitcoin Overview",
             TrafficParticipantBitcoinUrl(fileId, fileAnalysisId, participantId));
 
+
+    public const string BitcoinMessageDetailPage = $"{TrafficParticipantBitcoinPage}/message/{{messageId:guid}}";
+
+    public static string
+        BitcoinMessageDetailUrl(Guid fileId, Guid fileAnalysisId, Guid participantId, Guid messageId) =>
+        $"{TrafficParticipantBitcoinUrl(fileId, fileAnalysisId, participantId)}/message/{messageId}";
+
+    public static List<BreadcrumbItem> GetBitcoinMessageDetailPageBreadcrumbs(Guid fileId, Guid fileAnalysisId,
+        Guid participantId, Guid messageId) =>
+        BuildChildBreadcrumbs(
+            GetTrafficParticipantBitcoinPageBreadcrumbs(fileId, fileAnalysisId, participantId),
+            "Message Detail",
+            BitcoinMessageDetailUrl(fileId, fileAnalysisId, participantId, messageId));
+
+    public const string BitcoinInventoryReferencesPage = $"{BitcoinMessageDetailPage}/inventory/{{inventoryId:guid}}";
+
+    public static string BitcoinInventoryReferencesUrl(Guid fileId, Guid fileAnalysisId, Guid participantId,
+        Guid messageId, Guid inventoryId) =>
+        $"{BitcoinMessageDetailUrl(fileId, fileAnalysisId, participantId, messageId)}/inventory/{inventoryId}";
+
+    public static List<BreadcrumbItem> GetBitcoinInventoryReferencesBreadcrumbs(Guid fileId, Guid fileAnalysisId,
+        Guid participantId, Guid messageId, Guid inventoryId) =>
+        BuildChildBreadcrumbs(
+            GetBitcoinMessageDetailPageBreadcrumbs(fileId, fileAnalysisId, participantId, messageId),
+            "Inventory item",
+            BitcoinInventoryReferencesUrl(fileId, fileAnalysisId, participantId, messageId, inventoryId));
+
+
     public const string CryptoProductsPage = $"/{CryptoProductsSegment}";
     public static string CryptoProductsUrl() => CryptoProductsPage;
 

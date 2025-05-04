@@ -1,6 +1,7 @@
 ﻿using CryTraCtor.Business.Facades;
 using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Mappers;
+using CryTraCtor.Business.Mappers.Bitcoin;
 using CryTraCtor.Business.Mappers.CryptoProduct;
 using CryTraCtor.Business.Mappers.FileAnalysis;
 using CryTraCtor.Business.Mappers.KnownDomain;
@@ -29,7 +30,9 @@ public class WebAppBusinessInstaller : IInstaller
             .AddSingleton<FileAnalysisModelMapper>()
             .AddSingleton<DnsPacketModelMapper>()
             .AddSingleton<DomainMatchMapper>()
-            .AddSingleton<BitcoinPacketModelMapper>();
+            .AddSingleton<BitcoinPacketModelMapper>()
+            .AddSingleton<BitcoinTransactionMapper>()
+            .AddSingleton<BitcoinBlockHeaderMapper>();
 
         serviceCollection
             .AddScoped<IStoredFileFacade, StoredFileFacade>()
@@ -40,7 +43,8 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>()
             .AddScoped<IDnsPacketFacade, DnsPacketFacade>()
             .AddScoped<IDomainMatchFacade, DomainMatchFacade>()
-            .AddScoped<IBitcoinPacketFacade, BitcoinPacketFacade>();
+            .AddScoped<IBitcoinPacketFacade, BitcoinPacketFacade>()
+            .AddScoped<IBitcoinInventoryFacade, BitcoinInventoryFacade>();
 
         serviceCollection
             .AddScoped<FileAnalysisService>()

@@ -3,6 +3,7 @@ using CryTraCtor.Packet.DataTypes.Packet.Summary.Bitcoin;
 using CryTraCtor.Packet.Models;
 using NBitcoin;
 using NBitcoin.Crypto;
+using NBitcoin.Protocol;
 using PacketDotNet.Connections;
 using Microsoft.Extensions.Logging;
 using System.Buffers.Binary;
@@ -188,6 +189,135 @@ public class BitcoinMessageParser(ILogger<BitcoinMessageParser> logger)
                 Magic = magic,
                 Checksum = checksum
             };
+
+
+            switch (command)
+            {
+                case "inv" or "notfound" when length > 0:
+                    try
+                    {
+                        var invPayload = new InvPayload();
+
+                        using var memoryStream = new MemoryStream(payloadBytes);
+
+                        var bitcoinStream = new BitcoinStream(memoryStream, false)
+                        {
+                            MaxArraySize = (int)length
+                        };
+                        invPayload.ReadWrite(bitcoinStream);
+
+
+                        if (memoryStream.Position == length)
+                        {
+                            messageSummary.Inventories = invPayload.Inventory;
+                            logger.LogDebug("Parsed {InventoryCount} inventory items from '{Command}' message.",
+                                messageSummary.Inventories.Count, command);
+                        }
+                        else
+                        {
+                            logger.LogWarning(
+                                "Payload parsing consumed {ConsumedBytes} bytes, expected {ExpectedBytes}. Skipping inventory data for '{Command}'.",
+                                memoryStream.Position, length, command);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(0, ex,
+                            "Error parsing '{Command}' payload for message from {Source} to {Destination}.",
+                            command, flowInfo.SourceEndpoint, flowInfo.DestinationEndpoint);
+                    }
+
+                    break;
+                case "headers" when length > 0:
+                    try
+                    {
+                        var headersPayload = new HeadersPayload();
+
+                        using var memoryStream = new MemoryStream(payloadBytes);
+
+                        var bitcoinStream = new BitcoinStream(memoryStream, false)
+                        {
+                            MaxArraySize = (int)length
+                        };
+                        headersPayload.ReadWrite(bitcoinStream);
+
+                        if (memoryStream.Position == length)
+                        {
+                            messageSummary.Headers = headersPayload.Headers;
+                            logger.LogDebug("Parsed {HeaderCount} headers from 'headers' message.",
+                                messageSummary.Headers.Count);
+                        }
+                        else
+                        {
+                            logger.LogWarning(
+                                "Payload parsing consumed {ConsumedBytes} bytes, expected {ExpectedBytes}. Skipping header data for 'headers'.",
+                                memoryStream.Position, length);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(0, ex,
+                            "Error parsing 'headers' payload for message from {Source} to {Destination}.",
+                            flowInfo.SourceEndpoint, flowInfo.DestinationEndpoint);
+                    }
+                    break;
+                case "tx" when length > 0:
+                    try
+                    {
+                        using var memoryStream = new MemoryStream(payloadBytes);
+
+                        var nbitcoinTx = Transaction.Load(payloadBytes, Network.Main);
+
+
+                        messageSummary.Transaction = nbitcoinTx;
+                        logger.LogDebug("Parsed transaction with TxId: {TxId} from 'tx' message.",
+                            nbitcoinTx.GetHash());
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(0, ex,
+                            "Error parsing 'tx' payload for message from {Source} to {Destination}. Error: {ErrorMessage}",
+                            flowInfo.SourceEndpoint, flowInfo.DestinationEndpoint, ex.Message);
+                    }
+
+                    break;
+                case "getdata" when length > 0:
+                    try
+                    {
+                        var getDataPayload = new GetDataPayload();
+
+                        using var memoryStream = new MemoryStream(payloadBytes);
+
+                        var bitcoinStream = new BitcoinStream(memoryStream, false)
+                        {
+                            MaxArraySize = (int)length
+                        };
+                        getDataPayload.ReadWrite(bitcoinStream);
+
+
+                        if (memoryStream.Position == length)
+                        {
+                            messageSummary.Inventories = getDataPayload.Inventory;
+                            logger.LogDebug("Parsed {InventoryCount} inventory items from '{Command}' message.",
+                                messageSummary.Inventories.Count, command);
+                        }
+                        else
+                        {
+                            logger.LogWarning(
+                                "Payload parsing consumed {ConsumedBytes} bytes, expected {ExpectedBytes}. Skipping inventory data for '{Command}'.",
+                                memoryStream.Position, length, command);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(0, ex,
+                            "Error parsing '{Command}' payload for message from {Source} to {Destination}.",
+                            command, flowInfo.SourceEndpoint, flowInfo.DestinationEndpoint);
+                    }
+
+                    break;
+            }
+
 
             consumedBytes = totalMessageSize;
             return true;

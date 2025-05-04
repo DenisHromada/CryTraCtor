@@ -6,12 +6,11 @@ using MudBlazor.Services;
 using CryTraCtor.WebApp.Components;
 using CryTraCtor.WebApp.Installers;
 using Serilog;
-using CryTraCtor.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add MudBlazor services
 builder.Services.AddMudServices();
+builder.Services.AddMemoryCache();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

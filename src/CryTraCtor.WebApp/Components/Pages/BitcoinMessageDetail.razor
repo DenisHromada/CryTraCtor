@@ -1,0 +1,180 @@
+@page "/files/{FileId:guid}/file-analysis/{FileAnalysisId:guid}/traffic-participants/{ParticipantId:guid}/bitcoin/message/{MessageId:guid}"
+
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models
+@using CryTraCtor.Business.Models.Bitcoin
+@using CryTraCtor.WebApp.Services
+
+@inject IBitcoinPacketFacade BitcoinPacketFacade
+@inject ISnackbar Snackbar
+@inject IBreadcrumbService BreadcrumbService
+
+<h3>Bitcoin Message Detail</h3>
+
+@if (_messageDetail == null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else
+{
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.h6">Header Information</MudText>
+        <MudText><strong>Command:</strong> @_messageDetail.Command</MudText>
+        <MudText><strong>Timestamp:</strong> @_messageDetail.Timestamp</MudText>
+        <MudText><strong>Sender:</strong> @_messageDetail.Sender?.Address:@_messageDetail.Sender?.Port</MudText>
+        <MudText><strong>Recipient:</strong> @_messageDetail.Recipient?.Address:@_messageDetail.Recipient?.Port</MudText>
+        <MudText><strong>Length:</strong> @_messageDetail.Length</MudText>
+        <MudText><strong>Checksum:</strong> @_messageDetail.Checksum</MudText>
+        <MudText><strong>Magic:</strong> @_messageDetail.Magic</MudText>
+    </MudPaper>
+
+    @* TODO: Add specific display logic for different message types, e.g., MudDataGrid for 'inv' and 'getdata' items *@
+    @if (_messageDetail.Command is "inv" or "getdata" or "notfound")
+    {
+        <MudPaper Class="pa-4 mb-4">
+            <MudText Typo="Typo.h6">Inventory Items</MudText>
+            @if (_messageDetail.Inventories == null || !_messageDetail.Inventories.Any())
+            {
+                <MudText>No inventory items found for this message.</MudText>
+            }
+            else
+            {
+                <MudDataGrid Items="@_messageDetail.Inventories" Hover="true" Dense="true" Striped="true"
+                             T="BitcoinInventoryItemModel">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Type" Title="Type"/>
+                        <PropertyColumn Property="x => x.Hash" Title="Hash"/>
+                        <TemplateColumn Title="Actions">
+                            <CellTemplate>
+                                <MudTooltip Text="View Inventory References">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Link" Size="Size.Small" Color="Color.Primary"
+                                                   Href="@(AppRoutes.BitcoinInventoryReferencesUrl(FileId, FileAnalysisId, ParticipantId, MessageId, context.Item.Id))"/>
+                                </MudTooltip>
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            }
+        </MudPaper>
+    }
+    else if (_messageDetail.Command == "headers")
+    {
+        <MudPaper Class="pa-4 mb-4">
+            <MudText Typo="Typo.h6">Block Headers</MudText>
+            @if (_messageDetail.Headers == null || !_messageDetail.Headers.Any())
+            {
+                <MudText>No headers found for this message.</MudText>
+            }
+            else
+            {
+                <MudDataGrid Items="@_messageDetail.Headers" Hover="true" Dense="true" Striped="true"
+                             T="BitcoinBlockHeaderModel">
+                    <Columns>
+                        <PropertyColumn Property="x => x.BlockHash" Title="Block Hash"/>
+                        <PropertyColumn Property="x => x.Version" Title="Version"/>
+                        <PropertyColumn Property="x => x.PrevBlockHash" Title="Previous Block Hash"/>
+                        <PropertyColumn Property="x => x.MerkleRoot" Title="Merkle Root"/>
+                        <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss"/>
+                        <PropertyColumn Property="x => x.Bits" Title="Bits"/>
+                        <PropertyColumn Property="x => x.Nonce" Title="Nonce"/>
+                    </Columns>
+                </MudDataGrid>
+            }
+        </MudPaper>
+    }
+    else if (_messageDetail.Command == "tx")
+    {
+        <MudPaper Class="pa-4 mb-4">
+            <MudText Typo="Typo.h6">Transaction Details</MudText>
+            @if (_messageDetail.Transaction == null)
+            {
+                <MudText>No transaction details found for this message.</MudText>
+            }
+            else
+            {
+                <MudText><strong>TxId:</strong> @_messageDetail.Transaction.TxId</MudText>
+                <MudText><strong>Version:</strong> @_messageDetail.Transaction.Version</MudText>
+                <MudText><strong>Locktime:</strong> @_messageDetail.Transaction.Locktime</MudText>
+
+                <MudText Typo="Typo.h6" Class="mt-4">Inputs</MudText>
+                @if (!_messageDetail.Transaction.Inputs.Any())
+                {
+                    <MudText>No inputs found for this transaction.</MudText>
+                }
+                else
+                {
+                    <MudDataGrid Items="@_messageDetail.Transaction.Inputs" Hover="true" Dense="true" Striped="true"
+                                 T="BitcoinTransactionInputModel">
+                        <Columns>
+                            <PropertyColumn Property="x => x.PreviousTxHash" Title="Previous Tx Hash"/>
+                            <PropertyColumn Property="x => x.PreviousOutputIndex" Title="Previous Output Index"/>
+                            <PropertyColumn Property="x => x.ScriptSig" Title="ScriptSig"/>
+                            <PropertyColumn Property="x => x.Sequence" Title="Sequence"/>
+                        </Columns>
+                    </MudDataGrid>
+                }
+
+                <MudText Typo="Typo.h6" Class="mt-4">Outputs</MudText>
+                 @if (!_messageDetail.Transaction.Outputs.Any())
+                {
+                    <MudText>No outputs found for this transaction.</MudText>
+                }
+                else
+                {
+                    <MudDataGrid Items="@_messageDetail.Transaction.Outputs" Hover="true" Dense="true" Striped="true"
+                                 T="BitcoinTransactionOutputModel">
+                        <Columns>
+                            <PropertyColumn Property="x => x.Value" Title="Value (Satoshis)"/>
+                            <PropertyColumn Property="x => x.ScriptPubKey" Title="ScriptPubKey"/>
+                        </Columns>
+                    </MudDataGrid>
+                }
+            }
+        </MudPaper>
+    }
+    else
+    {
+         <MudPaper Class="pa-4 mb-4">
+            <MudText Typo="Typo.h6">Payload</MudText>
+            <MudText>Payload details for command '@_messageDetail.Command' will be displayed here.</MudText>
+        </MudPaper>
+    }
+}
+
+
+@code {
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Guid FileAnalysisId { get; set; }
+    [Parameter] public Guid ParticipantId { get; set; }
+    [Parameter] public Guid MessageId { get; set; }
+
+    private BitcoinPacketDetailModel? _messageDetail;
+
+    protected override async Task OnInitializedAsync()
+    {
+        BreadcrumbService.SetBreadcrumbs(AppRoutes.GetBitcoinMessageDetailPageBreadcrumbs(FileId, FileAnalysisId, ParticipantId, MessageId));
+
+        if (RendererInfo.IsInteractive)
+        {
+            await LoadMessageDetailAsync();
+        }
+    }
+
+    private async Task LoadMessageDetailAsync()
+    {
+        try
+        {
+            _messageDetail = await BitcoinPacketFacade.GetAsync(MessageId);
+            if (_messageDetail == null)
+            {
+                 Snackbar.Add($"Bitcoin message with ID {MessageId} not found.", Severity.Warning);
+            }
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading Bitcoin message detail: {ex.Message}", Severity.Error);
+            _messageDetail = null;
+        }
+    }
+}

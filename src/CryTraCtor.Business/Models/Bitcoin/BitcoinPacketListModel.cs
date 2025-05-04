@@ -1,4 +1,4 @@
-namespace CryTraCtor.Business.Models;
+namespace CryTraCtor.Business.Models.Bitcoin;
 
 public class BitcoinPacketListModel : IPacketModelBase
 {
@@ -9,4 +9,5 @@ public class BitcoinPacketListModel : IPacketModelBase
     public Guid RecipientId { get; set; }
     public DateTime Timestamp { get; set; }
     public string Command { get; set; } = string.Empty;
+    public int? InventoryCount { get; set; }
 }

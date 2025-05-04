@@ -1,0 +1,77 @@
+@page "/files/{FileId:guid}/file-analysis/{FileAnalysisId:guid}/traffic-participants/{ParticipantId:guid}/bitcoin/message/{MessageId:guid}/inventory/{InventoryId:guid}"
+
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models.Bitcoin
+@using CryTraCtor.WebApp.Services
+@inject IBitcoinPacketFacade BitcoinPacketFacade
+@inject IBitcoinInventoryFacade BitcoinInventoryFacade
+@inject IBreadcrumbService BreadcrumbService
+@inject ISnackbar Snackbar
+
+<PageTitle>Bitcoin Inventory References</PageTitle>
+
+@if (_inventoryItem != null)
+{
+    <h3>References for Inventory Item: @_inventoryItem.Type / @_inventoryItem.Hash</h3>
+
+    @if (_referencingPackets != null)
+    {
+        <MudDataGrid Items="@_referencingPackets" T="BitcoinPacketListModel" Dense="true" Striped="true" Hover="true">
+            <Columns>
+                <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+                <PropertyColumn Property="x => x.Command" Title="Command"/>
+                <PropertyColumn Property="x => x.SenderId" Title="Sender"/>
+                <PropertyColumn Property="x => x.RecipientId" Title="Recipient"/>
+                <TemplateColumn Title="Actions">
+                    <CellTemplate>
+                        <MudTooltip Text="View Message Details">
+                            <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary"
+                                           Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, MessageId))"/>
+                        </MudTooltip>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    }
+    else
+    {
+        <MudText>Loading...</MudText>
+    }
+}
+else
+{
+    <MudText>Inventory item not found.</MudText>
+}
+
+@code {
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Guid FileAnalysisId { get; set; }
+    [Parameter] public Guid ParticipantId { get; set; }
+    [Parameter] public Guid MessageId { get; set; }
+    [Parameter] public Guid InventoryId { get; set; }
+
+    private BitcoinInventoryItemModel? _inventoryItem;
+    private List<BitcoinPacketListModel>? _referencingPackets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        BreadcrumbService.SetBreadcrumbs(AppRoutes.GetBitcoinInventoryReferencesBreadcrumbs(FileId, FileAnalysisId, ParticipantId, MessageId, InventoryId));
+        try
+        {
+            _inventoryItem = await BitcoinInventoryFacade.GetModelByIdAsync(InventoryId);
+            if (_inventoryItem != null)
+            {
+                _referencingPackets = (await BitcoinPacketFacade.GetPacketListByInventoryIdAndAnalysisIdAsync(InventoryId, FileAnalysisId)).ToList();
+            }
+            else
+            {
+                Snackbar.Add("Inventory item not found.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
+        }
+    }
+
+}

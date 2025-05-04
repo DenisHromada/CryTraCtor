@@ -3,6 +3,7 @@ using System;
 using CryTraCtor.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CryTraCtor.Database.Migrations
 {
     [DbContext(typeof(CryTraCtorDbContext))]
-    partial class CryTraCtorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250502161811_AddBitcoinTransactionEntities")]
+    partial class AddBitcoinTransactionEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,47 +24,6 @@ namespace CryTraCtor.Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinBlockHeaderEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<long>("Bits")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("BlockHash")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<string>("MerkleRoot")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<long>("Nonce")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("PrevBlockHash")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)");
-
-                    b.Property<DateTimeOffset>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Version")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BlockHash")
-                        .IsUnique();
-
-                    b.ToTable("BitcoinBlockHeader");
-                });
 
             modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinInventoryEntity", b =>
                 {
@@ -127,21 +89,6 @@ namespace CryTraCtor.Database.Migrations
                     b.HasIndex("SenderId");
 
                     b.ToTable("BitcoinPacket");
-                });
-
-            modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinPacketHeaderEntity", b =>
-                {
-                    b.Property<Guid>("BitcoinPacketId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BitcoinBlockHeaderId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("BitcoinPacketId", "BitcoinBlockHeaderId");
-
-                    b.HasIndex("BitcoinBlockHeaderId");
-
-                    b.ToTable("BitcoinPacketHeader");
                 });
 
             modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinPacketInventoryEntity", b =>
@@ -471,25 +418,6 @@ namespace CryTraCtor.Database.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinPacketHeaderEntity", b =>
-                {
-                    b.HasOne("CryTraCtor.Database.Entities.BitcoinBlockHeaderEntity", "BitcoinBlockHeader")
-                        .WithMany("BitcoinPacketHeaders")
-                        .HasForeignKey("BitcoinBlockHeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CryTraCtor.Database.Entities.BitcoinPacketEntity", "BitcoinPacket")
-                        .WithMany("BitcoinPacketHeaders")
-                        .HasForeignKey("BitcoinPacketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BitcoinBlockHeader");
-
-                    b.Navigation("BitcoinPacket");
-                });
-
             modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinPacketInventoryEntity", b =>
                 {
                     b.HasOne("CryTraCtor.Database.Entities.BitcoinInventoryEntity", "BitcoinInventory")
@@ -629,11 +557,6 @@ namespace CryTraCtor.Database.Migrations
                     b.Navigation("FileAnalysis");
                 });
 
-            modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinBlockHeaderEntity", b =>
-                {
-                    b.Navigation("BitcoinPacketHeaders");
-                });
-
             modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinInventoryEntity", b =>
                 {
                     b.Navigation("BitcoinPacketInventories");
@@ -641,8 +564,6 @@ namespace CryTraCtor.Database.Migrations
 
             modelBuilder.Entity("CryTraCtor.Database.Entities.BitcoinPacketEntity", b =>
                 {
-                    b.Navigation("BitcoinPacketHeaders");
-
                     b.Navigation("BitcoinPacketInventories");
 
                     b.Navigation("BitcoinPacketTransactions");
