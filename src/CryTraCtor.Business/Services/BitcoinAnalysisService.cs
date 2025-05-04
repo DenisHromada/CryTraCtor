@@ -43,9 +43,6 @@ public class BitcoinAnalysisService(
         var packetRepository =
             uow.GetRepository<BitcoinPacketEntity,
                 Database.Mappers.BitcoinPacketEntityMapper>();
-        var inventoryRepository = uow.BitcoinInventories;
-        var transactionRepository = uow.BitcoinTransactions;
-        var blockHeaderRepository = uow.BitcoinBlockHeaders;
 
         int processedMessageCount = 0;
         int currentBatchCount = 0;
@@ -118,89 +115,20 @@ public class BitcoinAnalysisService(
                 {
                     case "inv" or "getdata" or "notfound"
                         when concreteSummary.Inventories != null && concreteSummary.Inventories.Count != 0:
-                        foreach (var invItem in concreteSummary.Inventories)
-                        {
-                            var inventoryEntity =
-                                await inventoryRepository.GetOrCreateAsync(invItem.Type.ToString(),
-                                    invItem.Hash.ToString());
-                            packetEntity.BitcoinPacketInventories.Add(new BitcoinPacketInventoryEntity
-                            {
-                                BitcoinPacket = packetEntity,
-                                BitcoinInventory = inventoryEntity
-                            });
-                        }
-
+                        await HandleInventoryRelatedMessageAsync(packetEntity, concreteSummary, uow);
                         break;
                     case "tx" when concreteSummary.Transaction != null:
-                        var transactionEntity =
-                            await transactionRepository.GetByTxIdAsync(concreteSummary.Transaction.GetHash()
-                                .ToString());
-                        if (transactionEntity == null)
-                        {
-                            transactionEntity = new BitcoinTransactionEntity
-                            {
-                                Id = Guid.NewGuid(),
-                                TxId = concreteSummary.Transaction.GetHash().ToString(),
-                                Version = (int)concreteSummary.Transaction.Version,
-                                Locktime = concreteSummary.Transaction.LockTime.Value,
-                                Inputs = concreteSummary.Transaction.Inputs
-                                    .Select(txIn => new BitcoinTransactionInputEntity
-                                    {
-                                        Id = Guid.NewGuid(),
-                                        PreviousTxHash = txIn.PrevOut.Hash.ToString(),
-                                        PreviousOutputIndex = txIn.PrevOut.N,
-                                        ScriptSig = txIn.ScriptSig.ToHex(),
-                                        Sequence = txIn.Sequence.Value
-                                    })
-                                    .ToList(),
-                                Outputs = concreteSummary.Transaction.Outputs
-                                    .Select(txOut => new BitcoinTransactionOutputEntity
-                                    {
-                                        Id = Guid.NewGuid(),
-                                        Value = txOut.Value.Satoshi,
-                                        ScriptPubKey = txOut.ScriptPubKey.ToHex()
-                                    })
-                                    .ToList()
-                            };
-                            await transactionRepository.InsertAsync(transactionEntity);
-                        }
-
-                        packetEntity.BitcoinPacketTransactions.Add(new BitcoinPacketTransactionEntity
-                        {
-                            BitcoinPacket = packetEntity,
-                            BitcoinTransaction = transactionEntity
-                        });
+                        await HandleTransactionMessageAsync(packetEntity, concreteSummary, uow);
                         break;
                     case "headers" when concreteSummary.Headers != null && concreteSummary.Headers.Count != 0:
-                        foreach (var header in concreteSummary.Headers)
-                        {
-                            var blockHeaderEntity = await blockHeaderRepository.GetOrCreateByBlockHashAsync(
-                                header.GetHash().ToString(), new BitcoinBlockHeaderEntity
-                                {
-                                    BlockHash = header.GetHash().ToString(),
-                                    Version = header.Version,
-                                    PrevBlockHash = header.HashPrevBlock.ToString(),
-                                    MerkleRoot = header.HashMerkleRoot.ToString(),
-                                    Timestamp = header.BlockTime,
-                                    Bits = header.Bits,
-                                    Nonce = header.Nonce
-                                });
-                            packetEntity.BitcoinPacketHeaders.Add(new BitcoinPacketHeaderEntity
-                            {
-                                BitcoinPacket = packetEntity,
-                                BitcoinBlockHeader = blockHeaderEntity
-                            });
-                        }
-
+                        await HandleHeadersMessageAsync(packetEntity, concreteSummary, uow);
                         break;
                 }
-
 
                 await packetRepository.InsertAsync(packetEntity);
 
                 processedMessageCount++;
                 currentBatchCount++;
-
 
                 if (currentBatchCount >= BatchSize)
                 {
@@ -230,5 +158,90 @@ public class BitcoinAnalysisService(
         logger.LogInformation(
             "[BitcoinAnalysisService] Completed Bitcoin analysis for FileAnalysisId: {FileAnalysisId}. Processed {ProcessedMessageCount} messages in {ElapsedMilliseconds} ms.",
             fileAnalysisId, processedMessageCount, stopwatch.ElapsedMilliseconds);
+    }
+
+    private async Task HandleInventoryRelatedMessageAsync(BitcoinPacketEntity packetEntity,
+        BitcoinMessageSummary summary, IUnitOfWork uow)
+    {
+        foreach (var invItem in summary.Inventories)
+        {
+            var inventoryEntity =
+                await uow.BitcoinInventories.GetOrCreateAsync(invItem.Type.ToString(),
+                    invItem.Hash.ToString());
+            packetEntity.BitcoinPacketInventories.Add(new BitcoinPacketInventoryEntity
+            {
+                BitcoinPacket = packetEntity,
+                BitcoinInventory = inventoryEntity
+            });
+        }
+    }
+
+    private async Task HandleTransactionMessageAsync(BitcoinPacketEntity packetEntity, BitcoinMessageSummary summary,
+        IUnitOfWork uow)
+    {
+        var transactionRepository = uow.BitcoinTransactions;
+        var transactionEntity =
+            await transactionRepository.GetByTxIdAsync(summary.Transaction.GetHash()
+                .ToString());
+        if (transactionEntity == null)
+        {
+            transactionEntity = new BitcoinTransactionEntity
+            {
+                Id = Guid.NewGuid(),
+                TxId = summary.Transaction.GetHash().ToString(),
+                Version = (int)summary.Transaction.Version,
+                Locktime = summary.Transaction.LockTime.Value,
+                Inputs = summary.Transaction.Inputs
+                    .Select(txIn => new BitcoinTransactionInputEntity
+                    {
+                        Id = Guid.NewGuid(),
+                        PreviousTxHash = txIn.PrevOut.Hash.ToString(),
+                        PreviousOutputIndex = txIn.PrevOut.N,
+                        ScriptSig = txIn.ScriptSig.ToHex(),
+                        Sequence = txIn.Sequence.Value
+                    })
+                    .ToList(),
+                Outputs = summary.Transaction.Outputs
+                    .Select(txOut => new BitcoinTransactionOutputEntity
+                    {
+                        Id = Guid.NewGuid(),
+                        Value = txOut.Value.Satoshi,
+                        ScriptPubKey = txOut.ScriptPubKey.ToHex()
+                    })
+                    .ToList()
+            };
+            await transactionRepository.InsertAsync(transactionEntity);
+        }
+
+        packetEntity.BitcoinPacketTransactions.Add(new BitcoinPacketTransactionEntity
+        {
+            BitcoinPacket = packetEntity,
+            BitcoinTransaction = transactionEntity
+        });
+    }
+
+    private async Task HandleHeadersMessageAsync(BitcoinPacketEntity packetEntity, BitcoinMessageSummary summary,
+        IUnitOfWork uow)
+    {
+        var blockHeaderRepository = uow.BitcoinBlockHeaders;
+        foreach (var header in summary.Headers)
+        {
+            var blockHeaderEntity = await blockHeaderRepository.GetOrCreateByBlockHashAsync(
+                header.GetHash().ToString(), new BitcoinBlockHeaderEntity
+                {
+                    BlockHash = header.GetHash().ToString(),
+                    Version = header.Version,
+                    PrevBlockHash = header.HashPrevBlock.ToString(),
+                    MerkleRoot = header.HashMerkleRoot.ToString(),
+                    Timestamp = header.BlockTime,
+                    Bits = header.Bits,
+                    Nonce = header.Nonce
+                });
+            packetEntity.BitcoinPacketHeaders.Add(new BitcoinPacketHeaderEntity
+            {
+                BitcoinPacket = packetEntity,
+                BitcoinBlockHeader = blockHeaderEntity
+            });
+        }
     }
 }
