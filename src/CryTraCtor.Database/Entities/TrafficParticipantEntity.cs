@@ -14,9 +14,9 @@ public class TrafficParticipantEntity : IEntity
     public Guid FileAnalysisId { get; set; }
     public FileAnalysisEntity? FileAnalysis { get; set; }
 
-    [InverseProperty(nameof(DnsPacketEntity.Sender))]
-    public ICollection<DnsPacketEntity>? SentDnsPackets { get; set; } = new List<DnsPacketEntity>();
+    [InverseProperty(nameof(DnsMessageEntity.Sender))]
+    public ICollection<DnsMessageEntity>? SentDnsMessages { get; set; } = new List<DnsMessageEntity>();
 
-    [InverseProperty(nameof(DnsPacketEntity.Recipient))]
-    public ICollection<DnsPacketEntity>? ReceivedDnsPackets { get; set; } = new List<DnsPacketEntity>();
+    [InverseProperty(nameof(DnsMessageEntity.Recipient))]
+    public ICollection<DnsMessageEntity>? ReceivedDnsMessages { get; set; } = new List<DnsMessageEntity>();
 }

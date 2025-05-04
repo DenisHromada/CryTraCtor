@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CryTraCtor.Database.Entities;
 
-public abstract class PacketEntityBase : IEntity
+public abstract class MessageEntityBase : IEntity
 {
     public required Guid Id { get; set; }
 

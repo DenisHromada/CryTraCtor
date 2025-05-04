@@ -11,11 +11,11 @@ public interface IUnitOfWork : IAsyncDisposable
         where TEntity : class, IEntity
         where TEntityMapper : IEntityMapper<TEntity>, new();
 
-    IDnsPacketRepository DnsPackets { get; }
+    IDnsMessageRepository DnsMessages { get; }
     IDomainMatchRepository DomainMatches { get; }
-    IBitcoinPacketRepository BitcoinPackets { get; }
+    IBitcoinMessageRepository BitcoinMessages { get; }
     IBitcoinInventoryRepository BitcoinInventories { get; }
-    IBitcoinPacketInventoryRepository BitcoinPacketInventories { get; }
+    IBitcoinMessageInventoryRepository BitcoinMessageInventories { get; }
     IBitcoinTransactionRepository BitcoinTransactions { get; }
     IBitcoinBlockHeaderRepository BitcoinBlockHeaders { get; }
     TrafficParticipantAggregateRepository TrafficParticipantAggregates { get; }

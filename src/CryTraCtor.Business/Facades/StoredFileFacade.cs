@@ -2,6 +2,7 @@ using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Mappers;
 using CryTraCtor.Business.Models.StoredFiles;
 using CryTraCtor.Database.Repositories;
+using CryTraCtor.Database.Repositories.Interfaces;
 
 namespace CryTraCtor.Business.Facades;
 

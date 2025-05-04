@@ -12,5 +12,5 @@ public class BitcoinInventoryEntity : IEntity
     [MaxLength(64)]
     public string Hash { get; set; } = string.Empty;
 
-    public ICollection<BitcoinPacketInventoryEntity> BitcoinPacketInventories { get; set; } = new HashSet<BitcoinPacketInventoryEntity>();
+    public ICollection<BitcoinMessageInventoryEntity> BitcoinMessageInventories { get; set; } = new HashSet<BitcoinMessageInventoryEntity>();
 }

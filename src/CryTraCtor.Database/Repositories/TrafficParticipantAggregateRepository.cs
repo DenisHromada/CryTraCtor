@@ -21,9 +21,9 @@ public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext
                 Port = tp.Port,
                 FileAnalysisId = tp.FileAnalysisId,
 
-                OutgoingDnsCount = _dbContext.Set<DnsPacketEntity>()
+                OutgoingDnsCount = _dbContext.Set<DnsMessageEntity>()
                     .Count(dns => dns.FileAnalysisId == fileAnalysisId && dns.SenderId == tp.Id),
-                IncomingDnsCount = _dbContext.Set<DnsPacketEntity>()
+                IncomingDnsCount = _dbContext.Set<DnsMessageEntity>()
                     .Count(dns => dns.FileAnalysisId == fileAnalysisId && dns.RecipientId == tp.Id),
 
                 OutgoingBitcoinCount = _dbContext.Set<BitcoinMessageEntity>()
@@ -32,18 +32,18 @@ public class TrafficParticipantAggregateRepository(CryTraCtorDbContext dbContext
                     .Count(btc => btc.FileAnalysisId == fileAnalysisId && btc.RecipientId == tp.Id),
 
                 TotalMatchedKnownDomainCount = _dbContext.Set<DomainMatchEntity>()
-                    .Count(dm => _dbContext.Set<DnsPacketEntity>()
+                    .Count(dm => _dbContext.Set<DnsMessageEntity>()
                         .Where(dns =>
                             dns.FileAnalysisId == fileAnalysisId && (dns.SenderId == tp.Id || dns.RecipientId == tp.Id))
                         .Select(dns => dns.Id)
-                        .Contains(dm.DnsPacketId)),
+                        .Contains(dm.DnsMessageId)),
 
                 UniqueMatchedKnownDomainCount = _dbContext.Set<DomainMatchEntity>()
-                    .Where(dm => _dbContext.Set<DnsPacketEntity>()
+                    .Where(dm => _dbContext.Set<DnsMessageEntity>()
                         .Where(dns =>
                             dns.FileAnalysisId == fileAnalysisId && (dns.SenderId == tp.Id || dns.RecipientId == tp.Id))
                         .Select(dns => dns.Id)
-                        .Contains(dm.DnsPacketId))
+                        .Contains(dm.DnsMessageId))
                     .Select(dm => dm.KnownDomainId)
                     .Distinct()
                     .Count()

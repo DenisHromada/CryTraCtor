@@ -3,6 +3,7 @@ using CryTraCtor.Database.Entities;
 using CryTraCtor.Database.Factories;
 using CryTraCtor.Database.Mappers;
 using CryTraCtor.Database.Repositories;
+using CryTraCtor.Database.Repositories.Interfaces;
 using CryTraCtor.Database.Services;
 using CryTraCtor.Database.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
@@ -27,8 +28,8 @@ public class WebAppDatabaseInstaller : IInstaller
             .AddSingleton<IEntityMapper<KnownDomainEntity>, KnownDomainEntityMapper>()
             .AddSingleton<IEntityMapper<TrafficParticipantEntity>, TrafficParticipantEntityMapper>()
             .AddSingleton<IEntityMapper<FileAnalysisEntity>, FileAnalysisEntityMapper>()
-            .AddSingleton<IEntityMapper<DnsPacketEntity>, DnsPacketEntityMapper>()
-            .AddSingleton<IEntityMapper<BitcoinMessageEntity>, BitcoinPacketEntityMapper>()
+            .AddSingleton<IEntityMapper<DnsMessageEntity>, DnsMessageEntityMapper>()
+            .AddSingleton<IEntityMapper<BitcoinMessageEntity>, BitcoinMessageEntityMapper>()
             .AddSingleton<IEntityMapper<BitcoinInventoryEntity>, BitcoinInventoryEntityMapper>();
 
         serviceCollection

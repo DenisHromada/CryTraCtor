@@ -1,6 +1,6 @@
 namespace CryTraCtor.Database.Dtos;
 
-public class DnsPacketFlatPurposeDto
+public class DnsMessageFlatPurposeDto
 {
     public required Guid Id { get; set; }
     public DateTime Timestamp { get; set; }

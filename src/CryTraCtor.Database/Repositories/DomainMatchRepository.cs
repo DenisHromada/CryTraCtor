@@ -1,4 +1,5 @@
 using CryTraCtor.Database.Entities;
+using CryTraCtor.Database.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.Repositories;
@@ -10,26 +11,26 @@ public class DomainMatchRepository(CryTraCtorDbContext dbContext) : IDomainMatch
     public async Task<List<DomainMatchEntity>> GetByTrafficParticipantIdAsync(Guid trafficParticipantId)
     {
         return await _dbContext.DomainMatch
-            .Include(dm => dm.DnsPacket)
+            .Include(dm => dm.DnsMessage)
             .Include(dm => dm.KnownDomain)
             .ThenInclude(kd => kd!.CryptoProduct)
-            .Where(dm => dm.DnsPacket != null &&
-                         (dm.DnsPacket.SenderId == trafficParticipantId ||
-                          dm.DnsPacket.RecipientId == trafficParticipantId))
+            .Where(dm => dm.DnsMessage != null &&
+                         (dm.DnsMessage.SenderId == trafficParticipantId ||
+                          dm.DnsMessage.RecipientId == trafficParticipantId))
             .ToListAsync();
     }
 
-    public async Task<List<DomainMatchEntity>> GetByPacketIdsAsync(IEnumerable<Guid> packetIds)
+    public async Task<List<DomainMatchEntity>> GetByMessageIdsAsync(IEnumerable<Guid> messageIds)
     {
-        var packetIdList = packetIds.ToList();
-        if (!packetIdList.Any())
+        var messageIdList = messageIds.ToList();
+        if (messageIdList.Count == 0)
         {
-            return new List<DomainMatchEntity>();
+            return [];
         }
 
         return await _dbContext.DomainMatch
             .Include(dm => dm.KnownDomain)
-            .Where(dm => packetIdList.Contains(dm.DnsPacketId))
+            .Where(dm => messageIdList.Contains(dm.DnsMessageId))
             .ToListAsync();
     }
 

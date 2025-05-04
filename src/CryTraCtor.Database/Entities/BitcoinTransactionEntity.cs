@@ -16,5 +16,5 @@ public class BitcoinTransactionEntity : IEntity
 
     public ICollection<BitcoinTransactionInputEntity> Inputs { get; set; } = new HashSet<BitcoinTransactionInputEntity>();
     public ICollection<BitcoinTransactionOutputEntity> Outputs { get; set; } = new HashSet<BitcoinTransactionOutputEntity>();
-    public ICollection<BitcoinPacketTransactionEntity> BitcoinPacketTransactions { get; set; } = new HashSet<BitcoinPacketTransactionEntity>();
+    public ICollection<BitcoinMessageTransactionEntity> BitcoinMessageTransactions { get; set; } = new HashSet<BitcoinMessageTransactionEntity>();
 }

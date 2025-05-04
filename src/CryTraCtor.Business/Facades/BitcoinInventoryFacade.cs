@@ -37,10 +37,10 @@ public class BitcoinInventoryFacade(
 
         var inventoryEntity = await inventoryRepository.Get()
             .Where(inv => inv.Id == inventoryId)
-            .Include(inv => inv.BitcoinPacketInventories)
+            .Include(inv => inv.BitcoinMessageInventories)
             .ThenInclude(bpi => bpi.BitcoinMessage)
             .ThenInclude(packet => packet.Sender)
-            .Include(inv => inv.BitcoinPacketInventories)
+            .Include(inv => inv.BitcoinMessageInventories)
             .ThenInclude(bpi => bpi.BitcoinMessage)
             .ThenInclude(packet => packet.Recipient)
             .FirstOrDefaultAsync();
@@ -55,7 +55,7 @@ public class BitcoinInventoryFacade(
             Id = inventoryEntity.Id,
             Type = inventoryEntity.Type,
             Hash = inventoryEntity.Hash,
-            ReferencingPackets = inventoryEntity.BitcoinPacketInventories
+            ReferencingPackets = inventoryEntity.BitcoinMessageInventories
                 .Where(bpi => bpi.BitcoinMessage.FileAnalysisId == fileAnalysisId)
                 .Select(bpi => new BitcoinMessageDetailModel
                 {

@@ -2,10 +2,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.Entities;
 
-[PrimaryKey(nameof(BitcoinPacketId), nameof(BitcoinTransactionId))]
-public class BitcoinPacketTransactionEntity
+[PrimaryKey(nameof(BitcoinMessageId), nameof(BitcoinTransactionId))]
+public class BitcoinMessageTransactionEntity
 {
-    public Guid BitcoinPacketId { get; set; }
+    public Guid BitcoinMessageId { get; set; }
     public BitcoinMessageEntity BitcoinMessage { get; set; } = null!;
 
     public Guid BitcoinTransactionId { get; set; }

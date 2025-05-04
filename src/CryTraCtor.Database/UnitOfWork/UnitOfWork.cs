@@ -10,11 +10,11 @@ public class UnitOfWork(DbContext dbContext) : IUnitOfWork
 {
     private readonly DbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
-    private IDnsPacketRepository? _dnsPackets;
+    private IDnsMessageRepository? _dnsMessages;
     private IDomainMatchRepository? _domainMatches;
-    private IBitcoinPacketRepository? _bitcoinPackets;
+    private IBitcoinMessageRepository? _bitcoinMessages;
     private IBitcoinInventoryRepository? _bitcoinInventories;
-    private IBitcoinPacketInventoryRepository? _bitcoinPacketInventories;
+    private IBitcoinMessageInventoryRepository? _bitcoinMessageInventories;
     private IBitcoinTransactionRepository? _bitcoinTransactions;
     private IBitcoinBlockHeaderRepository? _bitcoinBlockHeaders;
     private TrafficParticipantAggregateRepository? _trafficParticipantAggregates;
@@ -24,22 +24,22 @@ public class UnitOfWork(DbContext dbContext) : IUnitOfWork
         where TEntityMapper : IEntityMapper<TEntity>, new()
         => new Repository<TEntity>(_dbContext, new TEntityMapper());
 
-    public IDnsPacketRepository DnsPackets =>
-        _dnsPackets ??= new DnsPacketRepository((CryTraCtorDbContext)_dbContext, new DnsPacketEntityMapper());
+    public IDnsMessageRepository DnsMessages =>
+        _dnsMessages ??= new DnsMessageRepository((CryTraCtorDbContext)_dbContext, new DnsMessageEntityMapper());
 
     public IDomainMatchRepository DomainMatches =>
         _domainMatches ??= new DomainMatchRepository((CryTraCtorDbContext)_dbContext);
 
-    public IBitcoinPacketRepository BitcoinPackets =>
-        _bitcoinPackets ??=
-            new BitcoinPacketRepository((CryTraCtorDbContext)_dbContext, new BitcoinPacketEntityMapper());
+    public IBitcoinMessageRepository BitcoinMessages =>
+        _bitcoinMessages ??=
+            new BitcoinMessageRepository((CryTraCtorDbContext)_dbContext, new BitcoinMessageEntityMapper());
 
     public IBitcoinInventoryRepository BitcoinInventories =>
         _bitcoinInventories ??=
             new BitcoinInventoryRepository((CryTraCtorDbContext)_dbContext, new BitcoinInventoryEntityMapper());
 
-    public IBitcoinPacketInventoryRepository BitcoinPacketInventories =>
-        _bitcoinPacketInventories ??= new BitcoinPacketInventoryRepository((CryTraCtorDbContext)_dbContext);
+    public IBitcoinMessageInventoryRepository BitcoinMessageInventories =>
+        _bitcoinMessageInventories ??= new BitcoinMessageInventoryRepository((CryTraCtorDbContext)_dbContext);
 
     public IBitcoinTransactionRepository BitcoinTransactions =>
         _bitcoinTransactions ??=

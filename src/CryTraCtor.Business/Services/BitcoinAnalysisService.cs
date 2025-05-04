@@ -42,7 +42,7 @@ public class BitcoinAnalysisService(
         await using var uow = unitOfWorkFactory.Create();
         var packetRepository =
             uow.GetRepository<BitcoinMessageEntity,
-                Database.Mappers.BitcoinPacketEntityMapper>();
+                Database.Mappers.BitcoinMessageEntityMapper>();
 
         int processedMessageCount = 0;
         int currentBatchCount = 0;
@@ -168,7 +168,7 @@ public class BitcoinAnalysisService(
             var inventoryEntity =
                 await uow.BitcoinInventories.GetOrCreateAsync(invItem.Type.ToString(),
                     invItem.Hash.ToString());
-            messageEntity.BitcoinPacketInventories.Add(new BitcoinPacketInventoryEntity
+            messageEntity.BitcoinMessageInventories.Add(new BitcoinMessageInventoryEntity
             {
                 BitcoinMessage = messageEntity,
                 BitcoinInventory = inventoryEntity
@@ -213,7 +213,7 @@ public class BitcoinAnalysisService(
             await transactionRepository.InsertAsync(transactionEntity);
         }
 
-        messageEntity.BitcoinPacketTransactions.Add(new BitcoinPacketTransactionEntity
+        messageEntity.BitcoinMessageTransactions.Add(new BitcoinMessageTransactionEntity
         {
             BitcoinMessage = messageEntity,
             BitcoinTransaction = transactionEntity
@@ -237,7 +237,7 @@ public class BitcoinAnalysisService(
                     Bits = header.Bits,
                     Nonce = header.Nonce
                 });
-            messageEntity.BitcoinPacketHeaders.Add(new BitcoinPacketHeaderEntity
+            messageEntity.BitcoinMessageHeaders.Add(new BitcoinMessageHeaderEntity
             {
                 BitcoinMessage = messageEntity,
                 BitcoinBlockHeader = blockHeaderEntity

@@ -12,16 +12,16 @@ public class DnsMessageFacade(
     IUnitOfWorkFactory unitOfWorkFactory,
     DnsMessageModelMapper modelMapper
 )
-    : FacadeBase<DnsPacketEntity, DnsMessageModel, DnsMessageModel, DnsPacketEntityMapper>(unitOfWorkFactory,
+    : FacadeBase<DnsMessageEntity, DnsMessageModel, DnsMessageModel, DnsMessageEntityMapper>(unitOfWorkFactory,
         modelMapper), IDnsMessageFacade
 {
     public async Task<IEnumerable<DnsMessageModel>> GetByFileAnalysisIdAsync(Guid fileAnalysisId)
     {
         await using var uow = UnitOfWorkFactory.Create();
 
-        var dnsPacketRepository = uow.DnsPackets;
+        var dnsPacketRepository = uow.DnsMessages;
 
-        var flatPacketDtos = await dnsPacketRepository.GetPacketsWithFlatPurposeByFileAnalysisIdAsync(fileAnalysisId);
+        var flatPacketDtos = await dnsPacketRepository.GetMessagesWithFlatPurposeByFileAnalysisIdAsync(fileAnalysisId);
 
         if (!flatPacketDtos.Any())
         {

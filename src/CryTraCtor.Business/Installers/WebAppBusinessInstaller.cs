@@ -30,7 +30,7 @@ public class WebAppBusinessInstaller : IInstaller
             .AddSingleton<FileAnalysisModelMapper>()
             .AddSingleton<DnsMessageModelMapper>()
             .AddSingleton<DomainMatchMapper>()
-            .AddSingleton<BitcoinPacketModelMapper>()
+            .AddSingleton<BitcoinMessageModelMapper>()
             .AddSingleton<BitcoinTransactionMapper>()
             .AddSingleton<BitcoinBlockHeaderMapper>();
 

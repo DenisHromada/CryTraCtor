@@ -1,6 +1,6 @@
 ﻿using CryTraCtor.Database.Entities;
 
-namespace CryTraCtor.Database.Repositories;
+namespace CryTraCtor.Database.Repositories.Interfaces;
 
 public interface IRepository<TEntity>
 where TEntity : class, IEntity

@@ -1,5 +1,6 @@
 ﻿using CryTraCtor.Database.Entities;
 using CryTraCtor.Database.Mappers;
+using CryTraCtor.Database.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CryTraCtor.Database.Repositories;

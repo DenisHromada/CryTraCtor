@@ -7,9 +7,9 @@ namespace CryTraCtor.Business.Mappers;
 
 public class DnsMessageModelMapper(
     TrafficParticipantListModelMapper trafficParticipantListModelMapper
-) : ModelMapperBase<DnsPacketEntity, DnsMessageModel, DnsMessageModel>
+) : ModelMapperBase<DnsMessageEntity, DnsMessageModel, DnsMessageModel>
 {
-    public override DnsPacketEntity MapToEntity(DnsMessageModel model)
+    public override DnsMessageEntity MapToEntity(DnsMessageModel model)
         => new()
         {
             Id = model.Id,
@@ -24,7 +24,7 @@ public class DnsMessageModelMapper(
             FileAnalysisId = model.FileAnalysisId,
         };
 
-    public override DnsMessageModel MapToListModel(DnsPacketEntity? entity)
+    public override DnsMessageModel MapToListModel(DnsMessageEntity? entity)
     {
         if (entity == null)
         {
@@ -51,5 +51,5 @@ public class DnsMessageModelMapper(
         };
     }
 
-    public override DnsMessageModel? MapToDetailModel(DnsPacketEntity? entity) => MapToListModel(entity);
+    public override DnsMessageModel? MapToDetailModel(DnsMessageEntity? entity) => MapToListModel(entity);
 }

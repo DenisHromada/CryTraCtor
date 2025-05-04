@@ -11,5 +11,5 @@ public class FileAnalysisEntity : IEntity
     public StoredFileEntity? StoredFile { get; set; }
 
     public virtual ICollection<TrafficParticipantEntity>? TrafficParticipants { get; set; }
-    public virtual ICollection<DnsPacketEntity>? DnsPackets { get; set; }
+    public virtual ICollection<DnsMessageEntity>? DnsMessages { get; set; }
 }

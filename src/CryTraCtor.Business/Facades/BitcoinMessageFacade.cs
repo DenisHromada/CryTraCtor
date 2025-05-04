@@ -11,9 +11,9 @@ namespace CryTraCtor.Business.Facades;
 
 public class BitcoinMessageFacade(
     IUnitOfWorkFactory unitOfWorkFactory,
-    BitcoinPacketModelMapper modelMapper,
+    BitcoinMessageModelMapper modelMapper,
     ILogger<BitcoinMessageFacade> logger)
-    : FacadeBase<BitcoinMessageEntity, BitcoinMessageListModel, BitcoinMessageDetailModel, BitcoinPacketEntityMapper>(
+    : FacadeBase<BitcoinMessageEntity, BitcoinMessageListModel, BitcoinMessageDetailModel, BitcoinMessageEntityMapper>(
         unitOfWorkFactory, modelMapper), IBitcoinMessageFacade
 {
     protected override ICollection<string> IncludesNavigationPathDetail =>
@@ -21,10 +21,10 @@ public class BitcoinMessageFacade(
         {
             nameof(BitcoinMessageEntity.Sender),
             nameof(BitcoinMessageEntity.Recipient),
-            $"{nameof(BitcoinMessageEntity.BitcoinPacketInventories)}.{nameof(BitcoinPacketInventoryEntity.BitcoinInventory)}",
-            $"{nameof(BitcoinMessageEntity.BitcoinPacketTransactions)}.{nameof(BitcoinPacketTransactionEntity.BitcoinTransaction)}.{nameof(BitcoinTransactionEntity.Inputs)}",
-            $"{nameof(BitcoinMessageEntity.BitcoinPacketTransactions)}.{nameof(BitcoinPacketTransactionEntity.BitcoinTransaction)}.{nameof(BitcoinTransactionEntity.Outputs)}",
-            $"{nameof(BitcoinMessageEntity.BitcoinPacketHeaders)}.{nameof(BitcoinPacketHeaderEntity.BitcoinBlockHeader)}"
+            $"{nameof(BitcoinMessageEntity.BitcoinMessageInventories)}.{nameof(BitcoinMessageInventoryEntity.BitcoinInventory)}",
+            $"{nameof(BitcoinMessageEntity.BitcoinMessageTransactions)}.{nameof(BitcoinMessageTransactionEntity.BitcoinTransaction)}.{nameof(BitcoinTransactionEntity.Inputs)}",
+            $"{nameof(BitcoinMessageEntity.BitcoinMessageTransactions)}.{nameof(BitcoinMessageTransactionEntity.BitcoinTransaction)}.{nameof(BitcoinTransactionEntity.Outputs)}",
+            $"{nameof(BitcoinMessageEntity.BitcoinMessageHeaders)}.{nameof(BitcoinMessageHeaderEntity.BitcoinBlockHeader)}"
         };
 
     public override async Task<BitcoinMessageDetailModel> CreateOrUpdateAsync(BitcoinMessageDetailModel model)
@@ -32,7 +32,7 @@ public class BitcoinMessageFacade(
         try
         {
             await using var uow = UnitOfWorkFactory.Create();
-            var packetRepository = uow.GetRepository<BitcoinMessageEntity, BitcoinPacketEntityMapper>();
+            var packetRepository = uow.GetRepository<BitcoinMessageEntity, BitcoinMessageEntityMapper>();
             var inventoryRepository = uow.BitcoinInventories;
             var transactionRepository = uow.BitcoinTransactions;
             var blockHeaderRepository = uow.BitcoinBlockHeaders;
@@ -49,13 +49,13 @@ public class BitcoinMessageFacade(
                         var inventoryEntity =
                             await inventoryRepository.GetOrCreateAsync(invItemModel.Type, invItemModel.Hash);
 
-                        var packetInventoryEntity = new BitcoinPacketInventoryEntity
+                        var packetInventoryEntity = new BitcoinMessageInventoryEntity
                         {
                             BitcoinMessage = entity,
                             BitcoinInventory = inventoryEntity
                         };
 
-                        entity.BitcoinPacketInventories.Add(packetInventoryEntity);
+                        entity.BitcoinMessageInventories.Add(packetInventoryEntity);
                     }
 
                     break;
@@ -92,13 +92,13 @@ public class BitcoinMessageFacade(
                         await transactionRepository.InsertAsync(transactionEntity);
                     }
 
-                    var packetTransactionEntity = new BitcoinPacketTransactionEntity
+                    var packetTransactionEntity = new BitcoinMessageTransactionEntity
                     {
                         BitcoinMessage = entity,
                         BitcoinTransaction = transactionEntity
                     };
 
-                    entity.BitcoinPacketTransactions.Add(packetTransactionEntity);
+                    entity.BitcoinMessageTransactions.Add(packetTransactionEntity);
                     break;
                 }
                 case "headers" when model.Headers != null && model.Headers.Count != 0:
@@ -118,13 +118,13 @@ public class BitcoinMessageFacade(
                                     Nonce = headerModel.Nonce
                                 });
 
-                        var packetHeaderEntity = new BitcoinPacketHeaderEntity
+                        var packetHeaderEntity = new BitcoinMessageHeaderEntity
                         {
                             BitcoinMessage = entity,
                             BitcoinBlockHeader = blockHeaderEntity
                         };
 
-                        entity.BitcoinPacketHeaders.Add(packetHeaderEntity);
+                        entity.BitcoinMessageHeaders.Add(packetHeaderEntity);
                     }
 
                     break;
@@ -152,19 +152,19 @@ public class BitcoinMessageFacade(
         {
             await using var uow = UnitOfWorkFactory.Create();
 
-            var repository = uow.GetRepository<BitcoinMessageEntity, BitcoinPacketEntityMapper>();
+            var repository = uow.GetRepository<BitcoinMessageEntity, BitcoinMessageEntityMapper>();
 
             var entities = await repository.Get()
                 .Include(p => p.Sender)
                 .Include(p => p.Recipient)
-                .Include(p => p.BitcoinPacketInventories)
-                .Include(p => p.BitcoinPacketTransactions)
+                .Include(p => p.BitcoinMessageInventories)
+                .Include(p => p.BitcoinMessageTransactions)
                 .ThenInclude(ppt => ppt.BitcoinTransaction)
                 .ThenInclude(t => t.Inputs)
-                .Include(p => p.BitcoinPacketTransactions)
+                .Include(p => p.BitcoinMessageTransactions)
                 .ThenInclude(ppt => ppt.BitcoinTransaction)
                 .ThenInclude(t => t.Outputs)
-                .Include(p => p.BitcoinPacketHeaders)
+                .Include(p => p.BitcoinMessageHeaders)
                 .ThenInclude(pph => pph.BitcoinBlockHeader)
                 .Where(p => p.FileAnalysisId == fileAnalysisId)
                 .ToListAsync();
@@ -186,7 +186,7 @@ public class BitcoinMessageFacade(
         Guid inventoryId, Guid fileAnalysisId)
     {
         await using var uow = UnitOfWorkFactory.Create();
-        var repository = uow.BitcoinPackets;
+        var repository = uow.BitcoinMessages;
 
         var entities = await repository.GetByInventoryIdAndAnalysisIdAsync(inventoryId, fileAnalysisId);
 

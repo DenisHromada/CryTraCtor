@@ -5,7 +5,7 @@ using CryTraCtor.Database.Entities;
 
 namespace CryTraCtor.Business.Mappers.Bitcoin;
 
-public class BitcoinPacketModelMapper(
+public class BitcoinMessageModelMapper(
     TrafficParticipantListModelMapper trafficParticipantMapper,
     BitcoinTransactionMapper bitcoinTransactionMapper
 ) : ModelMapperBase<BitcoinMessageEntity, BitcoinMessageListModel, BitcoinMessageDetailModel>
@@ -40,7 +40,7 @@ public class BitcoinPacketModelMapper(
             Timestamp = entity.Timestamp,
             Command = entity.Command,
             InventoryCount = entity.Command is "inv" or "getdata" or "notfound"
-                ? entity.BitcoinPacketInventories.Count
+                ? entity.BitcoinMessageInventories.Count
                 : null
         };
     }
@@ -66,7 +66,7 @@ public class BitcoinPacketModelMapper(
             Sender = trafficParticipantMapper.MapToListModel(entity.Sender),
             Recipient = trafficParticipantMapper.MapToListModel(entity.Recipient),
             InventoryCount = entity.Command is "inv" or "getdata" or "notfound"
-                ? entity.BitcoinPacketInventories.Count
+                ? entity.BitcoinMessageInventories.Count
                 : null
         };
 
@@ -74,7 +74,7 @@ public class BitcoinPacketModelMapper(
         {
             case "inv" or "getdata" or "notfound":
             {
-                detailModel.Inventories = entity.BitcoinPacketInventories
+                detailModel.Inventories = entity.BitcoinMessageInventories
                     .Where(joinEntity => joinEntity?.BitcoinInventory != null)
                     .Select(joinEntity => new BitcoinInventoryItemListModel
                     {
@@ -87,7 +87,7 @@ public class BitcoinPacketModelMapper(
             }
             case "headers":
             {
-                detailModel.Headers = entity.BitcoinPacketHeaders
+                detailModel.Headers = entity.BitcoinMessageHeaders
                     .Where(joinEntity => joinEntity?.BitcoinBlockHeader != null)
                     .Select(joinEntity => new BitcoinBlockHeaderModel
                     {
@@ -104,7 +104,7 @@ public class BitcoinPacketModelMapper(
             }
             case "tx":
             {
-                var transactionEntity = entity.BitcoinPacketTransactions.FirstOrDefault()?.BitcoinTransaction;
+                var transactionEntity = entity.BitcoinMessageTransactions.FirstOrDefault()?.BitcoinTransaction;
                 if (transactionEntity != null)
                 {
                     detailModel.Transaction = bitcoinTransactionMapper.MapToDetailModel(transactionEntity);

@@ -10,7 +10,7 @@ namespace CryTraCtor.Business.Mappers.DomainMatch
             return new DomainMatchEntity
             {
                 KnownDomainId = model.KnownDomainId,
-                DnsPacketId = model.DnsPacketId,
+                DnsMessageId = model.DnsPacketId,
                 MatchType = model.MatchType
             };
         }

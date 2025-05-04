@@ -24,6 +24,6 @@ public class BitcoinBlockHeaderEntity : IEntity
 
     public uint Nonce { get; set; }
 
-    public ICollection<BitcoinPacketHeaderEntity> BitcoinPacketHeaders { get; set; } =
-        new HashSet<BitcoinPacketHeaderEntity>();
+    public ICollection<BitcoinMessageHeaderEntity> BitcoinMessageHeaders { get; set; } =
+        new HashSet<BitcoinMessageHeaderEntity>();
 }

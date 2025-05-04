@@ -23,9 +23,9 @@ public class TrafficParticipantModelMapper(
                 Address = entity.Address,
                 Port = entity.Port,
                 FileAnalysis = fileAnalysisModelMapper.MapToListModel(entity.FileAnalysis),
-                SentDnsPackets = entity.SentDnsPackets?
+                SentDnsPackets = entity.SentDnsMessages?
                     .Select(dnsMessageModelMapper.MapToListModel).ToList() ?? [],
-                ReceivedDnsPackets = entity.ReceivedDnsPackets?
+                ReceivedDnsPackets = entity.ReceivedDnsMessages?
                     .Select(dnsMessageModelMapper.MapToListModel).ToList() ?? []
             };
 
@@ -37,7 +37,7 @@ public class TrafficParticipantModelMapper(
             Port = model.Port,
             FileAnalysisId = model.FileAnalysis.Id,
             FileAnalysis = null,
-            SentDnsPackets = null,
-            ReceivedDnsPackets = null
+            SentDnsMessages = null,
+            ReceivedDnsMessages = null
         };
 }
