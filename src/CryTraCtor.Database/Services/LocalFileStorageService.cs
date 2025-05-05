@@ -38,7 +38,7 @@ public class LocalFileStorageService : IFileStorageService
         var internalPath = GenerateInternalFilePath();
 
         await using var storageStream = File.Create(internalPath);
-        await incomingStream.CopyToAsync(storageStream);
+        await incomingStream.CopyToAsync(storageStream, 81920);
 
         return internalPath;
     }
