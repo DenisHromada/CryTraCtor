@@ -24,13 +24,8 @@ public class DnsMessageModelMapper(
             FileAnalysisId = model.FileAnalysisId,
         };
 
-    public override DnsMessageModel MapToListModel(DnsMessageEntity? entity)
+    public override DnsMessageModel MapToListModel(DnsMessageEntity entity)
     {
-        if (entity == null)
-        {
-            return null;
-        }
-
         return new DnsMessageModel
         {
             Id = entity.Id,
@@ -51,5 +46,5 @@ public class DnsMessageModelMapper(
         };
     }
 
-    public override DnsMessageModel? MapToDetailModel(DnsMessageEntity? entity) => MapToListModel(entity);
+    public override DnsMessageModel MapToDetailModel(DnsMessageEntity entity) => MapToListModel(entity);
 }
