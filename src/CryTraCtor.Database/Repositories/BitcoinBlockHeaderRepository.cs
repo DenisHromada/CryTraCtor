@@ -10,8 +10,10 @@ public class BitcoinBlockHeaderRepository(
     IEntityMapper<BitcoinBlockHeaderEntity> entityMapper)
     : Repository<BitcoinBlockHeaderEntity>(dbContext, entityMapper), IBitcoinBlockHeaderRepository
 {
-    public async Task<BitcoinBlockHeaderEntity> GetOrCreateByBlockHashAsync(string blockHash,
-        BitcoinBlockHeaderEntity newHeaderEntity)
+    public async Task<BitcoinBlockHeaderEntity> GetOrCreateByBlockHashAsync(
+        string blockHash,
+        BitcoinBlockHeaderEntity newHeaderEntity
+    )
     {
         var existingHeader = await Get().FirstOrDefaultAsync(h => h.BlockHash == blockHash);
 
@@ -31,12 +33,4 @@ public class BitcoinBlockHeaderRepository(
             return newHeaderEntity;
         }
     }
-
-
-    public IQueryable<BitcoinBlockHeaderEntity> Get() => base.Get();
-    public IQueryable<BitcoinBlockHeaderEntity> GetLocal() => base.GetLocal();
-    public ValueTask<bool> ExistsAsync(BitcoinBlockHeaderEntity entity) => base.ExistsAsync(entity);
-    public Task<BitcoinBlockHeaderEntity> InsertAsync(BitcoinBlockHeaderEntity entity) => base.InsertAsync(entity);
-    public Task<BitcoinBlockHeaderEntity> UpdateAsync(BitcoinBlockHeaderEntity entity) => base.UpdateAsync(entity);
-    public Task DeleteAsync(Guid entityId) => base.DeleteAsync(entityId);
 }
