@@ -160,14 +160,24 @@ public class BitcoinAnalysisService(
             fileAnalysisId, processedMessageCount, stopwatch.ElapsedMilliseconds);
     }
 
-    private async Task HandleInventoryRelatedMessageAsync(BitcoinMessageEntity messageEntity,
-        BitcoinMessageSummary summary, IUnitOfWork uow)
+    private async Task HandleInventoryRelatedMessageAsync(
+        BitcoinMessageEntity messageEntity,
+        BitcoinMessageSummary summary,
+        IUnitOfWork uow
+    )
     {
+        if (summary.Inventories == null)
+        {
+            logger.LogWarning(
+                "[BitcoinAnalysisService] Inventories collection was null for message {MessageId} (Command: {Command}), skipping inventory processing.",
+                messageEntity.Id, summary.Command);
+            return;
+        }
+
         foreach (var invItem in summary.Inventories)
         {
             var inventoryEntity =
-                await uow.BitcoinInventories.GetOrCreateAsync(invItem.Type.ToString(),
-                    invItem.Hash.ToString());
+                await uow.BitcoinInventories.GetOrCreateAsync(invItem.Type.ToString(), invItem.Hash.ToString());
             messageEntity.BitcoinMessageInventories.Add(new BitcoinMessageInventoryEntity
             {
                 BitcoinMessage = messageEntity,
@@ -176,9 +186,20 @@ public class BitcoinAnalysisService(
         }
     }
 
-    private async Task HandleTransactionMessageAsync(BitcoinMessageEntity messageEntity, BitcoinMessageSummary summary,
-        IUnitOfWork uow)
+    private async Task HandleTransactionMessageAsync(
+        BitcoinMessageEntity messageEntity,
+        BitcoinMessageSummary summary,
+        IUnitOfWork uow
+    )
     {
+        if (summary.Transaction == null)
+        {
+            logger.LogWarning(
+                "[BitcoinAnalysisService] Transaction object was null for message {MessageId} (Command: {Command}), skipping transaction processing.",
+                messageEntity.Id, summary.Command);
+            return;
+        }
+
         var transactionRepository = uow.BitcoinTransactions;
         var transactionEntity =
             await transactionRepository.GetByTxIdAsync(summary.Transaction.GetHash()
@@ -220,9 +241,20 @@ public class BitcoinAnalysisService(
         });
     }
 
-    private async Task HandleHeadersMessageAsync(BitcoinMessageEntity messageEntity, BitcoinMessageSummary summary,
-        IUnitOfWork uow)
+    private async Task HandleHeadersMessageAsync(
+        BitcoinMessageEntity messageEntity,
+        BitcoinMessageSummary summary,
+        IUnitOfWork uow
+    )
     {
+        if (summary.Headers == null)
+        {
+            logger.LogWarning(
+                "[BitcoinAnalysisService] Headers collection was null for message {MessageId} (Command: {Command}), skipping headers processing.",
+                messageEntity.Id, summary.Command);
+            return;
+        }
+
         var blockHeaderRepository = uow.BitcoinBlockHeaders;
         foreach (var header in summary.Headers)
         {
