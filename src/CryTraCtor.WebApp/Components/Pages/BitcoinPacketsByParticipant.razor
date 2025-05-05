@@ -1,7 +1,6 @@
 @page "/files/{fileId:guid}/file-analysis/{fileAnalysisId:guid}/traffic-participants/{participantId:guid}/bitcoin"
 
 @using CryTraCtor.Business.Facades.Interfaces
-@using CryTraCtor.Business.Models
 @using CryTraCtor.Business.Models.TrafficParticipants
 @using CryTraCtor.WebApp.Services
 @using CryTraCtor.WebApp.Enums
@@ -119,11 +118,9 @@ else
     private TrafficParticipantDetailModel? _participant;
     private List<BitcoinMessageDetailModel> _incomingPackets = [];
     private List<BitcoinMessageDetailModel> _outgoingPackets = [];
-    private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        _isLoading = true;
         _participant = await TrafficParticipantFacade.GetAsync(ParticipantId);
         if (_participant != null)
         {
@@ -139,7 +136,6 @@ else
             await LoadBitcoinPacketsAsync();
         }
 
-        _isLoading = false;
         StateHasChanged();
     }
 
