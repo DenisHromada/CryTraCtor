@@ -1,0 +1,124 @@
+@page "/files/{fileId:guid}/file-analysis/{fileAnalysisId:guid}/bitcoin-messages"
+
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.WebApp.Services
+@using System.Linq
+@using CryTraCtor.Business.Models.Bitcoin
+@using CryTraCtor.WebApp.Enums
+
+@inject IBitcoinMessageFacade BitcoinMessageFacade
+@inject ISnackbar Snackbar
+@inject IBreadcrumbService BreadcrumbService
+
+<PageTitle>All Bitcoin Messages</PageTitle>
+
+<AnalysisOverviewNavButtonGroup FileId="FileId" FileAnalysisId="FileAnalysisId"
+                                ActiveView="AnalysisOverviewViewType.AllBitcoinMessages"/>
+
+<h3>All Bitcoin Messages</h3>
+
+@if (_allMessages.Any())
+{
+    <MudDataGrid Items="@_allMessages" T="BitcoinMessageDetailModel" Dense="true" Striped="true" Hover="true">
+        <Columns>
+            <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+            <PropertyColumn Property="x => x.Command" Title="Command"/>
+            <TemplateColumn Title="Summary">
+                <CellTemplate>
+                    @switch (context.Item.Command)
+                    {
+                        case "inv" or "getdata" or "notfound":
+                            <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
+                            break;
+                        case "headers":
+                            <MudText>@(context.Item.Headers?.Count.ToString() ?? "N/A") headers</MudText>
+                            break;
+                        case "tx":
+                        {
+                            var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
+                            <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0),
+                                Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0),
+                                Value: @totalValueBtc.ToString("0.########") BTC
+                            </MudText>
+                            break;
+                        }
+                        default:
+                            <MudText>-</MudText>
+                            break;
+                    }
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.Sender!.Address" Title="Sender Address"/>
+            <PropertyColumn Property="x => x.Sender!.Port.ToString()" Title="Sender Port"/>
+            <PropertyColumn Property="x => x.Recipient!.Address" Title="Recipient Address"/>
+            <PropertyColumn Property="x => x.Recipient!.Port.ToString()" Title="Recipient Port"/>
+            <TemplateColumn Title="Actions">
+                <CellTemplate>
+                    <MudTooltip Text="View Message Details">
+                        <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary"
+                                       Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, context.Item.SenderId, context.Item.Id))"/>
+                    </MudTooltip>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+}
+else if (_isLoading)
+{
+    <MudProgressCircular Indeterminate="true"/>
+}
+else
+{
+    <MudText>No Bitcoin messages found for this file analysis.</MudText>
+}
+
+@code {
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Guid FileAnalysisId { get; set; }
+
+    private List<BitcoinMessageDetailModel> _allMessages = [];
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        BreadcrumbService.SetBreadcrumbs(
+        [
+            new BreadcrumbItem("Files", AppRoutes.FilesUrl()),
+            new BreadcrumbItem("File Analysis", AppRoutes.FileAnalysisUrl(FileId)),
+            new BreadcrumbItem("All Bitcoin Messages", AppRoutes.AllBitcoinMessagesUrl(FileId, FileAnalysisId), disabled: true)
+        ]);
+
+        if (RendererInfo.IsInteractive)
+        {
+            await LoadAllBitcoinMessagesAsync();
+        }
+
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task LoadAllBitcoinMessagesAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            var messages = await BitcoinMessageFacade.GetByFileAnalysisIdAsync(FileAnalysisId);
+            _allMessages = messages.OrderBy(p => p.Timestamp).ToList();
+
+            if (!_allMessages.Any())
+            {
+                Snackbar.Add($"No Bitcoin messages found for this file analysis.", Severity.Info);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading Bitcoin message data: {ex.Message}", Severity.Error);
+            _allMessages = [];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+}

@@ -9,6 +9,7 @@ public static class AppRoutes
     private const string TrafficParticipantsSegment = "traffic-participants";
     private const string DnsSegment = "dns";
     private const string KnownDomainsSegment = "known-domains";
+    private const string AllBitcoinMessagesSegment = "bitcoin-messages";
     private const string BitcoinSegment = "bitcoin";
     private const string CryptoProductsSegment = "crypto-products";
     private const string KnownServicesSegment = "known-services";
@@ -114,6 +115,16 @@ public static class AppRoutes
             "Inventory item",
             BitcoinInventoryReferencesUrl(fileId, fileAnalysisId, participantId, messageId, inventoryId));
 
+    public const string AllBitcoinMessagesPage = $"{FileAnalysisPage}/{{fileAnalysisId:guid}}/{AllBitcoinMessagesSegment}";
+
+    public static string AllBitcoinMessagesUrl(Guid fileId, Guid fileAnalysisId) =>
+        $"{FileAnalysisUrl(fileId)}/{fileAnalysisId}/{BitcoinSegment}-messages";
+
+    public static List<BreadcrumbItem> GetAllBitcoinMessagesPageBreadcrumbs(Guid fileId, Guid fileAnalysisId) =>
+        BuildChildBreadcrumbs(
+            GetFileAnalysisPageBreadcrumbs(fileId),
+            "All Bitcoin Messages",
+            AllBitcoinMessagesUrl(fileId, fileAnalysisId));
 
     public const string CryptoProductsPage = $"/{CryptoProductsSegment}";
     public static string CryptoProductsUrl() => CryptoProductsPage;

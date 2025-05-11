@@ -11,6 +11,10 @@
                Disabled="@(ActiveView == AnalysisOverviewViewType.KnownServices)">
         Known Services
     </MudButton>
+    <MudButton StartIcon="@Icons.Material.Filled.Message" Href="@(AppRoutes.AllBitcoinMessagesUrl(FileId, FileAnalysisId))"
+               Disabled="@(ActiveView == AnalysisOverviewViewType.AllBitcoinMessages)">
+        All Bitcoin Messages
+    </MudButton>
 </MudButtonGroup>
 
 @code {

@@ -4,5 +4,6 @@ public enum AnalysisOverviewViewType
 {
     Unknown,
     TrafficParticipants,
-    KnownServices
+    KnownServices,
+    AllBitcoinMessages
 }
