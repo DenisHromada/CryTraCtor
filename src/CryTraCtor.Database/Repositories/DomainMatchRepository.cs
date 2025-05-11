@@ -43,4 +43,11 @@ public class DomainMatchRepository(CryTraCtorDbContext dbContext) : IDomainMatch
     {
         await _dbContext.DomainMatch.AddRangeAsync(entities);
     }
+
+    public async Task<List<DomainMatchEntity>> GetByKnownDomainIdAsync(Guid knownDomainId)
+    {
+        return await _dbContext.DomainMatch
+            .Where(dm => dm.KnownDomainId == knownDomainId)
+            .ToListAsync();
+    }
 }

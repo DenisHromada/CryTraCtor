@@ -4,15 +4,13 @@ namespace CryTraCtor.WebApp.Services;
 
 public class BreadcrumbService : IBreadcrumbService
 {
-    private List<BreadcrumbItem> _items = new();
-
-    public List<BreadcrumbItem> Items => _items;
+    public List<BreadcrumbItem> Items { get; private set; } = [];
 
     public event Action? OnBreadcrumbsChanged;
 
     public void SetBreadcrumbs(List<BreadcrumbItem> items)
     {
-        _items = items ?? new List<BreadcrumbItem>();
+        Items = items;
         OnBreadcrumbsChanged?.Invoke();
     }
 }

@@ -11,6 +11,7 @@ public static class AppRoutes
     private const string KnownDomainsSegment = "known-domains";
     private const string BitcoinSegment = "bitcoin";
     private const string CryptoProductsSegment = "crypto-products";
+    private const string KnownServicesSegment = "known-services";
     private const string StatusSegment = "status";
 
     public const string HomePage = "/";
@@ -125,6 +126,17 @@ public static class AppRoutes
 
     public static List<BreadcrumbItem> GetKnownDomainsPageBreadcrumbs() =>
         [new("Known Domains", href: KnownDomainsUrl(), disabled: true)];
+
+    public const string KnownServicesPage = $"{FileAnalysisPage}/{{fileAnalysisId:guid}}/{KnownServicesSegment}";
+
+    public static string KnownServicesUrl(Guid fileId, Guid fileAnalysisId) =>
+        $"{FileAnalysisUrl(fileId)}/{fileAnalysisId}/{KnownServicesSegment}";
+
+    public static List<BreadcrumbItem> GetKnownServicesPageBreadcrumbs(Guid fileId, Guid fileAnalysisId) =>
+        BuildChildBreadcrumbs(
+            GetFileAnalysisPageBreadcrumbs(fileId),
+            "Known Services",
+            KnownServicesUrl(fileId, fileAnalysisId));
 
     public const string StatusPage = $"/{StatusSegment}";
     public static string StatusUrl() => StatusPage;

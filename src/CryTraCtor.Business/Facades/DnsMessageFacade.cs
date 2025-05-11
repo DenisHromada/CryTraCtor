@@ -63,7 +63,6 @@ public class DnsMessageFacade(
                     QueryName = firstDto.QueryName,
                     QueryType = firstDto.QueryType,
                     IsQuery = firstDto.IsQuery,
-                    ResponseAddresses = firstDto.ResponseAddresses,
                     FileAnalysisId = firstDto.FileAnalysisId,
                     SenderId = firstDto.SenderId,
                     RecipientId = firstDto.RecipientId,
@@ -73,6 +72,32 @@ public class DnsMessageFacade(
                 };
             })
             .ToList();
+
+        if (groupedPackets.Count != 0)
+        {
+            var messageIds = groupedPackets.Select(p => p.Id).Distinct().ToList();
+            var resolvedParticipantDtos = await dnsPacketRepository.GetResolvedParticipantsForMessagesAsync(messageIds);
+
+            var resolvedParticipantsLookup = resolvedParticipantDtos
+                .GroupBy(dto => dto.DnsMessageId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(dto => new TrafficParticipantListModel
+                    {
+                        Id = dto.ParticipantId,
+                        Address = dto.Address,
+                        Port = dto.Port
+                    }).ToList()
+                );
+
+            foreach (var packetModel in groupedPackets)
+            {
+                if (resolvedParticipantsLookup.TryGetValue(packetModel.Id, out var participants))
+                {
+                    packetModel.ResolvedTrafficParticipants = participants;
+                }
+            }
+        }
 
         return groupedPackets;
     }

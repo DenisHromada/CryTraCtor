@@ -1,0 +1,109 @@
+@page "/files/{fileId:guid}/file-analysis/{fileAnalysisId:guid}/known-services"
+@using CryTraCtor.Business.Facades.Interfaces
+@using CryTraCtor.Business.Models.Aggregates
+@using CryTraCtor.WebApp.Enums
+@using CryTraCtor.WebApp.Services
+@inject IBreadcrumbService BreadcrumbService
+@inject IKnownDomainFacade KnownDomainFacade
+
+<AnalysisOverviewNavButtonGroup FileId="FileId" FileAnalysisId="FileAnalysisId" ActiveView="AnalysisOverviewViewType.KnownServices" />
+
+<PageTitle>Known Services</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Known Services</MudText>
+
+@if (_knownServicesData == null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else if (!_knownServicesData.Any())
+{
+    <MudText Class="mb-4">No known services data found for this analysis.</MudText>
+}
+else
+{
+    <MudGrid Spacing="3">
+        @foreach (var service in _knownServicesData)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="3">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@service.DomainName</MudText>
+                            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@service.ProductName (@service.ProductVendor)</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body2"><strong>Purpose:</strong> @service.DomainPurpose</MudText>
+                        <MudText Typo="Typo.body2" Class="mb-2"><strong>Description:</strong> @service.DomainDescription</MudText>
+
+                        @if (service.ResolvedIpAddresses.Any())
+                        {
+                            <MudText Typo="Typo.subtitle1" Class="mt-3 mb-1">Resolved IP Addresses:</MudText>
+                            <MudList T="string" Dense="true">
+                                @foreach (var ipAddress in service.ResolvedIpAddresses)
+                                {
+                                    <MudListItem T="string" Icon="@Icons.Material.Filled.Lan">
+                                        @ipAddress
+                                    </MudListItem>
+                                }
+                            </MudList>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Info">No resolved IP addresses found for this domain in this analysis.</MudText>
+                        }
+
+                        @if (service.QueryingEndpoints.Any())
+                        {
+                            <MudText Typo="Typo.subtitle1" Class="mt-3 mb-1">Queried by Endpoints:</MudText>
+                            <MudList T="string" Dense="true">
+                                @foreach (var endpoint in service.QueryingEndpoints)
+                                {
+                                    <MudListItem T="string" Icon="@Icons.Material.Filled.Computer">
+                                        @endpoint
+                                    </MudListItem>
+                                }
+                            </MudList>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Warning">No querying endpoints found for this domain in this analysis.</MudText>
+                        }
+
+                        @if (service.CommunicatingEndpoints.Any())
+                        {
+                            <MudText Typo="Typo.subtitle1" Class="mt-3 mb-1">Communicated with Endpoints:</MudText>
+                            <MudList T="string" Dense="true">
+                                @foreach (var endpoint in service.CommunicatingEndpoints)
+                                {
+                                    <MudListItem T="string" Icon="@Icons.Material.Filled.SwapHoriz">
+                                        @endpoint
+                                    </MudListItem>
+                                }
+                            </MudList>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Default" Class="mt-2">No direct communicating endpoints found for the resolved IPs in this analysis.</MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+
+@code {
+    [Parameter] public Guid FileId { get; set; }
+    [Parameter] public Guid FileAnalysisId { get; set; }
+
+    private IEnumerable<KnownServiceDataModel>? _knownServicesData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        BreadcrumbService.SetBreadcrumbs(AppRoutes.GetKnownServicesPageBreadcrumbs(FileId, FileAnalysisId));
+        _knownServicesData = await KnownDomainFacade.GetKnownServicesDataAsync(FileAnalysisId);
+    }
+}

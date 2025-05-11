@@ -1,4 +1,4 @@
-using CryTraCtor.Business.Models.Agregates;
+using CryTraCtor.Business.Models.Aggregates;
 using CryTraCtor.Business.Models.TrafficParticipants;
 using CryTraCtor.Database.Entities;
 

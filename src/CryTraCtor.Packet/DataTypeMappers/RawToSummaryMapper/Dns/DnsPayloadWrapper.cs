@@ -90,17 +90,11 @@ public class DnsPayloadWrapper
         if (GetRecordType(answer) == KaitaiDnsPacket.TypeType.A.ToString())
         {
             var answerPayload = (KaitaiDnsPacket.Address)answer.Payload;
-            foreach (var octet in answerPayload.Ip)
-            {
-                address += octet + ".";
-            }
+            address = string.Join(".", answerPayload.Ip);
         } else if (GetRecordType(answer) == KaitaiDnsPacket.TypeType.Aaaa.ToString())
         {
             var answerPayload = (KaitaiDnsPacket.AddressV6)answer.Payload;
-            foreach (var hextet in answerPayload.IpV6)
-            {
-                address += hextet + ":";
-            }
+            address = string.Join(":", answerPayload.IpV6);
         }
 
         return address;

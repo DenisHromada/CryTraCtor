@@ -40,7 +40,6 @@ public class DnsMessageRepository(CryTraCtorDbContext dbContext, IEntityMapper<D
                 QueryName = t.t.t.message.QueryName,
                 QueryType = t.t.t.message.QueryType,
                 IsQuery = t.t.t.message.IsQuery,
-                ResponseAddresses = t.t.t.message.ResponseAddresses,
                 FileAnalysisId = t.t.t.message.FileAnalysisId,
 
                 SenderId = t.t.t.message.SenderId,
@@ -55,5 +54,28 @@ public class DnsMessageRepository(CryTraCtorDbContext dbContext, IEntityMapper<D
             });
 
         return await query.ToListAsync();
+    }
+
+    public async Task<IEnumerable<ResolvedParticipantInfoDto>> GetResolvedParticipantsForMessagesAsync(IEnumerable<Guid> messageIds)
+    {
+        if (messageIds == null || !messageIds.Any())
+        {
+            return [];
+        }
+
+        var resolvedParticipants = await dbContext.Set<DnsMessageResolvedTrafficParticipantEntity>()
+            .AsNoTracking()
+            .Where(dmr => messageIds.Contains(dmr.DnsMessageId))
+            .Include(dmr => dmr.TrafficParticipant)
+            .Select(dmr => new ResolvedParticipantInfoDto
+            {
+                DnsMessageId = dmr.DnsMessageId,
+                ParticipantId = dmr.TrafficParticipantId,
+                Address = dmr.TrafficParticipant.Address,
+                Port = dmr.TrafficParticipant.Port
+            })
+            .ToListAsync();
+
+        return resolvedParticipants;
     }
 }

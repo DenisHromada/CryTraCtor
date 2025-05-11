@@ -2,7 +2,7 @@ using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Mappers.TrafficParticipant;
 using CryTraCtor.Business.Models.TrafficParticipants;
 using CryTraCtor.Database.Entities;
-using CryTraCtor.Business.Models.Agregates;
+using CryTraCtor.Business.Models.Aggregates;
 using CryTraCtor.Database.Enums;
 using CryTraCtor.Database.Mappers;
 using CryTraCtor.Database.UnitOfWork;
@@ -131,6 +131,83 @@ public class TrafficParticipantFacade(
                         .Count(dm => dm.MatchType == DomainMatchType.Subdomain)
                 };
                 productSummary.PurposeSummaries.Add(purposeSummary);
+            }
+
+            var productKnownDomainNames = await knownDomainRepo.Get()
+                .Where(kd => kd.CryptoProductId == product.Id)
+                .Select(kd => kd.DomainName)
+                .Distinct()
+                .ToListAsync();
+
+
+            var dnsMessageRepo = uow.GetRepository<DnsMessageEntity, DnsMessageEntityMapper>();
+            var relevantDnsMessages = await dnsMessageRepo.Get()
+                .Include(dns => dns.ResolvedTrafficParticipants!)
+                .ThenInclude(rtp => rtp.TrafficParticipant)
+                .Where(dns => dns.FileAnalysisId == participant.FileAnalysisId &&
+                              !dns.IsQuery &&
+                              (dns.QueryType == "A" || dns.QueryType == "AAAA") &&
+                              productKnownDomainNames.Contains(dns.QueryName) &&
+                              dns.ResolvedTrafficParticipants != null &&
+                              dns.ResolvedTrafficParticipants.Any(rtp => rtp.TrafficParticipant != null))
+                .ToListAsync();
+
+            var resolvedIpsForProductDomains = relevantDnsMessages
+                .SelectMany(dns => dns.ResolvedTrafficParticipants!
+                    .Where(rtp => rtp.TrafficParticipant != null)
+                    .Select(rtp => rtp.TrafficParticipant!.Address))
+                .Distinct()
+                .ToList();
+
+            if (resolvedIpsForProductDomains.Any())
+            {
+                var genericPacketRepo = uow.GetRepository<GenericPacketEntity, GenericPacketEntityMapper>();
+                var linkedPacketEntities = await genericPacketRepo.Get()
+                    .Include(gp => gp.Sender)
+                    .Include(gp => gp.Recipient)
+                    .Where(gp => gp.FileAnalysisId == participant.FileAnalysisId &&
+                                 gp.Sender != null && gp.Recipient != null &&
+                                 ((gp.SenderId == participant.Id &&
+                                   resolvedIpsForProductDomains.Contains(gp.Recipient.Address)) ||
+                                  (gp.RecipientId == participant.Id &&
+                                   resolvedIpsForProductDomains.Contains(gp.Sender.Address))))
+                    .OrderBy(gp => gp.Timestamp)
+                    .ToListAsync();
+
+                foreach (var packetEntity in linkedPacketEntities)
+                {
+                    var remoteIp = (packetEntity.SenderId == participant.Id)
+                        ? packetEntity.Recipient!.Address
+                        : packetEntity.Sender!.Address;
+                    var matchedDomain = "Unknown";
+                    var dnsQueryDomain = "N/A";
+
+                    var responsibleDnsMessage = relevantDnsMessages.FirstOrDefault(dns =>
+                        dns.ResolvedTrafficParticipants!.Any(rtp =>
+                            rtp.TrafficParticipant != null && rtp.TrafficParticipant.Address == remoteIp) &&
+                        productKnownDomainNames.Contains(dns.QueryName)
+                    );
+
+                    if (responsibleDnsMessage != null)
+                    {
+                        dnsQueryDomain = responsibleDnsMessage.QueryName;
+
+                        matchedDomain = productKnownDomainNames.FirstOrDefault(kdName =>
+                            dnsQueryDomain.EndsWith(kdName, StringComparison.OrdinalIgnoreCase)) ?? dnsQueryDomain;
+                    }
+
+                    productSummary.LinkedGenericPackets.Add(new LinkedGenericPacketModel
+                    {
+                        Timestamp = packetEntity.Timestamp,
+                        SourceIp = packetEntity.Sender!.Address,
+                        SourcePort = packetEntity.Sender!.Port,
+                        DestinationIp = packetEntity.Recipient!.Address,
+                        DestinationPort = packetEntity.Recipient!.Port,
+                        MatchedDomain = matchedDomain,
+                        DnsQueryDomain = dnsQueryDomain,
+                        TrafficDirection = (packetEntity.SenderId == participant.Id) ? "Sent" : "Received"
+                    });
+                }
             }
 
             summary.ProductSummaries.Add(productSummary);

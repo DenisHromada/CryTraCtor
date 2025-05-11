@@ -29,6 +29,7 @@ public class WebAppDatabaseInstaller : IInstaller
             .AddSingleton<IEntityMapper<TrafficParticipantEntity>, TrafficParticipantEntityMapper>()
             .AddSingleton<IEntityMapper<FileAnalysisEntity>, FileAnalysisEntityMapper>()
             .AddSingleton<IEntityMapper<DnsMessageEntity>, DnsMessageEntityMapper>()
+            .AddSingleton<IEntityMapper<GenericPacketEntity>, GenericPacketEntityMapper>()
             .AddSingleton<IEntityMapper<BitcoinMessageEntity>, BitcoinMessageEntityMapper>()
             .AddSingleton<IEntityMapper<BitcoinInventoryEntity>, BitcoinInventoryEntityMapper>();
 

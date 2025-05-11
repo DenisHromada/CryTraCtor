@@ -1,4 +1,4 @@
-namespace CryTraCtor.Business.Models.Agregates
+namespace CryTraCtor.Business.Models.Aggregates
 {
     public class TrafficParticipantKnownDomainSummaryModel : IModel
     {

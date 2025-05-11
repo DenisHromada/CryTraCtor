@@ -1,0 +1,33 @@
+@using CryTraCtor.WebApp.Enums
+@inject ILogger<AnalysisOverviewNavButtonGroup> Logger
+
+<MudButtonGroup Color="Color.Primary" Variant="Variant.Outlined" Class="mb-4">
+    <MudButton StartIcon="@Icons.Material.Filled.Group"
+               Href="@(AppRoutes.TrafficParticipantsUrl(FileId, FileAnalysisId))"
+               Disabled="@(ActiveView == AnalysisOverviewViewType.TrafficParticipants)">
+        Traffic Participants
+    </MudButton>
+    <MudButton StartIcon="@Icons.Material.Filled.Dns" Href="@(AppRoutes.KnownServicesUrl(FileId, FileAnalysisId))"
+               Disabled="@(ActiveView == AnalysisOverviewViewType.KnownServices)">
+        Known Services
+    </MudButton>
+</MudButtonGroup>
+
+@code {
+    [Parameter, EditorRequired] public Guid FileId { get; set; }
+    [Parameter, EditorRequired] public Guid FileAnalysisId { get; set; }
+    [Parameter, EditorRequired] public AnalysisOverviewViewType ActiveView { get; set; } = AnalysisOverviewViewType.Unknown;
+
+    protected override void OnParametersSet()
+    {
+        if (!Enum.IsDefined(typeof(AnalysisOverviewViewType), ActiveView) || ActiveView == AnalysisOverviewViewType.Unknown)
+        {
+            Logger.LogWarning("Invalid or Unknown ActiveView parameter '{ActiveView}' provided to AnalysisOverviewNavButtonGroup.", ActiveView);
+        }
+
+        if (FileId == Guid.Empty || FileAnalysisId == Guid.Empty)
+        {
+            Logger.LogWarning("One or more required ID parameters are empty in AnalysisOverviewNavButtonGroup. FileId: {FileId}, FileAnalysisId: {FileAnalysisId}", FileId, FileAnalysisId);
+        }
+    }
+}

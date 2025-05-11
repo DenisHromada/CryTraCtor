@@ -3,6 +3,7 @@ using System;
 using CryTraCtor.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CryTraCtor.Database.Migrations
 {
     [DbContext(typeof(CryTraCtorDbContext))]
-    partial class CryTraCtorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250508191509_ResponseAddressesXRefTable")]
+    partial class ResponseAddressesXRefTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -373,35 +376,6 @@ namespace CryTraCtor.Database.Migrations
                     b.ToTable("FileAnalysis");
                 });
 
-            modelBuilder.Entity("CryTraCtor.Database.Entities.GenericPacketEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("FileAnalysisId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RecipientId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileAnalysisId");
-
-                    b.HasIndex("RecipientId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("GenericPacket");
-                });
-
             modelBuilder.Entity("CryTraCtor.Database.Entities.KnownDomainEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -665,33 +639,6 @@ namespace CryTraCtor.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("StoredFile");
-                });
-
-            modelBuilder.Entity("CryTraCtor.Database.Entities.GenericPacketEntity", b =>
-                {
-                    b.HasOne("CryTraCtor.Database.Entities.FileAnalysisEntity", "FileAnalysis")
-                        .WithMany()
-                        .HasForeignKey("FileAnalysisId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CryTraCtor.Database.Entities.TrafficParticipantEntity", "Recipient")
-                        .WithMany()
-                        .HasForeignKey("RecipientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CryTraCtor.Database.Entities.TrafficParticipantEntity", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FileAnalysis");
-
-                    b.Navigation("Recipient");
-
-                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("CryTraCtor.Database.Entities.KnownDomainEntity", b =>

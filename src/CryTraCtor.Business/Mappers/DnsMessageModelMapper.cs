@@ -20,13 +20,18 @@ public class DnsMessageModelMapper(
             QueryName = model.QueryName,
             QueryType = model.QueryType,
             IsQuery = model.IsQuery,
-            ResponseAddresses = model.ResponseAddresses,
             FileAnalysisId = model.FileAnalysisId,
+            ResolvedTrafficParticipants = model.ResolvedTrafficParticipants.Select(p =>
+                new DnsMessageResolvedTrafficParticipantEntity
+                {
+                    DnsMessageId = model.Id,
+                    TrafficParticipantId = p.Id
+                }).ToList()
         };
 
     public override DnsMessageModel MapToListModel(DnsMessageEntity entity)
     {
-        return new DnsMessageModel
+        var model = new DnsMessageModel
         {
             Id = entity.Id,
             SenderId = entity.SenderId,
@@ -36,7 +41,6 @@ public class DnsMessageModelMapper(
             QueryName = entity.QueryName,
             QueryType = entity.QueryType,
             IsQuery = entity.IsQuery,
-            ResponseAddresses = entity.ResponseAddresses,
             FileAnalysisId = entity.FileAnalysisId,
             Sender = entity.Sender == null ? null : trafficParticipantListModelMapper.MapToListModel(entity.Sender),
             Recipient = entity.Recipient == null
@@ -44,6 +48,20 @@ public class DnsMessageModelMapper(
                 : trafficParticipantListModelMapper.MapToListModel(entity.Recipient),
             KnownDomainPurpose = null
         };
+
+        if (entity.ResolvedTrafficParticipants != null)
+        {
+            model.ResolvedTrafficParticipants = entity.ResolvedTrafficParticipants
+                .Where(rtp => rtp.TrafficParticipant != null)
+                .Select(rtp => trafficParticipantListModelMapper.MapToListModel(rtp.TrafficParticipant!))
+                .ToList();
+        }
+        else
+        {
+            model.ResolvedTrafficParticipants = [];
+        }
+
+        return model;
     }
 
     public override DnsMessageModel MapToDetailModel(DnsMessageEntity entity) => MapToListModel(entity);

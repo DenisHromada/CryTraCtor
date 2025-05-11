@@ -17,6 +17,7 @@ public record DnsMessageModel : IMessageModelBase
     public string QueryName { get; set; } = string.Empty;
     public string QueryType { get; set; } = string.Empty;
     public bool IsQuery { get; set; }
-    public string? ResponseAddresses { get; set; }
     public string? KnownDomainPurpose { get; set; }
+
+    public List<TrafficParticipantListModel> ResolvedTrafficParticipants { get; set; } = [];
 }

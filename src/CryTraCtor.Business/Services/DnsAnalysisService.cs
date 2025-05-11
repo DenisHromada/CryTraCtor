@@ -1,10 +1,14 @@
+using System.Diagnostics;
+using System.Text;
 using CryTraCtor.Business.Facades.Interfaces;
 using CryTraCtor.Business.Models;
+using CryTraCtor.Business.Models.FileAnalysis;
 using CryTraCtor.Business.Models.StoredFiles;
+using CryTraCtor.Business.Models.TrafficParticipants;
 using CryTraCtor.Packet.DataTypes.Packet.Summary.Dns;
+using CryTraCtor.Packet.Models;
 using CryTraCtor.Packet.Services;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace CryTraCtor.Business.Services;
 
@@ -13,7 +17,9 @@ public class DnsAnalysisService(
     IDnsMessageFacade dnsMessageFacade,
     ITrafficParticipantFacade trafficParticipantFacade,
     DomainMatchAssociationService domainMatchAssociationService,
-    ILogger<DnsAnalysisService> logger)
+    ILogger<DnsAnalysisService> logger,
+    GenericPacketReaderService genericPacketReaderService,
+    IGenericPacketFacade genericPacketFacade)
 {
     public async Task AnalyzeAsync(StoredFileDetailModel storedFile, Guid fileAnalysisId)
     {
@@ -41,11 +47,14 @@ public class DnsAnalysisService(
         }
 
 
-        var participants = await trafficParticipantFacade.GetByFileAnalysisIdAsync(fileAnalysisId);
-        var participantLookup = participants.ToDictionary(
+        var participantsEnumerable = await trafficParticipantFacade.GetByFileAnalysisIdAsync(fileAnalysisId);
+        var participantsList = participantsEnumerable.ToList();
+        var participantLookup = participantsList.ToDictionary(
             p => $"{p.Address}:{p.Port}",
             p => p
         );
+
+        var targetEndpointsForFilter = new HashSet<InternetEndpointModel>();
 
         foreach (var packetSummary in dnsPackets)
         {
@@ -82,36 +91,85 @@ public class DnsAnalysisService(
                             IsQuery = true,
                             QueryName = query.Query.Name ?? string.Empty,
                             QueryType = query.Query.RecordType,
-                            ResponseAddresses = null
                         };
                     }
                 }
-                else if (packetSummary is DnsPacketResponse response)
+                else if (packetSummary is DnsPacketResponse { Query.RecordType: "A" or "AAAA" } response)
                 {
-                    if (response.Query != null &&
-                        response.Query.RecordType is "A" or "AAAA")
-                    {
-                        var addresses = response.Answers
-                            .Where(a => a.RecordType is "A" or "AAAA" &&
-                                        !string.IsNullOrEmpty(a.RecordData))
-                            .Select(a => a.RecordData)
-                            .ToList();
+                    var responseIpAddresses = response.Answers
+                        .Where(a => a.RecordType is "A" or "AAAA"
+                                    && !string.IsNullOrEmpty(a.RecordData))
+                        .Select(a => a.RecordData)
+                        .ToList();
 
-                        if (addresses.Any())
+                    if (responseIpAddresses.Count != 0)
+                    {
+                        dnsPacketModel = new DnsMessageModel
                         {
-                            dnsPacketModel = new DnsMessageModel
+                            Id = Guid.NewGuid(),
+                            FileAnalysisId = fileAnalysisId,
+                            SenderId = sender.Id,
+                            RecipientId = recipient.Id,
+                            Timestamp = packetSummary.Timestamp,
+                            TransactionId = (ushort)response.TransactionId,
+                            IsQuery = false,
+                            QueryName = response.Query.Name ?? string.Empty,
+                            QueryType = response.Query.RecordType
+                        };
+
+                        foreach (var ipAddressString in responseIpAddresses)
+                        {
+                            var existingParticipants =
+                                participantsList.Where(p => p.Address == ipAddressString).ToList();
+
+                            if (existingParticipants.Count != 0)
                             {
-                                Id = Guid.NewGuid(),
-                                FileAnalysisId = fileAnalysisId,
-                                SenderId = sender.Id,
-                                RecipientId = recipient.Id,
-                                Timestamp = packetSummary.Timestamp,
-                                TransactionId = (ushort)response.TransactionId,
-                                IsQuery = false,
-                                QueryName = response.Query.Name ?? string.Empty,
-                                QueryType = response.Query.RecordType,
-                                ResponseAddresses = string.Join(",", addresses)
-                            };
+                                foreach (var participant in existingParticipants)
+                                {
+                                    dnsPacketModel.ResolvedTrafficParticipants.Add(participant);
+
+                                    if (participant.Port != 0)
+                                    {
+                                        targetEndpointsForFilter.Add(
+                                            new InternetEndpointModel(participant.Address, participant.Port));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var newDetailParticipant = new TrafficParticipantDetailModel
+                                {
+                                    Address = ipAddressString,
+                                    Port = 0,
+                                    FileAnalysis = new FileAnalysisListModel { Id = fileAnalysisId }
+                                };
+
+
+                                var createdOrUpdatedDetailParticipant =
+                                    await trafficParticipantFacade.CreateOrUpdateAsync(newDetailParticipant);
+
+
+                                var newListParticipant = new TrafficParticipantListModel
+                                {
+                                    Id = createdOrUpdatedDetailParticipant.Id,
+                                    Address = createdOrUpdatedDetailParticipant.Address,
+                                    Port = createdOrUpdatedDetailParticipant.Port,
+                                    FileAnalysisId = fileAnalysisId
+                                };
+
+                                dnsPacketModel.ResolvedTrafficParticipants.Add(newListParticipant);
+
+                                if (newListParticipant.Port != 0)
+                                {
+                                    targetEndpointsForFilter.Add(new InternetEndpointModel(newListParticipant.Address,
+                                        newListParticipant.Port));
+                                }
+
+
+                                participantsList.Add(newListParticipant);
+                                var newParticipantKey = $"{newListParticipant.Address}:{newListParticipant.Port}";
+                                participantLookup.TryAdd(newParticipantKey, newListParticipant);
+                            }
                         }
                     }
                 }
@@ -145,6 +203,126 @@ public class DnsAnalysisService(
         {
             logger.LogError(ex,
                 "[DnsAnalysisService] Error during domain association for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}",
+                fileAnalysisId, ex.Message);
+        }
+
+
+        await CreateGenericPacketsForDnsResolvedEndpointsAsync(internalFilePath, fileAnalysisId,
+            targetEndpointsForFilter, participantsList, participantLookup);
+    }
+
+    private async Task CreateGenericPacketsForDnsResolvedEndpointsAsync(
+        string pcapFilePath,
+        Guid fileAnalysisId,
+        HashSet<InternetEndpointModel> targetEndpoints,
+        List<TrafficParticipantListModel> currentParticipantsList,
+        Dictionary<string, TrafficParticipantListModel> currentParticipantLookup)
+    {
+        logger.LogInformation(
+            "[DnsAnalysisService] Starting generic packet creation for DNS resolved endpoints for FileAnalysisId: {FileAnalysisId}",
+            fileAnalysisId);
+        try
+        {
+            if (targetEndpoints.Count == 0)
+            {
+                logger.LogInformation(
+                    "[DnsAnalysisService] No DNS resolved target endpoints with non-zero port found for FileAnalysisId: {FileAnalysisId}. Skipping generic packet creation.",
+                    fileAnalysisId);
+                return;
+            }
+
+
+            var bpfFilterBuilder = new StringBuilder();
+            foreach (var endpoint in targetEndpoints)
+            {
+                if (bpfFilterBuilder.Length > 0)
+                {
+                    bpfFilterBuilder.Append(" or ");
+                }
+
+                bpfFilterBuilder.Append($"(host {endpoint.Address} and port {endpoint.Port})");
+            }
+
+            var bpfFilter = bpfFilterBuilder.ToString();
+            logger.LogDebug("[DnsAnalysisService] Constructed BPF filter for generic packets: {BpfFilter}", bpfFilter);
+
+
+            var genericPacketSummaries = genericPacketReaderService.ReadIpPackets(pcapFilePath, bpfFilter);
+
+
+            int genericPacketsCreated = 0;
+            foreach (var packetSummary in genericPacketSummaries)
+            {
+                try
+                {
+                    var sourceKey = $"{packetSummary.Source.Address}:{packetSummary.Source.Port}";
+                    if (!currentParticipantLookup.TryGetValue(sourceKey, out var sender))
+                    {
+                        var newSenderDetail = new TrafficParticipantDetailModel
+                        {
+                            Address = packetSummary.Source.Address, Port = packetSummary.Source.Port,
+                            FileAnalysis = new FileAnalysisListModel { Id = fileAnalysisId }
+                        };
+                        var persistedSender = await trafficParticipantFacade.CreateOrUpdateAsync(newSenderDetail);
+                        sender = new TrafficParticipantListModel
+                        {
+                            Id = persistedSender.Id, Address = persistedSender.Address, Port = persistedSender.Port,
+                            FileAnalysisId = fileAnalysisId
+                        };
+                        currentParticipantsList.Add(sender);
+                        currentParticipantLookup[sourceKey] = sender;
+                    }
+
+
+                    var destinationKey = $"{packetSummary.Destination.Address}:{packetSummary.Destination.Port}";
+                    if (!currentParticipantLookup.TryGetValue(destinationKey, out var recipient))
+                    {
+                        var newRecipientDetail = new TrafficParticipantDetailModel
+                        {
+                            Address = packetSummary.Destination.Address, Port = packetSummary.Destination.Port,
+                            FileAnalysis = new FileAnalysisListModel { Id = fileAnalysisId }
+                        };
+                        var persistedRecipient = await trafficParticipantFacade.CreateOrUpdateAsync(newRecipientDetail);
+                        recipient = new TrafficParticipantListModel
+                        {
+                            Id = persistedRecipient.Id, Address = persistedRecipient.Address,
+                            Port = persistedRecipient.Port, FileAnalysisId = fileAnalysisId
+                        };
+                        currentParticipantsList.Add(recipient);
+                        currentParticipantLookup[destinationKey] = recipient;
+                    }
+
+
+                    var genericPacketModel = new GenericPacketModel
+                    {
+                        Id = Guid.NewGuid(),
+                        FileAnalysisId = fileAnalysisId,
+                        SenderId = sender.Id,
+                        RecipientId = recipient.Id,
+                        Timestamp = packetSummary.Timestamp
+                    };
+
+
+                    await genericPacketFacade.CreateOrUpdateAsync(genericPacketModel);
+                    genericPacketsCreated++;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex,
+                        "[DnsAnalysisService] Error processing a generic packet summary for FileAnalysisId: {FileAnalysisId}. Source: {Source}, Dest: {Destination}, Timestamp: {Timestamp}. Error: {ErrorMessage}",
+                        fileAnalysisId, packetSummary.Source, packetSummary.Destination, packetSummary.Timestamp,
+                        ex.Message);
+                }
+            }
+
+            logger.LogInformation(
+                "[DnsAnalysisService] Completed generic packet creation for FileAnalysisId: {FileAnalysisId}. {Count} packets created.",
+                fileAnalysisId, genericPacketsCreated);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,
+                "[DnsAnalysisService] Error during generic packet creation for DNS resolved endpoints for FileAnalysisId: {FileAnalysisId}. Error: {ErrorMessage}",
                 fileAnalysisId, ex.Message);
         }
     }

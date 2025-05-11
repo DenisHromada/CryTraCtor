@@ -19,4 +19,6 @@ public class TrafficParticipantEntity : IEntity
 
     [InverseProperty(nameof(DnsMessageEntity.Recipient))]
     public ICollection<DnsMessageEntity>? ReceivedDnsMessages { get; set; } = new List<DnsMessageEntity>();
+
+    public ICollection<DnsMessageResolvedTrafficParticipantEntity> DnsMessagesResolvingThisParticipant { get; set; } = new List<DnsMessageResolvedTrafficParticipantEntity>();
 }

@@ -11,7 +11,10 @@ public class CryTraCtorDbContext : DbContext
     public virtual DbSet<TrafficParticipantEntity> TrafficParticipant { get; set; }
     public virtual DbSet<FileAnalysisEntity> FileAnalysis { get; set; }
     public virtual DbSet<DnsMessageEntity> DnsMessage { get; set; }
+    public virtual DbSet<DnsMessageResolvedTrafficParticipantEntity> DnsMessageResolvedTrafficParticipant { get; set; }
     public virtual DbSet<DomainMatchEntity> DomainMatch { get; set; }
+    public virtual DbSet<GenericPacketEntity> GenericPacket { get; set; }
+
     public virtual DbSet<BitcoinMessageEntity> BitcoinMessage { get; set; }
     public virtual DbSet<BitcoinInventoryEntity> BitcoinInventory { get; set; }
     public virtual DbSet<BitcoinMessageInventoryEntity> BitcoinMessageInventory { get; set; }

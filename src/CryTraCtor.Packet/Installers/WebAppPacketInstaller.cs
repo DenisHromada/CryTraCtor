@@ -15,6 +15,7 @@ public class WebAppPacketInstaller : IInstaller
             .AddTransient<BitcoinMessageParser>()
             .AddTransient<BitcoinPacketAnalyzer>()
             .AddTransient<BitcoinTcpStreamHandler>()
-            .AddTransient<IEndpointReader, EndpointReader>();
+            .AddTransient<IEndpointReader, EndpointReader>()
+            .AddTransient<GenericPacketReaderService>();
     }
 }

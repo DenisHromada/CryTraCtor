@@ -30,6 +30,7 @@ public class WebAppBusinessInstaller : IInstaller
             .AddSingleton<FileAnalysisModelMapper>()
             .AddSingleton<DnsMessageModelMapper>()
             .AddSingleton<DomainMatchMapper>()
+            .AddSingleton<GenericPacketModelMapper>()
             .AddSingleton<BitcoinMessageModelMapper>()
             .AddSingleton<BitcoinTransactionMapper>()
             .AddSingleton<BitcoinBlockHeaderMapper>();
@@ -43,6 +44,7 @@ public class WebAppBusinessInstaller : IInstaller
             .AddScoped<IFileAnalysisFacade, FileAnalysisFacade>()
             .AddScoped<IDnsMessageFacade, DnsMessageFacade>()
             .AddScoped<IDomainMatchFacade, DomainMatchFacade>()
+            .AddScoped<IGenericPacketFacade, GenericPacketFacade>()
             .AddScoped<IBitcoinMessageFacade, BitcoinMessageFacade>()
             .AddScoped<IBitcoinInventoryFacade, BitcoinInventoryFacade>();
 

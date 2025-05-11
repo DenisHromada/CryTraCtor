@@ -8,7 +8,6 @@ public class DnsMessageFlatPurposeDto
     public string QueryName { get; set; } = string.Empty;
     public string QueryType { get; set; } = string.Empty;
     public bool IsQuery { get; set; }
-    public string? ResponseAddresses { get; set; }
     public Guid FileAnalysisId { get; set; }
 
     public Guid SenderId { get; set; }

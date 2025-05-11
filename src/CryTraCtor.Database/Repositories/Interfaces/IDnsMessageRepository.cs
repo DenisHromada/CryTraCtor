@@ -7,4 +7,5 @@ public interface IDnsMessageRepository : IRepository<DnsMessageEntity>
 {
     Task<IEnumerable<DnsMessageEntity>> GetByFileAnalysisIdAsync(Guid fileAnalysisId);
     Task<IEnumerable<DnsMessageFlatPurposeDto>> GetMessagesWithFlatPurposeByFileAnalysisIdAsync(Guid fileAnalysisId);
+    Task<IEnumerable<ResolvedParticipantInfoDto>> GetResolvedParticipantsForMessagesAsync(IEnumerable<Guid> messageIds);
 }
