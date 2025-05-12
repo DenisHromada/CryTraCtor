@@ -1,0 +1,36 @@
+@using CryTraCtor.Business.Models.Bitcoin
+@using System.Linq
+
+@if (Message != null)
+{
+    @switch (Message!.Command)
+    {
+        case "inv" or "getdata" or "notfound":
+            <MudText>@(Message!.InventoryCount?.ToString() ?? "N/A") items</MudText>
+            break;
+        case "headers":
+            <MudText>@(Message!.Headers?.Count.ToString() ?? "N/A") headers</MudText>
+            break;
+        case "tx":
+        {
+            var totalValueBtc = (Message!.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
+            <MudText>Inputs: @(Message!.Transaction?.Inputs?.Count() ?? 0),
+                Outputs: @(Message!.Transaction?.Outputs?.Count() ?? 0),
+                Value: @totalValueBtc.ToString("0.########") BTC
+            </MudText>
+            break;
+        }
+        default:
+            <MudText>-</MudText>
+            break;
+    }
+}
+else
+{
+    <MudText>Error: Message data not provided.</MudText>
+}
+
+
+@code {
+    [Parameter, EditorRequired] public BitcoinMessageDetailModel? Message { get; set; }
+}

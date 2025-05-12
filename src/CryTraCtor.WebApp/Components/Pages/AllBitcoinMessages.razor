@@ -25,27 +25,7 @@
             <PropertyColumn Property="x => x.Command" Title="Command"/>
             <TemplateColumn Title="Summary">
                 <CellTemplate>
-                    @switch (context.Item.Command)
-                    {
-                        case "inv" or "getdata" or "notfound":
-                            <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
-                            break;
-                        case "headers":
-                            <MudText>@(context.Item.Headers?.Count.ToString() ?? "N/A") headers</MudText>
-                            break;
-                        case "tx":
-                        {
-                            var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
-                            <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0),
-                                Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0),
-                                Value: @totalValueBtc.ToString("0.########") BTC
-                            </MudText>
-                            break;
-                        }
-                        default:
-                            <MudText>-</MudText>
-                            break;
-                    }
+                    <BitcoinMessageSummary Message="context.Item"/>
                 </CellTemplate>
             </TemplateColumn>
             <PropertyColumn Property="x => x.Sender!.Address" Title="Sender Address"/>
