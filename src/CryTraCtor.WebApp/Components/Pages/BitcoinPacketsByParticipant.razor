@@ -23,85 +23,179 @@
 {
     <h3>Bitcoin Messages for Participant @_participant.Address:@_participant.Port</h3>
 
-    <h4 class="mt-4">Incoming Messages</h4>
-    @if (_incomingPackets.Any())
+    <MudSwitch @bind-Value="_showCombinedView" Label="Show Combined View" Color="Color.Primary" Class="mt-4 mb-4"/>
+
+    @if (!_showCombinedView)
     {
-        <MudDataGrid Items="@_incomingPackets" T="BitcoinMessageDetailModel" Dense="true" Striped="true" Hover="true">
-            <Columns>
-                <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
-                <PropertyColumn Property="x => x.Command" Title="Command"/>
-                <TemplateColumn Title="Summary">
-                    <CellTemplate>
-                        @if (context.Item.Command is "inv" or "getdata" or "notfound")
-                        {
-                            <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
-                        }
-                        else if (context.Item.Command == "headers")
-                        {
-                            <MudText>@(context.Item.Headers?.Count.ToString() ?? "N/A") headers</MudText>
-                        }
-                        else if (context.Item.Command == "tx")
-                        {
-                            var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
-                            <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0), Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0), Value: @(totalValueBtc.ToString("0.########")) BTC</MudText>
-                        }
-                    </CellTemplate>
-                </TemplateColumn>
-                <PropertyColumn Property="x => x.Sender!.Address" Title="Sender Address"/>
-                <PropertyColumn Property="x => x.Sender!.Port" Title="Sender Port"/>
-                <TemplateColumn Title="Actions">
-                    <CellTemplate>
-                        <MudTooltip Text="View Message Details">
-                            <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary"
-                                           Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, context.Item.Id))"/>
-                        </MudTooltip>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-        </MudDataGrid>
+        <h4 class="mt-4">Incoming Messages</h4>
+        @if (_incomingPackets.Any())
+        {
+            <MudDataGrid Items="@_incomingPackets" T="BitcoinMessageDetailModel" Dense="true" Striped="true"
+                         Hover="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+                    <PropertyColumn Property="x => x.Command" Title="Command"/>
+                    <TemplateColumn Title="Summary">
+                        <CellTemplate>
+                            @switch (context.Item.Command)
+                            {
+                                case "inv" or "getdata" or "notfound":
+                                    <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
+                                    break;
+                                case "headers":
+                                    <MudText>@(context.Item.Headers?.Count.ToString() ?? "N/A") headers</MudText>
+                                    break;
+                                case "tx":
+                                {
+                                    var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
+                                    <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0),
+                                        Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0),
+                                        Value: @totalValueBtc.ToString("0.########") BTC
+                                    </MudText>
+                                    break;
+                                }
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="x => x.Sender!.Address" Title="Sender Address"/>
+                    <PropertyColumn Property="x => x.Sender!.Port" Title="Sender Port"/>
+                    <TemplateColumn Title="Actions">
+                        <CellTemplate>
+                            <MudTooltip Text="View Message Details">
+                                <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small"
+                                               Color="Color.Primary"
+                                               Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, context.Item.Id))"/>
+                            </MudTooltip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        }
+        else
+        {
+            <MudText>No incoming Bitcoin messages found for this participant.</MudText>
+        }
+
+
+        <h4 class="mt-6">Outgoing Messages</h4>
+        @if (_outgoingPackets.Any())
+        {
+            <MudDataGrid Items="@_outgoingPackets" T="BitcoinMessageDetailModel" Dense="true" Striped="true"
+                         Hover="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+                    <PropertyColumn Property="x => x.Command" Title="Command"/>
+                    <TemplateColumn Title="Summary">
+                        <CellTemplate>
+                            @switch (context.Item.Command)
+                            {
+                                case "inv" or "getdata" or "notfound":
+                                    <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
+                                    break;
+                                case "tx":
+                                {
+                                    var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
+                                    <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0),
+                                        Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0),
+                                        Value: @totalValueBtc.ToString("0.########") BTC
+                                    </MudText>
+                                    break;
+                                }
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="x => x.Recipient!.Address" Title="Recipient Address"/>
+                    <PropertyColumn Property="x => x.Recipient!.Port" Title="Recipient Port"/>
+                    <TemplateColumn Title="Actions">
+                        <CellTemplate>
+                            <MudTooltip Text="View Message Details">
+                                <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small"
+                                               Color="Color.Primary"
+                                               Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, context.Item.Id))"/>
+                            </MudTooltip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        }
+        else
+        {
+            <MudText>No outgoing Bitcoin messages found for this participant.</MudText>
+        }
     }
     else
     {
-        <MudText>No incoming Bitcoin messages found for this participant.</MudText>
-    }
-
-
-    <h4 class="mt-6">Outgoing Messages</h4>
-    @if (_outgoingPackets.Any())
-    {
-        <MudDataGrid Items="@_outgoingPackets" T="BitcoinMessageDetailModel" Dense="true" Striped="true" Hover="true">
-            <Columns>
-                <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
-                <PropertyColumn Property="x => x.Command" Title="Command"/>
-                 <TemplateColumn Title="Summary">
-                    <CellTemplate>
-                        @if (context.Item.Command is "inv" or "getdata" or "notfound")
-                        {
-                            <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
-                        }
-                         else if (context.Item.Command == "tx")
-                        {
-                            var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
-                            <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0), Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0), Value: @(totalValueBtc.ToString("0.########")) BTC</MudText>
-                        }
-                    </CellTemplate>
-                </TemplateColumn>
-                <PropertyColumn Property="x => x.Recipient!.Address" Title="Recipient Address"/>
-                <PropertyColumn Property="x => x.Recipient!.Port" Title="Recipient Port"/>
-                 <TemplateColumn Title="Actions">
-                    <CellTemplate>
-                        <MudTooltip Text="View Message Details">
-                            <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary"
-                                           Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, context.Item.Id))"/>
-                        </MudTooltip>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-        </MudDataGrid>
-    }
-    else
-    {
-        <MudText>No outgoing Bitcoin messages found for this participant.</MudText>
+        <h4 class="mt-4">All Messages</h4>
+        @if (_combinedPackets.Any())
+        {
+            <MudDataGrid Items="@_combinedPackets" T="BitcoinMessageDetailModel" Dense="true" Striped="true"
+                         Hover="true">
+                <Columns>
+                    <PropertyColumn Property="x => x.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss.fff"/>
+                    <PropertyColumn Property="x => x.Command" Title="Command"/>
+                    <TemplateColumn Title="Summary">
+                        <CellTemplate>
+                            @switch (context.Item.Command)
+                            {
+                                case "inv" or "getdata" or "notfound":
+                                    <MudText>@(context.Item.InventoryCount?.ToString() ?? "N/A") items</MudText>
+                                    break;
+                                case "headers":
+                                    <MudText>@(context.Item.Headers?.Count.ToString() ?? "N/A") headers</MudText>
+                                    break;
+                                case "tx":
+                                {
+                                    var totalValueBtc = (context.Item.Transaction?.Outputs?.Sum(output => output.Value) ?? 0) / 100000000.0;
+                                    <MudText>Inputs: @(context.Item.Transaction?.Inputs?.Count() ?? 0),
+                                        Outputs: @(context.Item.Transaction?.Outputs?.Count() ?? 0),
+                                        Value: @totalValueBtc.ToString("0.########") BTC
+                                    </MudText>
+                                    break;
+                                }
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Direction"
+                                    SortBy="@(p => p.RecipientId == ParticipantId ? "Incoming" : "Outgoing")">
+                        <CellTemplate>
+                            @if (context.Item.RecipientId == ParticipantId)
+                            {
+                                <MudChip Label="true" Color="Color.Success" Size="Size.Small">Incoming</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip Label="true" Color="Color.Info" Size="Size.Small">Outgoing</MudChip>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Remote Party">
+                        <CellTemplate>
+                            @if (context.Item.RecipientId == ParticipantId)
+                            {
+                                <MudText>@context.Item.Sender?.Address:@context.Item.Sender?.Port</MudText>
+                            }
+                            else
+                            {
+                                <MudText>@context.Item.Recipient?.Address:@context.Item.Recipient?.Port</MudText>
+                            }
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Actions">
+                        <CellTemplate>
+                            <MudTooltip Text="View Message Details">
+                                <MudIconButton Icon="@Icons.Material.Filled.Info" Size="Size.Small"
+                                               Color="Color.Primary"
+                                               Href="@(AppRoutes.BitcoinMessageDetailUrl(FileId, FileAnalysisId, ParticipantId, context.Item.Id))"/>
+                            </MudTooltip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        }
+        else
+        {
+            <MudText>No Bitcoin messages found for this participant.</MudText>
+        }
     }
 }
 else
@@ -118,6 +212,8 @@ else
     private TrafficParticipantDetailModel? _participant;
     private List<BitcoinMessageDetailModel> _incomingPackets = [];
     private List<BitcoinMessageDetailModel> _outgoingPackets = [];
+    private List<BitcoinMessageDetailModel> _combinedPackets = [];
+    private bool _showCombinedView;
 
     protected override async Task OnInitializedAsync()
     {
@@ -158,7 +254,12 @@ else
                 .OrderBy(p => p.Timestamp)
                 .ToList();
 
-            if (!_incomingPackets.Any() && !_outgoingPackets.Any())
+            _combinedPackets = allPackets
+                .Where(p => p.SenderId == ParticipantId || p.RecipientId == ParticipantId)
+                .OrderBy(p => p.Timestamp)
+                .ToList();
+
+            if (!_combinedPackets.Any())
             {
                 Snackbar.Add($"No Bitcoin messages found for participant {_participant.Address}:{_participant.Port}.", Severity.Info);
             }
@@ -168,6 +269,7 @@ else
             Snackbar.Add($"Error loading Bitcoin message data: {ex.Message}", Severity.Error);
             _incomingPackets = [];
             _outgoingPackets = [];
+            _combinedPackets = [];
         }
     }
 
