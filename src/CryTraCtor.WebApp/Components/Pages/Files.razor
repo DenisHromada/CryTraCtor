@@ -34,8 +34,11 @@
         <PropertyColumn Property="x => x.Id" Title="Id"/>
         <PropertyColumn Property="x => x.PublicFileName" Title="Public File Name"/>
         <PropertyColumn Property="x => x.InternalFilePath" Title="Internal File Name"/>
-        <PropertyColumn Property="x => x.MimeType" Title="Mime Type"/>
-        <PropertyColumn Property="x => x.FileSize" Title="File Size"/>
+        <TemplateColumn Title="File Size (kB)">
+            <CellTemplate>
+                @((context.Item.FileSize / 1024.0).ToString("N0")) kB
+            </CellTemplate>
+        </TemplateColumn>
         <TemplateColumn>
             <CellTemplate>
                 <MudIconButton Icon="@Icons.Material.Filled.Analytics"
