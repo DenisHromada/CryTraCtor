@@ -1,4 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+
+# Switch back to the non-root user.
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
@@ -6,6 +8,8 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
+RUN apt-get update -y && \
+    apt-get install -y libpcap-dev
 WORKDIR /src
 COPY ["src/CryTraCtor.WebApp/CryTraCtor.WebApp.csproj", "src/CryTraCtor.WebApp/"]
 RUN dotnet restore "src/CryTraCtor.WebApp/CryTraCtor.WebApp.csproj"

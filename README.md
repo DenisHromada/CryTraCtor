@@ -1,18 +1,15 @@
 # CryTraCtor
-Bachelor's Thesis - Forensic Analysis of Anonymization Principles of Cryptocurrency Networks
+Bachelor's Thesis - Deep Packet Inspection of Cryptocurrency Wallet Traffic
 
 ## Initial Setup
-1. Create your own `.env` file. You can use the `.env.example` file as a template.
-2. Have Docker installed and run `docker-compose up -d postgres` in the root directory. This creates and a PostgreSQL
-database container.
+1. Create your own `.env` file. You can use the `.env.example` file as a template. (When modifying values, make sure to change launchSettings.json in the webapp project as well.)
+2. Have Docker installed and run `docker compose -f compose.prod.yml up -d` in the root directory. This creates two containers. One with the PostgreSQL
+database and one running the application.
 3. Apply migrations to the database. The tool named `dotnet-ef` must be available in the terminal.
 Then run `./scripts/migrate.sh`in the root directory of the solution.
-4. Connect the application to the database
-- If you wish to run the application using docker, you can simply run `docker compose up -d`.
-- If you wish to run the application locally, either make sure environment variables from the `.env` file are sourced,
-or add the database connection string to the CryTraCtor.API project. (for example as .NET User Secrets)
+4. The application should now be available at `localhost:5261`
 
-### WSL Development Setup Snippets
+### WSL Development Setup Remarks
 - Run Rider through Remote Development Gateway plugin in WSL
 
 - Change permissions in `/etc/wsl.conf`
